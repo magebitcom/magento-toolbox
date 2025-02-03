@@ -1,0 +1,81 @@
+{
+  "name": "magento-toolbox",
+  "displayName": "magento-toolbox",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.93.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/app/etc/env.php",
+    "workspaceContains:**/app/etc/di.xml",
+    "workspaceContains:**/bin/magento"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "magento-toolbox.generateModule",
+        "title": "Magento Toolbox: Generate Module"
+      },
+      {
+        "command": "magento-toolbox.indexWorkspace",
+        "title": "Magento Toolbox: Index Workspace"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\""
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/lodash-es": "^4.17.12",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@types/validatorjs": "^3.15.5",
+    "@types/vscode": "^1.93.1",
+    "@types/vscode-webview": "^1.57.5",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@vscode-elements/elements": "^1.11.0",
+    "ejs": "^3.1.10",
+    "fast-xml-parser": "^4.5.1",
+    "formik": "^2.4.6",
+    "lodash-es": "^4.17.21",
+    "node-php-generator": "^1.0.1",
+    "php-parser": "^3.2.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript-memoize": "^1.1.1",
+    "validatorjs": "^3.22.1"
+  }
+}
