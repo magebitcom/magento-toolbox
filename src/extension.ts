@@ -6,7 +6,7 @@ import ExtensionState from 'common/ExtensionState';
 import IndexRunner from 'indexer/IndexRunner';
 import ActiveTextEditorChangeObserver from 'observer/ActiveTextEditorChangeObserver';
 import * as vscode from 'vscode';
-
+import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvider';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
@@ -34,10 +34,24 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(event => {
       activeTextEditorChangeObserver.execute(event);
+
+      if (event?.document) {
+        DiagnosticCollectionProvider.updateDiagnostics(event.document);
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument(event => {
+      DiagnosticCollectionProvider.updateDiagnostics(event.document);
     })
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);
+
+  if (vscode.window.activeTextEditor) {
+    DiagnosticCollectionProvider.updateDiagnostics(vscode.window.activeTextEditor.document);
+  }
 
   console.log('[Magento Toolbox] Done');
 }

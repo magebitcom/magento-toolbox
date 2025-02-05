@@ -4,7 +4,7 @@ import PluginClassDecorationProvider from 'decorator/PluginClassDecorationProvid
 
 export default class ActiveTextEditorChangeObserver extends Observer {
   public async execute(textEditor: TextEditor | undefined): Promise<void> {
-    if (textEditor && textEditor.document.uri.fsPath.endsWith('.php')) {
+    if (textEditor && textEditor.document.languageId === 'php') {
       const provider = new PluginClassDecorationProvider(textEditor.document);
 
       const decorations = await provider.getDecorations();
