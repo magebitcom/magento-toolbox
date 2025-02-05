@@ -3,11 +3,12 @@ import AutoloadNamespaceIndexer from './AutoloadNamespaceIndexer';
 import DiIndexer from './DiIndexer';
 import IndexManager from './IndexManager';
 import ModuleIndexer from './ModuleIndexer';
+import IndexStorage from 'common/IndexStorage';
 
 export default class IndexRunner {
   private static instance: IndexRunner;
 
-  private indexManager: IndexManager;
+  public readonly indexManager: IndexManager;
 
   private constructor() {
     this.indexManager = new IndexManager([
@@ -25,7 +26,13 @@ export default class IndexRunner {
     return IndexRunner.instance;
   }
 
-  public async indexWorkspace(): Promise<void> {
+  public async indexWorkspace(force: boolean = false): Promise<void> {
+    if (force) {
+      IndexStorage.clear();
+    } else {
+      await IndexStorage.load();
+    }
+
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Window,
@@ -35,5 +42,7 @@ export default class IndexRunner {
         await this.indexManager.indexWorkspace(progress);
       }
     );
+
+    await IndexStorage.save();
   }
 }

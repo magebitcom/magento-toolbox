@@ -69,6 +69,9 @@ async function main() {
     sourcesContent: false,
     platform: 'node',
     outdir: 'dist',
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+    },
     external: ['vscode'],
     logLevel: 'silent',
     plugins: [esbuildProblemMatcherPlugin, copyAssetsPlugin],
@@ -84,6 +87,9 @@ async function main() {
     sourcesContent: false,
     platform: 'browser',
     outdir: 'dist/webview',
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+    },
     logLevel: 'silent',
     plugins: [esbuildProblemMatcherPlugin],
     alias: {

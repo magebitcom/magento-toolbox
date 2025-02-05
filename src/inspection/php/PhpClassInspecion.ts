@@ -3,7 +3,6 @@ import { PhpFileInfo } from './PhpFileInfo';
 import IndexStorage from 'common/IndexStorage';
 import DiIndexer from 'indexer/DiIndexer';
 import { DiPlugin } from 'indexer/data/DiIndexData';
-import { PhpFile } from 'parser/php/PhpFile';
 import PhpParser from 'parser/php/Parser';
 import { first } from 'lodash-es';
 import Magento from 'util/Magento';
@@ -11,7 +10,6 @@ import Magento from 'util/Magento';
 export default class PhpClassInspecion {
   public readonly fileInfo: PhpFileInfo;
   private parser: PhpParser;
-  private phpFile: PhpFile | undefined;
 
   constructor(private readonly textDocument: TextDocument) {
     this.fileInfo = new PhpFileInfo(this.textDocument);

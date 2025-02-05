@@ -75,6 +75,7 @@
     "php-parser": "^3.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "typescript-json-serializer": "^6.0.1",
     "typescript-memoize": "^1.1.1",
     "validatorjs": "^3.22.1"
   }

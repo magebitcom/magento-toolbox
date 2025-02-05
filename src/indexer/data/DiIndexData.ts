@@ -1,5 +1,6 @@
 import { Uri } from 'vscode';
 import IndexData from './IndexData';
+import { JsonObject } from 'typescript-json-serializer';
 
 export interface DiPlugin {
   name: string;
@@ -36,6 +37,7 @@ export interface DiVirtualType extends DiBaseType {
   type: string;
 }
 
+@JsonObject()
 export class DiIndexData extends IndexData {
   public constructor(
     public types: DiType[] = [],

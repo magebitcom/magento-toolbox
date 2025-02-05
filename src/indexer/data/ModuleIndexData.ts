@@ -1,6 +1,7 @@
 import { Uri } from 'vscode';
 import { WizardSelectOption } from 'webview/types';
 import IndexData from './IndexData';
+import { JsonObject } from 'typescript-json-serializer';
 
 export interface Module {
   name: string;
@@ -10,6 +11,7 @@ export interface Module {
   location: 'vendor' | 'app';
 }
 
+@JsonObject()
 export class ModuleIndexData extends IndexData {
   public constructor(public modules: Module[] = []) {
     super();

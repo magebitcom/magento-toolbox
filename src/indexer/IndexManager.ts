@@ -1,6 +1,7 @@
 import { Progress, workspace } from 'vscode';
 import { Indexer } from './Indexer';
 import IndexStorage from 'common/IndexStorage';
+import Common from 'util/Common';
 
 export default class IndexManager {
   public constructor(private readonly indexers: Indexer[]) {}
@@ -19,26 +20,32 @@ export default class IndexManager {
   ): Promise<void> {
     const workspaceUri = workspace.workspaceFolders![0].uri;
 
+    Common.startStopwatch('indexWorkspace');
+
     for (const indexer of this.indexers) {
       if (!force && !this.shouldIndex(indexer)) {
         continue;
       }
 
+      const timer = `indexer_${indexer.getId()}`;
+      Common.startStopwatch(timer);
       const files = await workspace.findFiles(indexer.getPattern(workspaceUri), 'dev/**');
 
       progress.report({ message: `Running indexer - ${indexer.getName()}`, increment: 0 });
 
-      for (const file of files) {
-        await indexer.indexFile(file);
-      }
+      const promises = files.map(file => indexer.indexFile(file));
+      await Promise.all(promises);
 
       const indexData = indexer.getData();
       IndexStorage.set(indexer.getId(), indexData);
 
       indexer.clear();
+      Common.stopStopwatch(timer);
 
       progress.report({ increment: 100 });
     }
+
+    Common.stopStopwatch('indexWorkspace');
   }
 
   protected shouldIndex(index: Indexer): boolean {
