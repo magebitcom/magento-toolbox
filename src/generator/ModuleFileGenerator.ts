@@ -9,4 +9,8 @@ export default abstract class ModuleFileGenerator extends FileGenerator {
   public getModuleName(vendor: string, module: string): string {
     return `${vendor}_${module}`;
   }
+
+  public getModuleNamespace(vendor: string, module: string): string {
+    return `${vendor}\\${module}`;
+  }
 }

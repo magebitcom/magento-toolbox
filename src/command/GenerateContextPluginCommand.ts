@@ -3,6 +3,7 @@ import { ClassInfo } from 'common/php/ClassInfo';
 import PluginSubjectInfo from 'common/php/PluginSubjectInfo';
 import FileGeneratorManager from 'generator/FileGeneratorManager';
 import PluginClassGenerator from 'generator/plugin/PluginClassGenerator';
+import PluginDiGenerator from 'generator/plugin/PluginDiGenerator';
 import PhpParser from 'parser/php/Parser';
 import { PhpMethod } from 'parser/php/PhpMethod';
 import * as vscode from 'vscode';
@@ -57,6 +58,7 @@ export default class GenerateContextPluginCommand extends Command {
 
     const manager = new FileGeneratorManager([
       new PluginClassGenerator(data, phpClasses[0], method),
+      new PluginDiGenerator(data, phpClasses[0], method),
     ]);
 
     await manager.generate(vscode.workspace.workspaceFolders![0].uri);

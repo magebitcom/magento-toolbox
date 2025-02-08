@@ -14,6 +14,7 @@ export default class XmlGenerator {
       attributeNamePrefix: '@_',
       ignoreAttributes: false,
       textNodeName: '#text',
+      indentBy: '    ',
       format: true,
       ...(options ?? {}),
     });

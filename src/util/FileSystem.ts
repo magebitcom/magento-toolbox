@@ -12,4 +12,9 @@ export default class FileSystem {
         return exists;
       });
   }
+
+  public static async readFile(uri: Uri): Promise<string> {
+    const content = await workspace.fs.readFile(uri);
+    return content.toString();
+  }
 }

@@ -18,7 +18,7 @@ export default class PluginClassGenerator extends ModuleFileGenerator {
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const nameParts = this.data.name.split(/[\\/]+/);
+    const nameParts = this.data.className.split(/[\\/]+/);
     const pluginName = nameParts.pop() as string;
     const parts = [vendor, module, 'Plugin', ...nameParts];
     const moduleDirectory = this.getModuleDirectory(vendor, module, workspaceUri);

@@ -8,6 +8,7 @@ import { WizardFormBuilder } from 'webview/WizardFormBuilder';
 export interface PluginContextWizardData {
   module: string;
   method: string;
+  className: string;
   name: string;
   type: 'before' | 'after' | 'around';
   scope: MagentoScope;
@@ -20,7 +21,7 @@ export default class PluginContextWizard extends GeneratorWizard {
     initialMethod?: string
   ): Promise<PluginContextWizardData> {
     const moduleNameIndex = IndexStorage.get(ModuleIndexer.KEY);
-    const modules = moduleNameIndex?.getModuleOptions() ?? [];
+    const modules = moduleNameIndex?.getModuleOptions(module => module.location === 'app') ?? [];
     const builder = new WizardFormBuilder();
 
     builder.setTitle('Generate a new plugin');
@@ -30,6 +31,7 @@ export default class PluginContextWizard extends GeneratorWizard {
       WizardFieldBuilder.select('module', 'Module')
         .setDescription(['Module where plugin will be generated in'])
         .setOptions(modules)
+        .setInitialValue(modules[0]?.value)
         .build()
     );
 
@@ -41,9 +43,13 @@ export default class PluginContextWizard extends GeneratorWizard {
     );
 
     builder.addField(
-      WizardFieldBuilder.text('name', 'Plugin name')
-        .setDescription(['Name of the plugin class, e.g. "MyPlugin"'])
+      WizardFieldBuilder.text('className', 'Plugin class name')
+        .setDescription(['E.g. "MyPlugin"'])
         .build()
+    );
+
+    builder.addField(
+      WizardFieldBuilder.text('name', 'Plugin name').setDescription(['E.g. "my_plugin"']).build()
     );
 
     builder.addField(

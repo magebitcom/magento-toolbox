@@ -21,9 +21,9 @@ export class ModuleIndexData extends IndexData {
     return this.modules;
   }
 
-  public getModuleOptions(exclude: string[] = []): WizardSelectOption[] {
+  public getModuleOptions(filter?: (module: Module) => boolean): WizardSelectOption[] {
     return this.modules
-      .filter(module => !exclude.includes(module.name))
+      .filter(module => !filter || filter(module))
       .map(module => ({
         label: module.name,
         value: module.name,
