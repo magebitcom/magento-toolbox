@@ -4,7 +4,7 @@ export default class MarkdownMessageBuilder {
   private string: MarkdownString;
 
   public constructor(title: string) {
-    let t = '[Magento Toolbox]';
+    let t = 'Magento Toolbox';
 
     if (title) {
       t += ` - ${title}`;

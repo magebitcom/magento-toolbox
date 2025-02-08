@@ -2,7 +2,7 @@ import { KindType, NodeKind } from './Parser';
 import { Identifier } from 'php-parser';
 
 export abstract class PhpNode<K = NodeKind> {
-  constructor(protected ast: KindType<K>) {}
+  constructor(public ast: KindType<K>) {}
 
   public searchAst<K extends NodeKind>(kind: K) {
     const results: KindType<K>[] = [];

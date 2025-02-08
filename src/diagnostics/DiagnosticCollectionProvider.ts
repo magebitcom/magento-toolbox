@@ -39,11 +39,11 @@ class DiagnosticCollectionProvider {
     }
 
     for (const language in this.collections) {
-      this.collections[language].clear();
+      this.getCollection(language).clear();
     }
 
     for (const language in diagnostics) {
-      this.collections[language].set(document.uri, diagnostics[language]);
+      this.getCollection(language).set(document.uri, diagnostics[language]);
     }
   }
 }

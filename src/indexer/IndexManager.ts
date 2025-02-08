@@ -1,7 +1,8 @@
-import { Progress, workspace } from 'vscode';
+import { Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
 import { Indexer } from './Indexer';
 import IndexStorage from 'common/IndexStorage';
 import Common from 'util/Common';
+import { minimatch } from 'minimatch';
 
 export default class IndexManager {
   public constructor(private readonly indexers: Indexer[]) {}
@@ -15,10 +16,11 @@ export default class IndexManager {
   }
 
   public async indexWorkspace(
+    workspaceFolder: WorkspaceFolder,
     progress: Progress<{ message?: string; increment?: number }>,
     force: boolean = false
   ): Promise<void> {
-    const workspaceUri = workspace.workspaceFolders![0].uri;
+    const workspaceUri = workspaceFolder.uri;
 
     Common.startStopwatch('indexWorkspace');
 
@@ -46,6 +48,21 @@ export default class IndexManager {
     }
 
     Common.stopStopwatch('indexWorkspace');
+  }
+
+  public async indexFile(workspaceFolder: WorkspaceFolder, file: Uri): Promise<void> {
+    Common.startStopwatch('indexFile');
+
+    for (const indexer of this.indexers) {
+      const pattern = indexer.getPattern(workspaceFolder.uri);
+      const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
+
+      if (minimatch(file.fsPath, patternString, { matchBase: true })) {
+        await indexer.indexFile(file);
+      }
+    }
+
+    Common.stopStopwatch('indexFile');
   }
 
   protected shouldIndex(index: Indexer): boolean {

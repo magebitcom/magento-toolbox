@@ -16,6 +16,16 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "submenus": [
+      {
+        "id": "magento-toolbox.submenu",
+        "label": "Magento Toolbox"
+      },
+      {
+        "id": "magento-toolbox.explorer-submenu",
+        "label": "Magento Toolbox"
+      }
+    ],
     "commands": [
       {
         "command": "magento-toolbox.generateModule",
@@ -24,8 +34,38 @@
       {
         "command": "magento-toolbox.indexWorkspace",
         "title": "Magento Toolbox: Index Workspace"
+      },
+      {
+        "command": "magento-toolbox.generateContextPlugin",
+        "title": "Magento Toolbox: Generate Plugin"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "magento-toolbox.generateContextPlugin",
+          "when": "false"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "magento-toolbox.submenu",
+          "group": "magento-toolbox"
+        }
+      ],
+      "explorer/context": [
+        {
+          "submenu": "magento-toolbox.explorer-submenu",
+          "group": "magento-toolbox"
+        }
+      ],
+      "magento-toolbox.submenu": [
+        {
+          "command": "magento-toolbox.generateContextPlugin",
+          "when": "magento-toolbox.canGeneratePlugin"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -67,10 +107,17 @@
   },
   "dependencies": {
     "@vscode-elements/elements": "^1.11.0",
+    "@xml-tools/ast": "^5.0.5",
+    "@xml-tools/content-assist": "^3.1.11",
+    "@xml-tools/parser": "^1.0.11",
+    "@xml-tools/simple-schema": "^3.0.5",
+    "@xml-tools/validation": "^1.0.16",
     "ejs": "^3.1.10",
     "fast-xml-parser": "^4.5.1",
     "formik": "^2.4.6",
+    "glob": "^11.0.1",
     "lodash-es": "^4.17.21",
+    "minimatch": "^10.0.1",
     "node-php-generator": "^1.0.1",
     "php-parser": "^3.2.2",
     "react": "^19.0.0",

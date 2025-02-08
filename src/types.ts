@@ -9,3 +9,12 @@ export enum License {
   GPL_V3 = 'gplv3',
   OSL_V3 = 'oslv3',
 }
+
+export enum MagentoScope {
+  Global = 'global',
+  Frontend = 'frontend',
+  Adminhtml = 'adminhtml',
+  Webapi = 'webapi',
+  Graphql = 'graphql',
+  Cron = 'cron',
+}

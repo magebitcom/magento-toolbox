@@ -23,11 +23,22 @@ export default class FileGeneratorManager {
   }
 
   public async writeFiles(showMessage: boolean = true): Promise<void> {
-    await Promise.all(this.generatedFiles.map(file => file.write()));
+    const written = await Promise.all(this.generatedFiles.map(file => file.write()));
     await this.refreshFiles();
 
+    const generated = written.filter(Boolean).length;
+    const skipped = this.generatedFiles.length - generated;
+
+    if (generated === 0) {
+      return;
+    }
+
     if (showMessage) {
-      window.showInformationMessage(`${this.generatedFiles.length} files generated`);
+      if (skipped > 0) {
+        window.showInformationMessage(`${generated} file/-s generated, ${skipped} file/-s skipped`);
+      } else {
+        window.showInformationMessage(`${generated} file/-s generated`);
+      }
     }
   }
 

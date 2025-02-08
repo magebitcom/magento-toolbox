@@ -61,14 +61,29 @@ export const FieldRenderer: React.FC<Props> = ({ field }) => {
         return <vscode-textfield placeholder={field.placeholder} {...fieldProps} ref={el} />;
       }
       case WizardInput.Select: {
+        const selectedIndex = field.initialValue
+          ? field.options.findIndex(option => option.value === String(field.initialValue))
+          : undefined;
+
         if (field.multiple) {
           return (
-            <vscode-multi-select {...fieldProps} ref={el} options={field.options.map(mapOption)} />
+            <vscode-multi-select
+              {...fieldProps}
+              ref={el}
+              value={field.initialValue ? [String(field.initialValue)] : undefined}
+              options={field.options.map(mapOption)}
+              selectedIndexes={selectedIndex ? [selectedIndex] : undefined}
+            />
           );
         }
 
         return (
-          <vscode-single-select {...fieldProps} ref={el} options={field.options.map(mapOption)} />
+          <vscode-single-select
+            {...fieldProps}
+            ref={el}
+            selectedIndex={selectedIndex}
+            options={field.options.map(mapOption)}
+          />
         );
       }
       case WizardInput.Checkbox: {

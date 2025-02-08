@@ -7,11 +7,14 @@ import IndexRunner from 'indexer/IndexRunner';
 import ActiveTextEditorChangeObserver from 'observer/ActiveTextEditorChangeObserver';
 import * as vscode from 'vscode';
 import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvider';
+import ChangeTextEditorSelectionObserver from 'observer/ChangeTextEditorSelectionObserver';
+import DocumentCache from 'cache/DocumentCache';
+import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log('[Magento Toolbox] Activating extension');
-  const commands = [IndexWorkspaceCommand, GenerateModuleCommand];
+  const commands = [IndexWorkspaceCommand, GenerateModuleCommand, GenerateContextPluginCommand];
 
   ExtensionState.init(context);
 
@@ -27,9 +30,10 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
   });
 
-  await IndexRunner.getInstance().indexWorkspace();
+  await IndexRunner.indexWorkspace();
 
   const activeTextEditorChangeObserver = new ActiveTextEditorChangeObserver();
+  const changeTextEditorSelectionObserver = new ChangeTextEditorSelectionObserver();
 
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(event => {
@@ -38,12 +42,27 @@ export async function activate(context: vscode.ExtensionContext) {
       if (event?.document) {
         DiagnosticCollectionProvider.updateDiagnostics(event.document);
       }
+    }),
+    vscode.window.onDidChangeTextEditorSelection(event => {
+      changeTextEditorSelectionObserver.execute(event);
     })
   );
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(event => {
       DiagnosticCollectionProvider.updateDiagnostics(event.document);
+    }),
+    vscode.workspace.onDidCloseTextDocument(event => {
+      DocumentCache.clear(event);
+    }),
+    vscode.workspace.onDidSaveTextDocument(textDocument => {
+      const workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
+
+      if (workspaceFolder) {
+        IndexRunner.indexFile(workspaceFolder, textDocument.uri);
+      }
+
+      DocumentCache.clear(textDocument);
     })
   );
 

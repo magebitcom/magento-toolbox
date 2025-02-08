@@ -28,6 +28,10 @@ export class WizardFieldBuilder {
     return new WizardFieldBuilder(WizardInput.Text, id, label);
   }
 
+  public static number(id?: string, label?: string): WizardFieldBuilder {
+    return new WizardFieldBuilder(WizardInput.Number, id, label);
+  }
+
   public static select(id?: string, label?: string): WizardFieldBuilder {
     return new WizardFieldBuilder(WizardInput.Select, id, label);
   }
@@ -65,7 +69,7 @@ export class WizardFieldBuilder {
     return this;
   }
 
-  public setInitialValue(initialValue: FieldValue): WizardFieldBuilder {
+  public setInitialValue(initialValue?: FieldValue): WizardFieldBuilder {
     this.initialValue = initialValue;
     return this;
   }
@@ -96,6 +100,7 @@ export class WizardFieldBuilder {
     }
 
     switch (this.type) {
+      case WizardInput.Number:
       case WizardInput.Text:
         return {
           id: this.id,
@@ -114,6 +119,7 @@ export class WizardFieldBuilder {
           dependsOn: this.dependsOn,
           options: this.options,
           multiple: this.multiple,
+          initialValue: this.initialValue,
           type: this.type,
         };
       case WizardInput.Checkbox:
@@ -122,6 +128,7 @@ export class WizardFieldBuilder {
           label: this.label,
           description: this.description,
           dependsOn: this.dependsOn,
+          initialValue: this.initialValue,
           type: this.type,
         };
       default:

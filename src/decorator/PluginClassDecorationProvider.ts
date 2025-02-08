@@ -5,82 +5,95 @@ import IndexStorage from 'common/IndexStorage';
 import MarkdownMessageBuilder from 'common/MarkdownMessageBuilder';
 import PhpNamespace from 'common/PhpNamespace';
 import AutoloadNamespaceIndexer from 'indexer/AutoloadNamespaceIndexer';
-import PhpClassInspecion from 'inspection/php/PhpClassInspecion';
 import TextDocumentDecorationProvider from './TextDocumentDecorationProvider';
-import flatten from 'lodash-es/flatten';
+import PhpParser from 'parser/php/Parser';
+import { ClassInfo } from 'common/php/ClassInfo';
+import Position from 'util/Position';
+import PluginSubjectInfo from 'common/php/PluginSubjectInfo';
+import PluginInfo from 'common/php/PluginInfo';
+import Magento from 'util/Magento';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
     return window.createTextEditorDecorationType({
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
       gutterIconPath: path.join(__dirname, 'resources', 'icons', 'plugin.svg'),
       gutterIconSize: '80%',
+      borderColor: 'rgba(0, 188, 202, 0.5)',
+      borderStyle: 'dotted',
+      borderWidth: '0 0 1px 0',
     });
   }
 
   public async getDecorations(): Promise<DecorationOptions[]> {
     const decorations: DecorationOptions[] = [];
-    const classInspection = new PhpClassInspecion(this.document);
-    const classInterceptors = classInspection.getClassInterceptors();
+    const parser = new PhpParser();
+    const phpFile = await parser.parseDocument(this.document);
 
-    if (classInterceptors.length === 0) {
+    const classNode = phpFile.classes[0];
+
+    if (!classNode) {
       return decorations;
     }
 
-    if (!classInspection.fileInfo.nameRange) {
+    const pluginSubjectInfo = new PluginSubjectInfo(phpFile);
+    const classInfo = new ClassInfo(phpFile);
+    const classPlugins = pluginSubjectInfo.getClassPlugins(classNode);
+
+    if (classPlugins.length === 0) {
       return decorations;
     }
 
-    const hoverMessage = await this.getInterceptorHoverMessage(classInterceptors);
+    const nameRange = classInfo.getNameRange();
+
+    if (!nameRange) {
+      return decorations;
+    }
+
+    const hoverMessage = await this.getInterceptorHoverMessage(classPlugins);
 
     decorations.push({
-      range: classInspection.fileInfo.nameRange,
+      range: nameRange,
       hoverMessage,
     });
 
-    const pluginMethodsDecorations = await this.getPluginMethodsDecorations(
-      classInspection,
-      classInterceptors
-    );
-
-    decorations.push(...pluginMethodsDecorations);
-
-    return decorations;
-  }
-
-  private async getPluginMethodsDecorations(
-    classInspection: PhpClassInspecion,
-    classInterceptors: DiPlugin[]
-  ): Promise<DecorationOptions[]> {
-    const promises = classInterceptors.map(async interceptor => {
+    const promises = classPlugins.map(async plugin => {
       const fileUri = await IndexStorage.get(AutoloadNamespaceIndexer.KEY)!.findClassByNamespace(
-        PhpNamespace.fromString(interceptor.type)
+        PhpNamespace.fromString(plugin.type)
       );
 
       if (!fileUri) {
         return;
       }
 
-      const pluginMethods = await classInspection.getPluginMethods(fileUri);
+      const pluginPhpFile = await parser.parse(fileUri);
+      const pluginInfo = new PluginInfo(pluginPhpFile);
+      const pluginMethods = pluginInfo.getPluginMethods(pluginPhpFile.classes[0]);
 
       return pluginMethods.map(method => {
-        const regex = new RegExp(`function\\s+${method}\\s*\\(`);
-        const match = this.document.getText().match(regex);
+        const subjectMethodName = Magento.pluginMethodToMethodName(method.name);
 
-        if (!match) {
+        if (!subjectMethodName) {
           return;
         }
 
-        const offset = 9;
+        const subjectMethod = classInfo.getMethodByName(phpFile.classes[0], subjectMethodName);
+
+        if (!subjectMethod) {
+          return;
+        }
+
+        if (typeof subjectMethod.ast.name === 'string' || !subjectMethod.ast.name.loc) {
+          return;
+        }
 
         const range = new Range(
-          this.document.positionAt(match.index! + offset),
-          this.document.positionAt(match.index! + offset + method.length)
+          Position.phpAstPositionToVsCodePosition(subjectMethod.ast.name.loc.start),
+          Position.phpAstPositionToVsCodePosition(subjectMethod.ast.name.loc.end)
         );
-        const link = `[${interceptor.type}](${fileUri})`;
-        const message = MarkdownMessageBuilder.create('Interceptors');
 
-        message.appendMarkdown(`- ${link} [(di.xml)](${interceptor.diUri})\n`);
+        const message = MarkdownMessageBuilder.create('Interceptors');
+        const link = `[${plugin.type}](${fileUri})`;
+        message.appendMarkdown(`- ${link} [(di.xml)](${plugin.diUri})\n`);
 
         return {
           range,
@@ -89,7 +102,11 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
       });
     });
 
-    return flatten(await Promise.all(promises)).filter(Boolean) as DecorationOptions[];
+    const pluginMethodsDecorations = await Promise.all(promises);
+
+    decorations.push(...(pluginMethodsDecorations.flat().filter(Boolean) as DecorationOptions[]));
+
+    return decorations;
   }
 
   private async getInterceptorHoverMessage(classInterceptors: DiPlugin[]): Promise<MarkdownString> {

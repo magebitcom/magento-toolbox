@@ -1,9 +1,7 @@
 import IndexStorage from 'common/IndexStorage';
-import IndexManager from 'indexer/IndexManager';
 import ModuleIndexer from 'indexer/ModuleIndexer';
 import { License } from 'types';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
-import { WizardInput } from 'webview/types';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';
 

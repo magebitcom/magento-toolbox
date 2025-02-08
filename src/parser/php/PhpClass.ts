@@ -16,6 +16,10 @@ export class PhpClass extends PhpNode<NodeKind.Class> {
     return this.getIdentifierName(this.ast.name);
   }
 
+  public get namespace() {
+    return this.parent.namespace;
+  }
+
   public get methods() {
     return this.searchAst(NodeKind.Method).map(ast => new PhpMethod(ast, this));
   }
