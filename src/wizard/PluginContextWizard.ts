@@ -70,14 +70,14 @@ export default class PluginContextWizard extends GeneratorWizard {
         .build()
     );
 
-    builder.addField(WizardFieldBuilder.number('sort_order', 'Sort order').build());
+    builder.addField(WizardFieldBuilder.number('sortOrder', 'Sort order').build());
 
     builder.addValidation('module', 'required');
     builder.addValidation('method', 'required');
     builder.addValidation('name', 'required');
     builder.addValidation('type', 'required');
     builder.addValidation('scope', 'required');
-    builder.addValidation('sort_order', 'numeric');
+    builder.addValidation('sortOrder', 'numeric');
 
     const data = await this.openWizard<PluginContextWizardData>(builder.build());
 

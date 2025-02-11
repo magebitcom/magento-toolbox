@@ -20,8 +20,10 @@ export abstract class PhpNode<K = NodeKind> {
         }
 
         for (const key in node) {
-          if (node[key] !== node) {
-            search(node[key]);
+          const value = node[key];
+
+          if (value !== node && ['object', 'array'].includes(typeof value)) {
+            search(value);
           }
         }
       }

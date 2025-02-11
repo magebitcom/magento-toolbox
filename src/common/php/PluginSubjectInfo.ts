@@ -2,6 +2,7 @@ import IndexStorage from 'common/IndexStorage';
 import DiIndexer from 'indexer/DiIndexer';
 import { PhpClass } from 'parser/php/PhpClass';
 import { PhpFile } from 'parser/php/PhpFile';
+import { PhpInterface } from 'parser/php/PhpInterface';
 import { PhpMethod } from 'parser/php/PhpMethod';
 import Magento from 'util/Magento';
 
@@ -41,6 +42,17 @@ export default class PluginSubjectInfo {
     return true;
   }
 
+  public isValidPluginInterface(phpInterface: PhpInterface): boolean {
+    if (
+      phpInterface.ast.extends &&
+      phpInterface.ast.extends.find(item => item.name === 'NoninterceptableInterface')
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   public isValidPluginMethod(method: PhpMethod): boolean {
     if (method.ast.visibility !== 'public') {
       return false;
@@ -54,17 +66,21 @@ export default class PluginSubjectInfo {
   }
 
   public getValidPluginClasses(): PhpClass[] {
-    return this.phpFile.classes.filter(phpClass => {
+    return (this.phpFile.classes || []).filter(phpClass => {
       return this.isValidPluginClass(phpClass);
     });
   }
 
-  public getValidPluginMethods(): PhpMethod[] {
-    return this.phpFile.classes.flatMap(phpClass => {
-      if (!this.isValidPluginClass(phpClass)) {
-        return [];
-      }
+  public getValidPluginInterfaces(): PhpInterface[] {
+    return (this.phpFile.interfaces || []).filter(phpInterface => {
+      return this.isValidPluginInterface(phpInterface);
+    });
+  }
 
+  public getValidPluginMethods(): PhpMethod[] {
+    const validClasslike = [...this.getValidPluginClasses(), ...this.getValidPluginInterfaces()];
+
+    return validClasslike.flatMap(phpClass => {
       return phpClass.methods.filter(phpMethod => {
         return this.isValidPluginMethod(phpMethod);
       });

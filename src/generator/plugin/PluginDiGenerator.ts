@@ -7,11 +7,12 @@ import { PhpMethod } from 'parser/php/PhpMethod';
 import { Uri } from 'vscode';
 import { PluginContextWizardData } from 'wizard/PluginContextWizard';
 import indentString from 'indent-string';
+import { PhpInterface } from 'parser/php/PhpInterface';
 
 export default class PluginDiGenerator extends ModuleFileGenerator {
   public constructor(
     protected data: PluginContextWizardData,
-    protected subjectClass: PhpClass,
+    protected subjectClass: PhpClass | PhpInterface,
     protected subjectMethod: PhpMethod
   ) {
     super();

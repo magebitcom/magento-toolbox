@@ -20,7 +20,7 @@ export class PhpClass extends PhpNode<NodeKind.Class> {
     return this.parent.namespace;
   }
 
-  public get methods() {
+  public get methods(): PhpMethod[] {
     return this.searchAst(NodeKind.Method).map(ast => new PhpMethod(ast, this));
   }
 }

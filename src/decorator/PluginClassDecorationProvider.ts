@@ -7,11 +7,11 @@ import PhpNamespace from 'common/PhpNamespace';
 import AutoloadNamespaceIndexer from 'indexer/AutoloadNamespaceIndexer';
 import TextDocumentDecorationProvider from './TextDocumentDecorationProvider';
 import PhpParser from 'parser/php/Parser';
-import { ClassInfo } from 'common/php/ClassInfo';
 import Position from 'util/Position';
 import PluginSubjectInfo from 'common/php/PluginSubjectInfo';
 import PluginInfo from 'common/php/PluginInfo';
 import Magento from 'util/Magento';
+import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
@@ -36,14 +36,14 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     }
 
     const pluginSubjectInfo = new PluginSubjectInfo(phpFile);
-    const classInfo = new ClassInfo(phpFile);
+    const classlikeInfo = new ClasslikeInfo(phpFile);
     const classPlugins = pluginSubjectInfo.getClassPlugins(classNode);
 
     if (classPlugins.length === 0) {
       return decorations;
     }
 
-    const nameRange = classInfo.getNameRange();
+    const nameRange = classlikeInfo.getNameRange();
 
     if (!nameRange) {
       return decorations;
@@ -76,7 +76,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
           return;
         }
 
-        const subjectMethod = classInfo.getMethodByName(phpFile.classes[0], subjectMethodName);
+        const subjectMethod = classlikeInfo.getMethodByName(phpFile.classes[0], subjectMethodName);
 
         if (!subjectMethod) {
           return;

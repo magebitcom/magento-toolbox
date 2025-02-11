@@ -56,6 +56,19 @@ class Context {
       return canGeneratePlugin;
     }
 
+    const phpInterface = phpFile.interfaces[0];
+
+    if (phpInterface) {
+      if (
+        phpInterface.ast.extends &&
+        phpInterface.ast.extends.find(item => item.name === 'NoninterceptableInterface')
+      ) {
+        return false;
+      }
+
+      return true;
+    }
+
     return false;
   }
 

@@ -1,5 +1,5 @@
 import { Command } from 'command/Command';
-import { ClassInfo } from 'common/php/ClassInfo';
+import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import PluginSubjectInfo from 'common/php/PluginSubjectInfo';
 import FileGeneratorManager from 'generator/FileGeneratorManager';
 import PluginClassGenerator from 'generator/plugin/PluginClassGenerator';
@@ -32,9 +32,12 @@ export default class GenerateContextPluginCommand extends Command {
     const phpFile = await parser.parse(editor.document.uri);
     const pluginSubjectInfo = new PluginSubjectInfo(phpFile);
     const phpClasses = pluginSubjectInfo.getValidPluginClasses();
+    const phpInterfaces = pluginSubjectInfo.getValidPluginInterfaces();
 
-    if (phpClasses.length === 0) {
-      vscode.window.showErrorMessage('File does not contain any valid plugin classes');
+    if (phpClasses.length === 0 && phpInterfaces.length === 0) {
+      vscode.window.showErrorMessage(
+        'File does not contain any valid plugin classes or interfaces'
+      );
       return;
     }
 
@@ -48,8 +51,9 @@ export default class GenerateContextPluginCommand extends Command {
       phpMethod?.name
     );
 
-    const classInfo = new ClassInfo(phpFile);
-    const method = classInfo.getMethodByName(phpClasses[0], data.method);
+    const classlike = phpClasses[0] || phpInterfaces[0];
+    const classlikeInfo = new ClasslikeInfo(phpFile);
+    const method = classlikeInfo.getMethodByName(classlike, data.method);
 
     if (!method) {
       vscode.window.showErrorMessage(`Method not found: ${data.method}`);
@@ -57,8 +61,8 @@ export default class GenerateContextPluginCommand extends Command {
     }
 
     const manager = new FileGeneratorManager([
-      new PluginClassGenerator(data, phpClasses[0], method),
-      new PluginDiGenerator(data, phpClasses[0], method),
+      new PluginClassGenerator(data, classlike, method),
+      new PluginDiGenerator(data, classlike, method),
     ]);
 
     await manager.generate(vscode.workspace.workspaceFolders![0].uri);

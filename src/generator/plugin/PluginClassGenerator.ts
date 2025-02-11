@@ -3,6 +3,7 @@ import ModuleFileGenerator from 'generator/ModuleFileGenerator';
 import { upperFirst } from 'lodash-es';
 import { PhpFile, PsrPrinter } from 'node-php-generator';
 import { PhpClass } from 'parser/php/PhpClass';
+import { PhpInterface } from 'parser/php/PhpInterface';
 import { PhpMethod } from 'parser/php/PhpMethod';
 import { Uri } from 'vscode';
 import { PluginContextWizardData } from 'wizard/PluginContextWizard';
@@ -10,7 +11,7 @@ import { PluginContextWizardData } from 'wizard/PluginContextWizard';
 export default class PluginClassGenerator extends ModuleFileGenerator {
   public constructor(
     protected data: PluginContextWizardData,
-    protected subjectClass: PhpClass,
+    protected subjectClass: PhpClass | PhpInterface,
     protected subjectMethod: PhpMethod
   ) {
     super();
