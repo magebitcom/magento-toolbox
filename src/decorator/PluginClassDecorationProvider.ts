@@ -12,6 +12,8 @@ import PluginSubjectInfo from 'common/php/PluginSubjectInfo';
 import PluginInfo from 'common/php/PluginInfo';
 import Magento from 'util/Magento';
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
+import { PhpClass } from 'parser/php/PhpClass';
+import { PhpInterface } from 'parser/php/PhpInterface';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
@@ -29,15 +31,16 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     const parser = new PhpParser();
     const phpFile = await parser.parseDocument(this.document);
 
-    const classNode = phpFile.classes[0];
+    const classLikeNode: PhpClass | PhpInterface | undefined =
+      phpFile.classes[0] || phpFile.interfaces[0];
 
-    if (!classNode) {
+    if (!classLikeNode) {
       return decorations;
     }
 
     const pluginSubjectInfo = new PluginSubjectInfo(phpFile);
     const classlikeInfo = new ClasslikeInfo(phpFile);
-    const classPlugins = pluginSubjectInfo.getClassPlugins(classNode);
+    const classPlugins = pluginSubjectInfo.getPlugins(classLikeNode);
 
     if (classPlugins.length === 0) {
       return decorations;
@@ -110,7 +113,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
   }
 
   private async getInterceptorHoverMessage(classInterceptors: DiPlugin[]): Promise<MarkdownString> {
-    const message = MarkdownMessageBuilder.create('Class plugins');
+    const message = MarkdownMessageBuilder.create('Interceptors');
 
     for (const interceptor of classInterceptors) {
       const fileUri = await IndexStorage.get(AutoloadNamespaceIndexer.KEY)!.findClassByNamespace(

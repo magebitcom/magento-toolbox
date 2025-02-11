@@ -4,19 +4,18 @@ import { PhpClass } from 'parser/php/PhpClass';
 import { PhpFile } from 'parser/php/PhpFile';
 import { PhpInterface } from 'parser/php/PhpInterface';
 import { PhpMethod } from 'parser/php/PhpMethod';
-import Magento from 'util/Magento';
 
 export default class PluginSubjectInfo {
   constructor(private readonly phpFile: PhpFile) {}
 
-  public getClassPlugins(phpClass: PhpClass) {
+  public getPlugins(phpClasslike: PhpClass | PhpInterface) {
     const diIndex = IndexStorage.get(DiIndexer.KEY);
 
     if (!diIndex) {
       return [];
     }
 
-    const fqn = this.phpFile.namespace + '\\' + phpClass.name;
+    const fqn = phpClasslike.namespace + '\\' + phpClasslike.name;
 
     if (!fqn) {
       return [];
