@@ -45,6 +45,13 @@ class IndexRunner {
   public async indexFile(workspaceFolder: vscode.WorkspaceFolder, file: vscode.Uri): Promise<void> {
     await this.indexManager.indexFile(workspaceFolder, file);
   }
+
+  public async indexFiles(
+    workspaceFolder: vscode.WorkspaceFolder,
+    files: vscode.Uri[]
+  ): Promise<void> {
+    await this.indexManager.indexFiles(workspaceFolder, files);
+  }
 }
 
 export default new IndexRunner();

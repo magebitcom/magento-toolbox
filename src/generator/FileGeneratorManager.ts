@@ -1,7 +1,9 @@
-import { commands, window } from 'vscode';
+import { commands, window, WorkspaceFolder } from 'vscode';
 import { Uri } from 'vscode';
 import FileGenerator from './FileGenerator';
 import GeneratedFile from './GeneratedFile';
+import IndexManager from 'indexer/IndexManager';
+import IndexRunner from 'indexer/IndexRunner';
 
 export default class FileGeneratorManager {
   private generatedFiles: GeneratedFile[] = [];
@@ -44,6 +46,13 @@ export default class FileGeneratorManager {
 
   public async refreshFiles(): Promise<void> {
     await commands.executeCommand('workbench.files.action.refreshFilesExplorer');
+  }
+
+  public async refreshIndex(workspaceFolder: WorkspaceFolder): Promise<void> {
+    await IndexRunner.indexFiles(
+      workspaceFolder,
+      this.generatedFiles.map(file => file.uri)
+    );
   }
 
   public openAllFiles(): void {

@@ -65,8 +65,11 @@ export default class GenerateContextPluginCommand extends Command {
       new PluginDiGenerator(data, classlike, method),
     ]);
 
-    await manager.generate(vscode.workspace.workspaceFolders![0].uri);
+    const workspaceFolder = vscode.workspace.workspaceFolders![0];
+
+    await manager.generate(workspaceFolder.uri);
     await manager.writeFiles();
+    await manager.refreshIndex(workspaceFolder);
     manager.openFirstFile();
   }
 

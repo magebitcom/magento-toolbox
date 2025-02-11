@@ -30,8 +30,11 @@ export default class GenerateModuleCommand extends Command {
       manager.addGenerator(new ModuleLicenseGenerator(data));
     }
 
-    await manager.generate(workspace.workspaceFolders![0].uri);
+    const workspaceFolder = workspace.workspaceFolders![0];
+
+    await manager.generate(workspaceFolder.uri);
     await manager.writeFiles();
+    await manager.refreshIndex(workspaceFolder);
     manager.openFirstFile();
   }
 }

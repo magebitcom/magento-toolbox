@@ -65,6 +65,10 @@ export default class IndexManager {
     Common.stopStopwatch('indexFile');
   }
 
+  public async indexFiles(workspaceFolder: WorkspaceFolder, files: Uri[]): Promise<void> {
+    await Promise.all(files.map(file => this.indexFile(workspaceFolder, file)));
+  }
+
   protected shouldIndex(index: Indexer): boolean {
     const indexData = IndexStorage.get(index.getId());
 
