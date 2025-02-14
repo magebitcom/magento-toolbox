@@ -17,7 +17,7 @@ export default class AutoloadNamespaceIndexer extends Indexer<AutoloadNamespaceD
   }
 
   public getName(): string {
-    return 'Autoload namespaces';
+    return 'namespaces';
   }
 
   public getPattern(uri: Uri): RelativePattern {

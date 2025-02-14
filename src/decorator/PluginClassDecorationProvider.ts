@@ -1,4 +1,11 @@
-import { DecorationOptions, MarkdownString, TextEditorDecorationType, window, Range } from 'vscode';
+import {
+  DecorationOptions,
+  MarkdownString,
+  TextEditorDecorationType,
+  window,
+  Range,
+  Uri,
+} from 'vscode';
 import path from 'path';
 import MarkdownMessageBuilder from 'common/MarkdownMessageBuilder';
 import PhpNamespace from 'common/PhpNamespace';
@@ -104,8 +111,8 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
         );
 
         const message = MarkdownMessageBuilder.create('Interceptors');
-        const link = `[${plugin.type}](${fileUri})`;
-        message.appendMarkdown(`- ${link} [(di.xml)](${plugin.diPath})\n`);
+        const link = `[${plugin.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})`;
+        message.appendMarkdown(`- ${link} [(di.xml)](${Uri.file(plugin.diPath)})\n`);
 
         return {
           range,
@@ -132,7 +139,9 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
         PhpNamespace.fromString(interceptor.type)
       );
 
-      message.appendMarkdown(`- [${interceptor.type}](${fileUri ?? '#'})\n`);
+      message.appendMarkdown(
+        `- [${interceptor.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})\n`
+      );
     }
 
     return message.build();

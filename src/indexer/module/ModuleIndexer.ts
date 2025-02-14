@@ -34,7 +34,7 @@ export default class ModuleIndexer extends Indexer<Module> {
   }
 
   public getName(): string {
-    return 'Module indexer';
+    return 'module.xml';
   }
 
   public getPattern(uri: Uri): RelativePattern {

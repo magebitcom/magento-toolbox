@@ -44,7 +44,10 @@ class IndexManager {
       Common.startStopwatch(timer);
       const files = await workspace.findFiles(indexer.getPattern(workspaceUri), 'dev/**');
 
-      progress.report({ message: `Running indexer - ${indexer.getName()}`, increment: 0 });
+      progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
+
+      let doneCount = 0;
+      const totalCount = files.length;
 
       await Promise.all(
         files.map(async file => {
@@ -53,6 +56,14 @@ class IndexManager {
           if (data !== undefined) {
             indexData.set(file.fsPath, data);
           }
+
+          doneCount++;
+          const pct = Math.round((doneCount / totalCount) * 100);
+
+          progress.report({
+            message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
+            increment: pct,
+          });
         })
       );
 

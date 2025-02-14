@@ -40,7 +40,7 @@ export default class DiIndexer extends Indexer<DiData> {
   }
 
   public getName(): string {
-    return 'di.xml indexer';
+    return 'di.xml';
   }
 
   public getPattern(uri: Uri): RelativePattern {
