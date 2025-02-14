@@ -33,6 +33,6 @@ export class ClasslikeInfo {
     phpClasslike: PhpClass | PhpInterface,
     name: string
   ): PhpMethod | undefined {
-    return phpClasslike.methods.find(method => method.name === name);
+    return phpClasslike.methods?.find(method => method.name === name);
   }
 }

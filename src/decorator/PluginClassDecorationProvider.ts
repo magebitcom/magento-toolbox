@@ -95,7 +95,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
           return;
         }
 
-        const subjectMethod = classlikeInfo.getMethodByName(phpFile.classes[0], subjectMethodName);
+        const subjectMethod = classlikeInfo.getMethodByName(classLikeNode, subjectMethodName);
 
         if (!subjectMethod) {
           return;

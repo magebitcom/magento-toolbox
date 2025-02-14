@@ -8,22 +8,19 @@ export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData>
   public async findClassByNamespace(namespace: PhpNamespace): Promise<Uri | undefined> {
     const parts = namespace.getParts();
 
-    for (let i = parts.length; i > 0; i--) {
-      const namespace = PhpNamespace.fromParts(parts.slice(0, i));
+    for (let i = parts.length; i >= 0; i--) {
+      const namespace = PhpNamespace.fromParts(parts.slice(0, i)).toString();
 
-      const namespaceData = this.getValues().find(data => data[namespace.toString()] !== undefined);
+      const directories = this.getDirectoriesByNamespace(namespace);
 
-      if (!namespaceData) {
+      if (directories.length === 0) {
         continue;
       }
 
       const className = parts.pop() as string;
       const classNamespace = PhpNamespace.fromParts(parts.slice(i)).append(className);
 
-      const directory = await this.findNamespaceDirectory(
-        classNamespace,
-        namespaceData.directories
-      );
+      const directory = await this.findNamespaceDirectory(classNamespace, directories);
 
       if (!directory) {
         continue;
@@ -36,6 +33,16 @@ export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData>
     }
 
     return undefined;
+  }
+
+  private getDirectoriesByNamespace(namespace: string): string[] {
+    const namespaceData = this.getValues().find(data => data[namespace] !== undefined);
+
+    if (!namespaceData) {
+      return [];
+    }
+
+    return namespaceData[namespace] ?? [];
   }
 
   private async findNamespaceDirectory(
