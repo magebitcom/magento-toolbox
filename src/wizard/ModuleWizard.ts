@@ -1,5 +1,7 @@
-import IndexStorage from 'common/IndexStorage';
-import ModuleIndexer from 'indexer/ModuleIndexer';
+import IndexManager from 'indexer/IndexManager';
+import { ModuleIndexData } from 'indexer/module/ModuleIndexData';
+import ModuleIndexer from 'indexer/module/ModuleIndexer';
+import { Module } from 'indexer/module/types';
 import { License } from 'types';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
@@ -27,8 +29,14 @@ export interface ModuleWizardComposerData extends ModuleWizardBaseData {
 
 export default class ModuleWizard extends GeneratorWizard {
   public async show(): Promise<ModuleWizardData | ModuleWizardComposerData> {
-    const moduleNameIndex = IndexStorage.get(ModuleIndexer.KEY);
-    const modules = moduleNameIndex?.getModuleOptions() ?? [];
+    const moduleIndexData = IndexManager.getIndexData<Module>(ModuleIndexer.KEY);
+
+    if (!moduleIndexData) {
+      throw new Error('Module index data not found');
+    }
+
+    const moduleIndex = new ModuleIndexData(moduleIndexData);
+    const modules = moduleIndex.getModuleOptions();
 
     const builder = new WizardFormBuilder();
 

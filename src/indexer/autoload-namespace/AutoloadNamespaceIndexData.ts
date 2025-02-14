@@ -1,34 +1,17 @@
 import { Uri } from 'vscode';
-import IndexData from './IndexData';
 import PhpNamespace from 'common/PhpNamespace';
 import FileSystem from 'util/FileSystem';
-import { JsonObject } from 'typescript-json-serializer';
+import { IndexData } from 'indexer/IndexData';
+import { AutoloadNamespaceData } from './types';
 
-export interface AutoloadNamespaceData {
-  namespace: PhpNamespace;
-  directories: Uri[];
-}
-
-@JsonObject()
-export class AutoloadNamespaceIndexData extends IndexData {
-  public namespaces: Map<string, AutoloadNamespaceData>;
-
-  public constructor(namespaces: Map<string, AutoloadNamespaceData> = new Map()) {
-    super();
-    this.namespaces = namespaces;
-  }
-
-  public getNamespaces(): Map<string, AutoloadNamespaceData> {
-    return this.namespaces;
-  }
-
+export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData> {
   public async findClassByNamespace(namespace: PhpNamespace): Promise<Uri | undefined> {
     const parts = namespace.getParts();
 
     for (let i = parts.length; i > 0; i--) {
       const namespace = PhpNamespace.fromParts(parts.slice(0, i));
 
-      const namespaceData = this.namespaces.get(namespace.toString());
+      const namespaceData = this.getValues().find(data => data[namespace.toString()] !== undefined);
 
       if (!namespaceData) {
         continue;
@@ -57,15 +40,16 @@ export class AutoloadNamespaceIndexData extends IndexData {
 
   private async findNamespaceDirectory(
     namespace: PhpNamespace,
-    directories: Uri[]
+    directories: string[]
   ): Promise<Uri | undefined> {
     for (const directory of directories) {
+      const directoryUri = Uri.file(directory);
       const classPath = namespace.toString().replace(/\\/g, '/');
-      const fileUri = Uri.joinPath(directory, `${classPath}.php`);
+      const fileUri = Uri.joinPath(directoryUri, `${classPath}.php`);
       const exists = await FileSystem.fileExists(fileUri);
 
       if (exists) {
-        return directory;
+        return directoryUri;
       }
     }
 

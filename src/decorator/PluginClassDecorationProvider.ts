@@ -1,10 +1,7 @@
 import { DecorationOptions, MarkdownString, TextEditorDecorationType, window, Range } from 'vscode';
 import path from 'path';
-import { DiPlugin } from 'indexer/data/DiIndexData';
-import IndexStorage from 'common/IndexStorage';
 import MarkdownMessageBuilder from 'common/MarkdownMessageBuilder';
 import PhpNamespace from 'common/PhpNamespace';
-import AutoloadNamespaceIndexer from 'indexer/AutoloadNamespaceIndexer';
 import TextDocumentDecorationProvider from './TextDocumentDecorationProvider';
 import PhpParser from 'parser/php/Parser';
 import Position from 'util/Position';
@@ -14,6 +11,10 @@ import Magento from 'util/Magento';
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import { PhpClass } from 'parser/php/PhpClass';
 import { PhpInterface } from 'parser/php/PhpInterface';
+import IndexManager from 'indexer/IndexManager';
+import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
+import { AutoloadNamespaceIndexData } from 'indexer/autoload-namespace/AutoloadNamespaceIndexData';
+import { DiPlugin } from 'indexer/di/types';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
@@ -52,7 +53,15 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
       return decorations;
     }
 
-    const hoverMessage = await this.getInterceptorHoverMessage(classPlugins);
+    const namespaceIndex = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
+
+    if (!namespaceIndex) {
+      return decorations;
+    }
+
+    const namespaceIndexData = new AutoloadNamespaceIndexData(namespaceIndex);
+
+    const hoverMessage = await this.getInterceptorHoverMessage(classPlugins, namespaceIndexData);
 
     decorations.push({
       range: nameRange,
@@ -60,7 +69,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     });
 
     const promises = classPlugins.map(async plugin => {
-      const fileUri = await IndexStorage.get(AutoloadNamespaceIndexer.KEY)!.findClassByNamespace(
+      const fileUri = await namespaceIndexData.findClassByNamespace(
         PhpNamespace.fromString(plugin.type)
       );
 
@@ -96,7 +105,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
 
         const message = MarkdownMessageBuilder.create('Interceptors');
         const link = `[${plugin.type}](${fileUri})`;
-        message.appendMarkdown(`- ${link} [(di.xml)](${plugin.diUri})\n`);
+        message.appendMarkdown(`- ${link} [(di.xml)](${plugin.diPath})\n`);
 
         return {
           range,
@@ -112,11 +121,14 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     return decorations;
   }
 
-  private async getInterceptorHoverMessage(classInterceptors: DiPlugin[]): Promise<MarkdownString> {
+  private async getInterceptorHoverMessage(
+    classInterceptors: DiPlugin[],
+    namespaceIndexData: AutoloadNamespaceIndexData
+  ): Promise<MarkdownString> {
     const message = MarkdownMessageBuilder.create('Interceptors');
 
     for (const interceptor of classInterceptors) {
-      const fileUri = await IndexStorage.get(AutoloadNamespaceIndexer.KEY)!.findClassByNamespace(
+      const fileUri = await namespaceIndexData.findClassByNamespace(
         PhpNamespace.fromString(interceptor.type)
       );
 

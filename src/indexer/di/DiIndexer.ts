@@ -1,39 +1,28 @@
 import { RelativePattern, Uri } from 'vscode';
-import { Indexer } from './Indexer';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
-import { DiIndexData, DiType, DiPreference, DiPlugin, DiVirtualType } from './data/DiIndexData';
+import FileSystem from 'util/FileSystem';
+import { DiData, DiPlugin, DiPreference, DiType, DiVirtualType } from './types';
+import { Indexer } from 'indexer/Indexer';
 
 declare global {
   interface IndexerData {
-    [DiIndexer.KEY]: DiIndexData;
+    [DiIndexer.KEY]: DiData;
   }
 }
 
-export default class DiIndexer extends Indexer {
+export default class DiIndexer extends Indexer<DiData> {
   public static readonly KEY = 'di';
 
-  private data: {
-    types: DiType[];
-    preferences: DiPreference[];
-    virtualTypes: DiVirtualType[];
-  };
-
-  private xmlParser: XMLParser;
+  protected xmlParser: XMLParser;
 
   public constructor() {
     super();
 
-    this.data = {
-      types: [],
-      preferences: [],
-      virtualTypes: [],
-    };
-
     this.xmlParser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
-      isArray: (name, jpath) => {
+      isArray: (_name, jpath) => {
         return [
           'config.type',
           'config.preference',
@@ -51,17 +40,23 @@ export default class DiIndexer extends Indexer {
   }
 
   public getName(): string {
-    return 'Dependency Injection indexer';
+    return 'di.xml indexer';
   }
 
   public getPattern(uri: Uri): RelativePattern {
     return new RelativePattern(uri, '**/etc/di.xml');
   }
 
-  public async indexFile(uri: Uri): Promise<void> {
-    const xml = await this.readFile(uri);
+  public async indexFile(uri: Uri): Promise<DiData> {
+    const xml = await FileSystem.readFile(uri);
     const parsed = this.xmlParser.parse(xml);
     const config = get(parsed, 'config', {});
+    const data: DiData = {
+      types: [],
+      preferences: [],
+      virtualTypes: [],
+      plugins: [],
+    };
 
     // Index types
     const types = get(config, 'type', []);
@@ -72,8 +67,8 @@ export default class DiIndexer extends Indexer {
       const typeData: DiType = {
         name: typeName,
         plugins: [],
-        diUri: uri,
         shared: type['@_shared'] === 'false' ? false : undefined,
+        diPath: uri.fsPath,
       };
 
       // Handle plugins
@@ -88,7 +83,7 @@ export default class DiIndexer extends Indexer {
             disabled: plugin['@_disabled'] === 'true',
             before: plugin['@_before'],
             after: plugin['@_after'],
-            diUri: uri,
+            diPath: uri.fsPath,
           };
           typeData.plugins.push(pluginData);
         }
@@ -100,7 +95,7 @@ export default class DiIndexer extends Indexer {
         typeData.arguments = arguments_;
       }
 
-      this.data.types.push(typeData);
+      data.types.push(typeData);
     }
 
     // Index preferences
@@ -109,9 +104,9 @@ export default class DiIndexer extends Indexer {
       const preference: DiPreference = {
         for: pref['@_for'],
         type: pref['@_type'],
-        diUri: uri,
+        diPath: uri.fsPath,
       };
-      this.data.preferences.push(preference);
+      data.preferences.push(preference);
     }
 
     // Index virtual types
@@ -121,7 +116,7 @@ export default class DiIndexer extends Indexer {
         name: vType['@_name'],
         type: vType['@_type'],
         shared: vType['@_shared'] === 'false' ? false : undefined,
-        diUri: uri,
+        diPath: uri.fsPath,
       };
 
       // Handle arguments
@@ -130,23 +125,9 @@ export default class DiIndexer extends Indexer {
         virtualType.arguments = arguments_;
       }
 
-      this.data.virtualTypes.push(virtualType);
+      data.virtualTypes.push(virtualType);
     }
-  }
 
-  public getData(): DiIndexData {
-    return new DiIndexData(
-      [...this.data.types],
-      [...this.data.preferences],
-      [...this.data.virtualTypes]
-    );
-  }
-
-  public clear(): void {
-    this.data = {
-      types: [],
-      preferences: [],
-      virtualTypes: [],
-    };
+    return data;
   }
 }
