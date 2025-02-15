@@ -1,19 +1,26 @@
 import { Memoize } from 'typescript-memoize';
 import { DiData, DiPlugin, DiPreference, DiType, DiVirtualType } from './types';
 import { IndexData } from 'indexer/IndexData';
+import DiIndexer from './DiIndexer';
 
 export class DiIndexData extends IndexData<DiData> {
-  @Memoize()
+  @Memoize({
+    tags: [DiIndexer.KEY],
+  })
   public getTypes(): DiType[] {
     return this.getValues().flatMap(data => data.types);
   }
 
-  @Memoize()
+  @Memoize({
+    tags: [DiIndexer.KEY],
+  })
   public getPreferences(): DiPreference[] {
     return this.getValues().flatMap(data => data.preferences);
   }
 
-  @Memoize()
+  @Memoize({
+    tags: [DiIndexer.KEY],
+  })
   public getVirtualTypes(): DiVirtualType[] {
     return this.getValues().flatMap(data => data.virtualTypes);
   }

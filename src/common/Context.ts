@@ -1,7 +1,5 @@
-import PhpParser from 'parser/php/Parser';
 import { commands, TextEditor } from 'vscode';
-import { PhpFile } from 'parser/php/PhpFile';
-import DocumentCache from 'cache/DocumentCache';
+import PhpDocumentParser from './php/PhpDocumentParser';
 
 export interface EditorContext {
   canGeneratePlugin: boolean;
@@ -44,7 +42,7 @@ class Context {
       return false;
     }
 
-    const phpFile = await this.getParsedPhpFile(editor);
+    const phpFile = await PhpDocumentParser.parse(editor.document);
     const phpClass = phpFile.classes[0];
 
     if (phpClass) {
@@ -70,19 +68,6 @@ class Context {
     }
 
     return false;
-  }
-
-  private async getParsedPhpFile(editor: TextEditor): Promise<PhpFile> {
-    const cacheKey = `php-file`;
-
-    if (DocumentCache.has(editor.document, cacheKey)) {
-      return DocumentCache.get(editor.document, cacheKey);
-    }
-
-    const phpParser = new PhpParser();
-    const phpFile = await phpParser.parseDocument(editor.document);
-    DocumentCache.set(editor.document, cacheKey, phpFile);
-    return phpFile;
   }
 }
 

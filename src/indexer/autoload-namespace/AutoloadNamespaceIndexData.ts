@@ -3,8 +3,14 @@ import PhpNamespace from 'common/PhpNamespace';
 import FileSystem from 'util/FileSystem';
 import { IndexData } from 'indexer/IndexData';
 import { AutoloadNamespaceData } from './types';
+import { Memoize } from 'typescript-memoize';
+import AutoloadNamespaceIndexer from './AutoloadNamespaceIndexer';
 
 export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData> {
+  @Memoize({
+    tags: [AutoloadNamespaceIndexer.KEY],
+    hashFunction: (namespace: PhpNamespace) => namespace.toString(),
+  })
   public async findClassByNamespace(namespace: PhpNamespace): Promise<Uri | undefined> {
     const parts = namespace.getParts();
 

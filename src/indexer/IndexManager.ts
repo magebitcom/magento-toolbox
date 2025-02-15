@@ -6,6 +6,7 @@ import DiIndexer from './di/DiIndexer';
 import IndexStorage from './IndexStorage';
 import ModuleIndexer from './module/ModuleIndexer';
 import AutoloadNamespaceIndexer from './autoload-namespace/AutoloadNamespaceIndexer';
+import { clear } from 'typescript-memoize';
 
 class IndexManager {
   protected indexers: Indexer[] = [];
@@ -69,6 +70,8 @@ class IndexManager {
 
       this.indexStorage.set(indexer.getId(), indexData);
 
+      clear([indexer.getId()]);
+
       Common.stopStopwatch(timer);
 
       progress.report({ increment: 100 });
@@ -119,6 +122,8 @@ class IndexManager {
         indexData.set(file.fsPath, data);
       }
     }
+
+    clear([indexer.getId()]);
   }
 
   protected shouldIndex(index: Indexer): boolean {

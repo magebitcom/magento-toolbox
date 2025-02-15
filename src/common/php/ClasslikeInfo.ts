@@ -2,8 +2,8 @@ import { PhpClass } from 'parser/php/PhpClass';
 import { PhpFile } from 'parser/php/PhpFile';
 import { PhpInterface } from 'parser/php/PhpInterface';
 import { PhpMethod } from 'parser/php/PhpMethod';
-import Position from 'util/Position';
-import { Range } from 'vscode';
+import PositionUtil from 'util/Position';
+import { Position, Range } from 'vscode';
 
 export class ClasslikeInfo {
   public constructor(private readonly phpFile: PhpFile) {}
@@ -21,12 +21,10 @@ export class ClasslikeInfo {
       return;
     }
 
-    const range = new Range(
-      Position.phpAstPositionToVsCodePosition(classlikeName.loc.start),
-      Position.phpAstPositionToVsCodePosition(classlikeName.loc.end)
+    return new Range(
+      PositionUtil.phpAstPositionToVsCodePosition(classlikeName.loc.start),
+      PositionUtil.phpAstPositionToVsCodePosition(classlikeName.loc.end)
     );
-
-    return range;
   }
 
   public getMethodByName(

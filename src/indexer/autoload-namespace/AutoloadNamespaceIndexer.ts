@@ -40,7 +40,7 @@ export default class AutoloadNamespaceIndexer extends Indexer<AutoloadNamespaceD
       for (const [namespace, paths] of Object.entries(composer.autoload['psr-4'])) {
         const directories = Array.isArray(paths) ? paths : [paths];
 
-        data[namespace] = directories.map(
+        data[this.normalizeNamespace(namespace)] = directories.map(
           (dir: string) => Uri.joinPath(baseDir, dir.replace(/^\.\//, '')).fsPath
         );
       }
@@ -51,12 +51,16 @@ export default class AutoloadNamespaceIndexer extends Indexer<AutoloadNamespaceD
       for (const [namespace, paths] of Object.entries(composer.autoload['psr-0'])) {
         const directories = Array.isArray(paths) ? paths : [paths];
 
-        data[namespace] = directories.map(
+        data[this.normalizeNamespace(namespace)] = directories.map(
           (dir: string) => Uri.joinPath(baseDir, dir.replace(/^\.\//, '')).fsPath
         );
       }
     }
 
     return data;
+  }
+
+  private normalizeNamespace(namespace: string): string {
+    return namespace.replace(/\\$/, '');
   }
 }

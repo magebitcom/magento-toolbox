@@ -10,6 +10,7 @@ import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvid
 import ChangeTextEditorSelectionObserver from 'observer/ChangeTextEditorSelectionObserver';
 import DocumentCache from 'cache/DocumentCache';
 import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
+import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
@@ -64,6 +65,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
       DocumentCache.clear(textDocument);
     })
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider())
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);
