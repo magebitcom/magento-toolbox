@@ -5,7 +5,8 @@ import ModuleComposerGenerator from 'generator/module/ModuleComposerGenerator';
 import ModuleLicenseGenerator from 'generator/module/ModuleLicenseGenerator';
 import ModuleWizard from 'wizard/ModuleWizard';
 import FileGeneratorManager from 'generator/FileGeneratorManager';
-import { workspace } from 'vscode';
+import { window } from 'vscode';
+import Common from 'util/Common';
 
 export default class GenerateModuleCommand extends Command {
   constructor() {
@@ -30,7 +31,12 @@ export default class GenerateModuleCommand extends Command {
       manager.addGenerator(new ModuleLicenseGenerator(data));
     }
 
-    const workspaceFolder = workspace.workspaceFolders![0];
+    const workspaceFolder = Common.getActiveWorkspaceFolder();
+
+    if (!workspaceFolder) {
+      window.showErrorMessage('No active workspace folder');
+      return;
+    }
 
     await manager.generate(workspaceFolder.uri);
     await manager.writeFiles();

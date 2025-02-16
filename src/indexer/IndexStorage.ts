@@ -1,14 +1,20 @@
-export type IndexerStorage<T = any> = Record<string, Map<string, T>>;
+import { WorkspaceFolder } from 'vscode';
+
+export type IndexerStorage<T = any> = Record<string, Record<string, Map<string, T>>>;
 
 export default class IndexStorage {
   private _indexStorage: IndexerStorage = {};
 
-  public set(key: string, value: any) {
-    this._indexStorage[key] = value;
+  public set(workspaceFolder: WorkspaceFolder, key: string, value: any) {
+    if (!this._indexStorage[workspaceFolder.uri.fsPath]) {
+      this._indexStorage[workspaceFolder.uri.fsPath] = {};
+    }
+
+    this._indexStorage[workspaceFolder.uri.fsPath][key] = value;
   }
 
-  public get<T = any>(key: string): Map<string, T> | undefined {
-    return this._indexStorage[key];
+  public get<T = any>(workspaceFolder: WorkspaceFolder, key: string): Map<string, T> | undefined {
+    return this._indexStorage[workspaceFolder.uri.fsPath]?.[key];
   }
 
   public clear() {

@@ -68,7 +68,7 @@ class IndexManager {
         })
       );
 
-      this.indexStorage.set(indexer.getId(), indexData);
+      this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
 
       clear([indexer.getId()]);
 
@@ -102,8 +102,17 @@ class IndexManager {
     Common.stopStopwatch('indexFiles');
   }
 
-  public getIndexData<T = any>(id: string): Map<string, T> | undefined {
-    return this.indexStorage.get<T>(id);
+  public getIndexData<T = any>(
+    id: string,
+    workspaceFolder?: WorkspaceFolder
+  ): Map<string, T> | undefined {
+    const wf = workspaceFolder || Common.getActiveWorkspaceFolder();
+
+    if (!wf) {
+      return undefined;
+    }
+
+    return this.indexStorage.get<T>(wf, id);
   }
 
   protected async indexFileInner(

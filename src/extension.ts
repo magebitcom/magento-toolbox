@@ -12,11 +12,13 @@ import DocumentCache from 'cache/DocumentCache';
 import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
 import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
 import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
+import Common from 'util/Common';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log('[Magento Toolbox] Activating extension');
+
   const commands = [
     IndexWorkspaceCommand,
     GenerateModuleCommand,
@@ -29,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
   commands.forEach(command => {
     const instance = new command();
 
-    console.log('Registering command', instance.getCommand());
+    Common.log('Registering command', instance.getCommand());
 
     const disposable = vscode.commands.registerCommand(instance.getCommand(), (...args) => {
       instance.execute(...args);
@@ -84,7 +86,7 @@ export async function activate(context: vscode.ExtensionContext) {
     DiagnosticCollectionProvider.updateDiagnostics(vscode.window.activeTextEditor.document);
   }
 
-  console.log('[Magento Toolbox] Done');
+  console.log('[Magento Toolbox] Loaded');
 }
 
 // This method is called when your extension is deactivated
