@@ -7,6 +7,8 @@ import { Memoize } from 'typescript-memoize';
 import AutoloadNamespaceIndexer from './AutoloadNamespaceIndexer';
 
 export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData> {
+  private static readonly SPECIAL_CLASSNAMES = ['Proxy', 'Factory'];
+
   @Memoize({
     tags: [AutoloadNamespaceIndexer.KEY],
     hashFunction: (namespace: PhpNamespace) => namespace.toString(),
@@ -23,7 +25,12 @@ export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData>
         continue;
       }
 
-      const className = parts.pop() as string;
+      let className = parts.pop() as string;
+
+      if (AutoloadNamespaceIndexData.SPECIAL_CLASSNAMES.includes(className)) {
+        className = parts.pop() as string;
+      }
+
       const classNamespace = PhpNamespace.fromParts(parts.slice(i)).append(className);
 
       const directory = await this.findNamespaceDirectory(classNamespace, directories);
@@ -42,13 +49,13 @@ export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData>
   }
 
   private getDirectoriesByNamespace(namespace: string): string[] {
-    const namespaceData = this.getValues().find(data => data[namespace] !== undefined);
+    const namespaceData = this.getValues().filter(data => data[namespace] !== undefined);
 
     if (!namespaceData) {
       return [];
     }
 
-    return namespaceData[namespace] ?? [];
+    return namespaceData.flatMap(data => data[namespace] ?? []);
   }
 
   private async findNamespaceDirectory(

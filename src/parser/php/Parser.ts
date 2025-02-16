@@ -35,6 +35,8 @@ export default class PhpParser {
     this.parser = new php.Engine({
       ast: {
         withPositions: true,
+      },
+      parser: {
         extractDoc: true,
       },
     });

@@ -14,6 +14,7 @@ import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitio
 import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
 import Common from 'util/Common';
 import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
+import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -47,6 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditorChangeObserver = new ActiveTextEditorChangeObserver();
   const changeTextEditorSelectionObserver = new ChangeTextEditorSelectionObserver();
 
+  // window observers
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(event => {
       activeTextEditorChangeObserver.execute(event);
@@ -60,6 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // workspace observers
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(event => {
       DiagnosticCollectionProvider.updateDiagnostics(event.document);
@@ -78,8 +81,14 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // definition providers
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider())
+  );
+
+  // hover providers
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider())
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);
