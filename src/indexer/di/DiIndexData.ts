@@ -25,8 +25,8 @@ export class DiIndexData extends IndexData<DiData> {
     return this.getValues().flatMap(data => data.virtualTypes);
   }
 
-  public findTypeByName(name: string): DiType | undefined {
-    return this.getTypes().find(type => type.name === name);
+  public findTypesByName(name: string): DiType[] {
+    return this.getTypes().filter(type => type.name === name);
   }
 
   public findVirtualTypeByName(name: string): DiVirtualType | undefined {
@@ -38,7 +38,8 @@ export class DiIndexData extends IndexData<DiData> {
   }
 
   public findPluginsForType(type: string): DiPlugin[] {
-    const typeData = this.findTypeByName(type);
-    return typeData?.plugins || [];
+    const typeData = this.findTypesByName(type);
+
+    return typeData.flatMap(type => type.plugins);
   }
 }
