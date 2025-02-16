@@ -16,6 +16,16 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Magento Toolbox",
+      "properties": {
+        "magento-toolbox.magentoCliPath": {
+          "type": "string",
+          "default": "bin/magento",
+          "description": "Path to Magento CLI tool. Relative to workspace root or absolute path."
+        }
+      }
+    },
     "submenus": [
       {
         "id": "magento-toolbox.submenu",
@@ -42,6 +52,10 @@
       {
         "command": "magento-toolbox.copyMagentoPath",
         "title": "Magento Toolbox: Copy Magento Path"
+      },
+      {
+        "command": "magento-toolbox.generateXmlCatalog",
+        "title": "Magento Toolbox: Generate XML URN Catalog"
       }
     ],
     "menus": {

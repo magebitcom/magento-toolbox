@@ -13,6 +13,7 @@ import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
 import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
 import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
 import Common from 'util/Common';
+import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -24,6 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
     GenerateModuleCommand,
     GenerateContextPluginCommand,
     CopyMagentoPathCommand,
+    GenerateXmlCatalogCommand,
   ];
 
   ExtensionState.init(context);
