@@ -11,11 +11,18 @@ import ChangeTextEditorSelectionObserver from 'observer/ChangeTextEditorSelectio
 import DocumentCache from 'cache/DocumentCache';
 import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
 import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
+import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log('[Magento Toolbox] Activating extension');
-  const commands = [IndexWorkspaceCommand, GenerateModuleCommand, GenerateContextPluginCommand];
+  const commands = [
+    IndexWorkspaceCommand,
+    GenerateModuleCommand,
+    GenerateContextPluginCommand,
+    CopyMagentoPathCommand,
+  ];
 
   ExtensionState.init(context);
 

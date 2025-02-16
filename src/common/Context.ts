@@ -1,26 +1,29 @@
 import { commands, TextEditor } from 'vscode';
 import PhpDocumentParser from './php/PhpDocumentParser';
+import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
 
 export interface EditorContext {
   canGeneratePlugin: boolean;
+  supportedMagentoPathExtensions: string[];
 }
 
 class Context {
-  public editorContext: EditorContext = {
-    canGeneratePlugin: false,
-  };
+  private editorContext: EditorContext;
+
+  constructor() {
+    this.editorContext = this.getDefaultContext();
+  }
 
   public async updateContext(type: 'editor' | 'selection', editor?: TextEditor) {
     if (!editor) {
-      await this.setContext({
-        canGeneratePlugin: false,
-      });
+      await this.setContext(this.getDefaultContext());
 
       return;
     }
 
     if (type === 'editor') {
       await this.setContext({
+        ...this.editorContext,
         canGeneratePlugin: await this.canGeneratePlugin(editor),
       });
     }
@@ -35,6 +38,17 @@ class Context {
     });
 
     await Promise.all(promises);
+  }
+
+  public getDefaultContext(): EditorContext {
+    return {
+      canGeneratePlugin: false,
+      supportedMagentoPathExtensions: [
+        ...CopyMagentoPathCommand.TEMPLATE_EXTENSIONS,
+        ...CopyMagentoPathCommand.WEB_EXTENSIONS,
+        ...CopyMagentoPathCommand.IMAGE_EXTENSIONS,
+      ],
+    };
   }
 
   private async canGeneratePlugin(editor: TextEditor): Promise<boolean> {

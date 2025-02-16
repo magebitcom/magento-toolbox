@@ -54,7 +54,7 @@ export default class ModuleIndexer extends Indexer<Module> {
       name: moduleName,
       version: setupVersion,
       sequence: sequence.map((module: any) => module['@_name']),
-      path: uri.fsPath,
+      path: Uri.joinPath(uri, '..', '..').fsPath,
       location: uri.fsPath.includes('vendor') ? 'vendor' : 'app',
     };
   }
