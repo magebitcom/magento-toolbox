@@ -22,7 +22,7 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
     position: Position,
     token: CancellationToken
   ) {
-    const range = document.getWordRangeAtPosition(position, /"[^"]*"/);
+    const range = document.getWordRangeAtPosition(position, /("[^"]+")|(>[^<]+<)/);
 
     if (!range) {
       return null;
@@ -36,7 +36,7 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       return null;
     }
 
-    const potentialNamespace = word.replace(/"/g, '');
+    const potentialNamespace = word.replace(/["<>]/g, '');
 
     const classUri = await namespaceIndexData.findClassByNamespace(
       PhpNamespace.fromString(potentialNamespace)
@@ -48,11 +48,16 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
 
     const targetPosition = await this.getClasslikeNameRange(document, classUri);
 
+    const originSelectionRange = new Range(
+      range.start.with({ character: range.start.character + 1 }),
+      range.end.with({ character: range.end.character - 1 })
+    );
+
     return [
       {
         targetUri: classUri,
         targetRange: targetPosition,
-        originSelectionRange: range,
+        originSelectionRange,
       } as LocationLink,
     ];
   }
