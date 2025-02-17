@@ -15,6 +15,8 @@ import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
 import Common from 'util/Common';
 import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
 import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
+import ObserverCodelensProvider from 'codelens/ObserverCodelensProvider';
+import GenerateObserverCommand from 'command/GenerateObserverCommand';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -27,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
     GenerateContextPluginCommand,
     CopyMagentoPathCommand,
     GenerateXmlCatalogCommand,
+    GenerateObserverCommand,
   ];
 
   ExtensionState.init(context);
@@ -84,6 +87,11 @@ export async function activate(context: vscode.ExtensionContext) {
   // definition providers
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider())
+  );
+
+  // codelens providers
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider('php', new ObserverCodelensProvider())
   );
 
   // hover providers

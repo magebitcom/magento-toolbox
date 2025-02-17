@@ -3,11 +3,13 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Command, Message, Wizard } from './types';
 import ExtensionState from 'common/ExtensionState';
+import WizzardClosedError from './error/WizzardClosedError';
 
 export class GeneratorWizard extends Webview {
   protected async openWizard<D>(pageData: Wizard): Promise<D> {
     let it: NodeJS.Timeout;
     let loaded = false;
+    let completed = false;
 
     return new Promise((resolve, reject) => {
       this.open(
@@ -30,8 +32,16 @@ export class GeneratorWizard extends Webview {
         }
 
         if (message.command === Command.Submit) {
+          completed = true;
           this.panel?.dispose();
           resolve(message.data);
+        }
+      });
+
+      this.panel?.onDidDispose(() => {
+        if (!completed) {
+          clearInterval(it);
+          reject(new WizzardClosedError());
         }
       });
 

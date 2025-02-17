@@ -1,15 +1,21 @@
-import { renderFile } from 'ejs';
+import { render } from 'ejs';
 import { resolve } from 'path';
-
-class GenerateFromTemplate {
-  public async generate(template: string, data?: any): Promise<string> {
-    const content = await renderFile<Promise<string>>(this.getTemplateDirectory(template), data);
-    return content;
+import FileSystem from 'util/FileSystem';
+import { Uri } from 'vscode';
+export default class GenerateFromTemplate {
+  public static async generate(template: string, data?: any): Promise<string> {
+    try {
+      const templatePath = this.getTemplatePath(template);
+      const templateContent = await FileSystem.readFile(Uri.file(templatePath));
+      const content = render(templateContent, data);
+      return content;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
-  private getTemplateDirectory(templateName: string): string {
+  protected static getTemplatePath(templateName: string): string {
     return resolve(__dirname, 'templates', templateName + '.ejs');
   }
 }
-
-export default new GenerateFromTemplate();

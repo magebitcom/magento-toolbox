@@ -27,6 +27,7 @@ export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
 
   const handleValidation = useCallback((values: FormikValues) => {
     if (wizard.validation) {
+      console.log(wizard.validation);
       const validation = new Validator(values, wizard.validation, wizard.validationMessages);
 
       validation.passes();

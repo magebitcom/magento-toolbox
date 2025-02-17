@@ -3,10 +3,11 @@ import ModuleXmlGenerator from 'generator/module/ModuleXmlGenerator';
 import ModuleRegistrationGenerator from 'generator/module/ModuleRegistrationGenerator';
 import ModuleComposerGenerator from 'generator/module/ModuleComposerGenerator';
 import ModuleLicenseGenerator from 'generator/module/ModuleLicenseGenerator';
-import ModuleWizard from 'wizard/ModuleWizard';
+import ModuleWizard, { ModuleWizardData, ModuleWizardComposerData } from 'wizard/ModuleWizard';
 import FileGeneratorManager from 'generator/FileGeneratorManager';
 import { window } from 'vscode';
 import Common from 'util/Common';
+import WizzardClosedError from 'webview/error/WizzardClosedError';
 
 export default class GenerateModuleCommand extends Command {
   constructor() {
@@ -16,7 +17,17 @@ export default class GenerateModuleCommand extends Command {
   public async execute(...args: any[]): Promise<void> {
     const moduleWizard = new ModuleWizard();
 
-    const data = await moduleWizard.show();
+    let data: ModuleWizardData | ModuleWizardComposerData;
+
+    try {
+      data = await moduleWizard.show();
+    } catch (error) {
+      if (error instanceof WizzardClosedError) {
+        return;
+      }
+
+      throw error;
+    }
 
     const manager = new FileGeneratorManager([
       new ModuleXmlGenerator(data),

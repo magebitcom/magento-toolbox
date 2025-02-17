@@ -57,6 +57,10 @@
       {
         "command": "magento-toolbox.generateXmlCatalog",
         "title": "Magento Toolbox: Generate XML URN Catalog"
+      },
+      {
+        "command": "magento-toolbox.generateObserver",
+        "title": "Magento Toolbox: Generate Observer"
       }
     ],
     "menus": {
