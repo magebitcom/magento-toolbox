@@ -8,9 +8,22 @@ import ModuleIndexer from './module/ModuleIndexer';
 import AutoloadNamespaceIndexer from './autoload-namespace/AutoloadNamespaceIndexer';
 import { clear } from 'typescript-memoize';
 import EventsIndexer from './events/EventsIndexer';
+import { DiIndexData } from './di/DiIndexData';
+import { ModuleIndexData } from './module/ModuleIndexData';
+import { AutoloadNamespaceIndexData } from './autoload-namespace/AutoloadNamespaceIndexData';
+import { EventsIndexData } from './events/EventsIndexData';
+
+type IndexerInstance = DiIndexer | ModuleIndexer | AutoloadNamespaceIndexer | EventsIndexer;
+
+type IndexerDataMap = {
+  [DiIndexer.KEY]: DiIndexData;
+  [ModuleIndexer.KEY]: ModuleIndexData;
+  [AutoloadNamespaceIndexer.KEY]: AutoloadNamespaceIndexData;
+  [EventsIndexer.KEY]: EventsIndexData;
+};
 
 class IndexManager {
-  protected indexers: Indexer[] = [];
+  protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
 
   public constructor() {
@@ -23,11 +36,11 @@ class IndexManager {
     this.indexStorage = new IndexStorage();
   }
 
-  public getIndexers(): Indexer[] {
+  public getIndexers(): IndexerInstance[] {
     return this.indexers;
   }
 
-  public getIndexer<I extends Indexer>(name: string): I | undefined {
+  public getIndexer<I extends IndexerInstance>(name: string): I | undefined {
     return this.indexers.find(index => index.getName() === name) as I | undefined;
   }
 
@@ -44,14 +57,13 @@ class IndexManager {
       if (!force && !this.shouldIndex(indexer)) {
         continue;
       }
+      progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
 
-      const indexData = this.getIndexData(indexer.getId()) || new Map();
+      const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
 
       const timer = `indexer_${indexer.getId()}`;
       Common.startStopwatch(timer);
       const files = await workspace.findFiles(indexer.getPattern(workspaceUri), 'dev/**');
-
-      progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
 
       let doneCount = 0;
       const totalCount = files.length;
@@ -108,7 +120,7 @@ class IndexManager {
     Common.stopStopwatch('indexFiles');
   }
 
-  public getIndexData<T = any>(
+  public getIndexStorageData<T = any>(
     id: string,
     workspaceFolder?: WorkspaceFolder
   ): Map<string, T> | undefined {
@@ -121,12 +133,41 @@ class IndexManager {
     return this.indexStorage.get<T>(wf, id);
   }
 
+  public getIndexData<T extends keyof IndexerDataMap>(
+    id: T,
+    workspaceFolder?: WorkspaceFolder
+  ): IndexerDataMap[T] | undefined {
+    const data = this.getIndexStorageData(id, workspaceFolder);
+
+    if (!data) {
+      return undefined;
+    }
+
+    if (id === DiIndexer.KEY) {
+      return new DiIndexData(data) as IndexerDataMap[T];
+    }
+
+    if (id === ModuleIndexer.KEY) {
+      return new ModuleIndexData(data) as IndexerDataMap[T];
+    }
+
+    if (id === AutoloadNamespaceIndexer.KEY) {
+      return new AutoloadNamespaceIndexData(data) as IndexerDataMap[T];
+    }
+
+    if (id === EventsIndexer.KEY) {
+      return new EventsIndexData(data) as IndexerDataMap[T];
+    }
+
+    return undefined;
+  }
+
   protected async indexFileInner(
     workspaceFolder: WorkspaceFolder,
     file: Uri,
     indexer: Indexer
   ): Promise<void> {
-    const indexData = this.getIndexData(indexer.getId()) || new Map();
+    const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
     const pattern = indexer.getPattern(workspaceFolder.uri);
     const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
 
@@ -141,7 +182,7 @@ class IndexManager {
     clear([indexer.getId()]);
   }
 
-  protected shouldIndex(index: Indexer): boolean {
+  protected shouldIndex(index: IndexerInstance): boolean {
     return true;
   }
 }

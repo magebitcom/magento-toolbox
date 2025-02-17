@@ -10,13 +10,11 @@ export default class PluginSubjectInfo {
   constructor(private readonly phpFile: PhpFile) {}
 
   public getPlugins(phpClasslike: PhpClass | PhpInterface) {
-    const diIndex = IndexManager.getIndexData(DiIndexer.KEY);
+    const diIndexData = IndexManager.getIndexData(DiIndexer.KEY);
 
-    if (!diIndex) {
+    if (!diIndexData) {
       return [];
     }
-
-    const diIndexData = new DiIndexData(diIndex);
 
     const fqn = phpClasslike.namespace + '\\' + phpClasslike.name;
 

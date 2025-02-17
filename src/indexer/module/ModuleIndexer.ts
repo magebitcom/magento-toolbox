@@ -1,19 +1,12 @@
 import { RelativePattern, Uri } from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
-import { ModuleIndexData } from './ModuleIndexData';
 import { Module } from './types';
 import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
 
-declare global {
-  interface IndexerData {
-    [ModuleIndexer.KEY]: ModuleIndexData;
-  }
-}
-
 export default class ModuleIndexer extends Indexer<Module> {
-  public static readonly KEY = 'moduleName';
+  public static readonly KEY = 'module';
 
   private xmlParser: XMLParser;
 
@@ -29,7 +22,7 @@ export default class ModuleIndexer extends Indexer<Module> {
     });
   }
 
-  public getId(): keyof IndexerData {
+  public getId(): string {
     return ModuleIndexer.KEY;
   }
 

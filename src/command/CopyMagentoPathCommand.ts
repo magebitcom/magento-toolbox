@@ -1,6 +1,5 @@
 import { Command } from 'command/Command';
 import IndexManager from 'indexer/IndexManager';
-import { ModuleIndexData } from 'indexer/module/ModuleIndexData';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
 import { Uri, window, env } from 'vscode';
 
@@ -32,13 +31,11 @@ export default class CopyMagentoPathCommand extends Command {
       return;
     }
 
-    const moduleIndex = IndexManager.getIndexData(ModuleIndexer.KEY);
+    const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
 
-    if (!moduleIndex) {
+    if (!moduleIndexData) {
       return;
     }
-
-    const moduleIndexData = new ModuleIndexData(moduleIndex);
 
     const module = moduleIndexData.getModuleByUri(file);
 

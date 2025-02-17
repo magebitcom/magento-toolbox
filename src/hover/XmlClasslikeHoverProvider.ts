@@ -1,14 +1,11 @@
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import PhpDocumentParser from 'common/php/PhpDocumentParser';
 import PhpNamespace from 'common/PhpNamespace';
-import { AutoloadNamespaceIndexData } from 'indexer/autoload-namespace/AutoloadNamespaceIndexData';
 import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
 import IndexManager from 'indexer/IndexManager';
 import { Hover, HoverProvider, Position, Range, TextDocument } from 'vscode';
 
 export default class XmlClasslikeHoverProvider implements HoverProvider {
-  private namespaceIndexData: AutoloadNamespaceIndexData | undefined;
-
   public async provideHover(document: TextDocument, position: Position): Promise<Hover | null> {
     const range = document.getWordRangeAtPosition(position, /("[^"]+")|(>[^<]+<)/);
 
@@ -18,7 +15,7 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
 
     const word = document.getText(range);
 
-    const namespaceIndexData = this.getNamespaceIndexData();
+    const namespaceIndexData = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
 
     if (!namespaceIndexData) {
       return null;
@@ -43,19 +40,5 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
     );
 
     return new Hover(classLikeInfo.getHover(), rangeWithoutTags);
-  }
-
-  private getNamespaceIndexData(): AutoloadNamespaceIndexData | undefined {
-    if (!this.namespaceIndexData) {
-      const namespaceIndex = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
-
-      if (!namespaceIndex) {
-        return undefined;
-      }
-
-      this.namespaceIndexData = new AutoloadNamespaceIndexData(namespaceIndex);
-    }
-
-    return this.namespaceIndexData;
   }
 }

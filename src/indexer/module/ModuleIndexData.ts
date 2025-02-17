@@ -1,9 +1,9 @@
 import { WizardSelectOption } from 'webview/types';
 import { Module } from './types';
-import { IndexData } from 'indexer/IndexData';
 import { Uri } from 'vscode';
+import { AbstractIndexData } from 'indexer/AbstractIndexData';
 
-export class ModuleIndexData extends IndexData<Module> {
+export class ModuleIndexData extends AbstractIndexData<Module> {
   public getModuleOptions(filter?: (module: Module) => boolean): WizardSelectOption[] {
     return this.getValues()
       .filter(module => !filter || filter(module))

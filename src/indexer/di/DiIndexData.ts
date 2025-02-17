@@ -1,9 +1,9 @@
 import { Memoize } from 'typescript-memoize';
 import { DiData, DiPlugin, DiPreference, DiType, DiVirtualType } from './types';
-import { IndexData } from 'indexer/IndexData';
+import { AbstractIndexData } from 'indexer/AbstractIndexData';
 import DiIndexer from './DiIndexer';
 
-export class DiIndexData extends IndexData<DiData> {
+export class DiIndexData extends AbstractIndexData<DiData> {
   @Memoize({
     tags: [DiIndexer.KEY],
   })

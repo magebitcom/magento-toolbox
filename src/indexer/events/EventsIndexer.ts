@@ -3,13 +3,6 @@ import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
 import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
-import { EventsIndexData } from './EventsIndexData';
-
-declare global {
-  interface IndexerData {
-    [EventsIndexer.KEY]: EventsIndexData;
-  }
-}
 
 export default class EventsIndexer extends Indexer<Event[]> {
   public static readonly KEY = 'events';
@@ -28,7 +21,7 @@ export default class EventsIndexer extends Indexer<Event[]> {
     });
   }
 
-  public getId(): keyof IndexerData {
+  public getId(): string {
     return EventsIndexer.KEY;
   }
 
@@ -49,6 +42,7 @@ export default class EventsIndexer extends Indexer<Event[]> {
 
     return events.map((event: any) => ({
       name: event['@_name'],
+      diPath: uri.fsPath,
       observers:
         event.observer?.map((observer: any) => ({
           name: observer['@_name'],

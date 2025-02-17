@@ -3,16 +3,10 @@ import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
 import { AutoloadNamespaceData } from './types';
 
-declare global {
-  interface IndexerData {
-    [AutoloadNamespaceIndexer.KEY]: AutoloadNamespaceData;
-  }
-}
-
 export default class AutoloadNamespaceIndexer extends Indexer<AutoloadNamespaceData> {
   public static readonly KEY = 'autoloadNamespace';
 
-  public getId(): keyof IndexerData {
+  public getId(): string {
     return AutoloadNamespaceIndexer.KEY;
   }
 

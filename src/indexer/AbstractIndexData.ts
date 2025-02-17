@@ -1,6 +1,6 @@
 import { Memoize } from 'typescript-memoize';
 
-export abstract class IndexData<T = any> {
+export abstract class AbstractIndexData<T = any> {
   public constructor(protected data: Map<string, T>) {}
 
   @Memoize()

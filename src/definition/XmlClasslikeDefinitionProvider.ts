@@ -1,7 +1,6 @@
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import PhpDocumentParser from 'common/php/PhpDocumentParser';
 import PhpNamespace from 'common/PhpNamespace';
-import { AutoloadNamespaceIndexData } from 'indexer/autoload-namespace/AutoloadNamespaceIndexData';
 import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
 import IndexManager from 'indexer/IndexManager';
 import {
@@ -15,8 +14,6 @@ import {
 } from 'vscode';
 
 export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
-  private namespaceIndexData: AutoloadNamespaceIndexData | undefined;
-
   public async provideDefinition(
     document: TextDocument,
     position: Position,
@@ -30,7 +27,7 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
 
     const word = document.getText(range);
 
-    const namespaceIndexData = this.getNamespaceIndexData();
+    const namespaceIndexData = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
 
     if (!namespaceIndexData) {
       return null;
@@ -60,20 +57,6 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
         originSelectionRange,
       } as LocationLink,
     ];
-  }
-
-  private getNamespaceIndexData(): AutoloadNamespaceIndexData | undefined {
-    if (!this.namespaceIndexData) {
-      const namespaceIndex = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
-
-      if (!namespaceIndex) {
-        return undefined;
-      }
-
-      this.namespaceIndexData = new AutoloadNamespaceIndexData(namespaceIndex);
-    }
-
-    return this.namespaceIndexData;
   }
 
   private async getClasslikeNameRange(

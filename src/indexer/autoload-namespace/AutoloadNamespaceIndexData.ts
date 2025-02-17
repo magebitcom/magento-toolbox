@@ -1,12 +1,12 @@
 import { Uri } from 'vscode';
 import PhpNamespace from 'common/PhpNamespace';
 import FileSystem from 'util/FileSystem';
-import { IndexData } from 'indexer/IndexData';
+import { AbstractIndexData } from 'indexer/AbstractIndexData';
 import { AutoloadNamespaceData } from './types';
 import { Memoize } from 'typescript-memoize';
 import AutoloadNamespaceIndexer from './AutoloadNamespaceIndexer';
 
-export class AutoloadNamespaceIndexData extends IndexData<AutoloadNamespaceData> {
+export class AutoloadNamespaceIndexData extends AbstractIndexData<AutoloadNamespaceData> {
   private static readonly SPECIAL_CLASSNAMES = ['Proxy', 'Factory'];
 
   @Memoize({

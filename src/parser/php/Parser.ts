@@ -10,6 +10,8 @@ export enum NodeKind {
   UseGroup = 'usegroup',
   UseItem = 'useitem',
   Method = 'method',
+  Call = 'call',
+  String = 'string',
 }
 
 export type KindType<K> = K extends NodeKind.Program

@@ -5,12 +5,6 @@ import FileSystem from 'util/FileSystem';
 import { DiData, DiPlugin, DiPreference, DiType, DiVirtualType } from './types';
 import { Indexer } from 'indexer/Indexer';
 
-declare global {
-  interface IndexerData {
-    [DiIndexer.KEY]: DiData;
-  }
-}
-
 export default class DiIndexer extends Indexer<DiData> {
   public static readonly KEY = 'di';
 
@@ -35,7 +29,7 @@ export default class DiIndexer extends Indexer<DiData> {
     });
   }
 
-  public getId(): keyof IndexerData {
+  public getId(): string {
     return DiIndexer.KEY;
   }
 

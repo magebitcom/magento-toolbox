@@ -1,7 +1,5 @@
 import IndexManager from 'indexer/IndexManager';
-import { ModuleIndexData } from 'indexer/module/ModuleIndexData';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
-import { Module } from 'indexer/module/types';
 import { MagentoScope } from 'types';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
@@ -22,13 +20,12 @@ export default class PluginContextWizard extends GeneratorWizard {
     allowedMethods: string[],
     initialMethod?: string
   ): Promise<PluginContextWizardData> {
-    const moduleIndex = IndexManager.getIndexData<Module>(ModuleIndexer.KEY);
+    const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
 
-    if (!moduleIndex) {
+    if (!moduleIndexData) {
       throw new Error('Module index not found');
     }
 
-    const moduleIndexData = new ModuleIndexData(moduleIndex);
     const modules = moduleIndexData.getModuleOptions(module => module.location === 'app');
     const builder = new WizardFormBuilder();
 

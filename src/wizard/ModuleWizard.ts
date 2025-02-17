@@ -29,14 +29,13 @@ export interface ModuleWizardComposerData extends ModuleWizardBaseData {
 
 export default class ModuleWizard extends GeneratorWizard {
   public async show(): Promise<ModuleWizardData | ModuleWizardComposerData> {
-    const moduleIndexData = IndexManager.getIndexData<Module>(ModuleIndexer.KEY);
+    const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
 
     if (!moduleIndexData) {
       throw new Error('Module index data not found');
     }
 
-    const moduleIndex = new ModuleIndexData(moduleIndexData);
-    const modules = moduleIndex.getModuleOptions();
+    const modules = moduleIndexData.getModuleOptions();
 
     const builder = new WizardFormBuilder();
 

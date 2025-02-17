@@ -22,6 +22,8 @@ import IndexManager from 'indexer/IndexManager';
 import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
 import { AutoloadNamespaceIndexData } from 'indexer/autoload-namespace/AutoloadNamespaceIndexData';
 import { DiPlugin } from 'indexer/di/types';
+import PhpDocumentParser from 'common/php/PhpDocumentParser';
+import Common from 'util/Common';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
@@ -36,8 +38,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
 
   public async getDecorations(): Promise<DecorationOptions[]> {
     const decorations: DecorationOptions[] = [];
-    const parser = new PhpParser();
-    const phpFile = await parser.parseDocument(this.document);
+    const phpFile = await PhpDocumentParser.parse(this.document);
 
     const classLikeNode: PhpClass | PhpInterface | undefined =
       phpFile.classes[0] || phpFile.interfaces[0];
@@ -60,13 +61,11 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
       return decorations;
     }
 
-    const namespaceIndex = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
+    const namespaceIndexData = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
 
-    if (!namespaceIndex) {
+    if (!namespaceIndexData) {
       return decorations;
     }
-
-    const namespaceIndexData = new AutoloadNamespaceIndexData(namespaceIndex);
 
     const hoverMessage = await this.getInterceptorHoverMessage(classPlugins, namespaceIndexData);
 
@@ -84,7 +83,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
         return;
       }
 
-      const pluginPhpFile = await parser.parse(fileUri);
+      const pluginPhpFile = await PhpDocumentParser.parseUri(this.document, fileUri);
       const pluginInfo = new PluginInfo(pluginPhpFile);
       const pluginMethods = pluginInfo.getPluginMethods(pluginPhpFile.classes[0]);
 
