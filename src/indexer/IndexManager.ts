@@ -7,13 +7,19 @@ import IndexStorage from './IndexStorage';
 import ModuleIndexer from './module/ModuleIndexer';
 import AutoloadNamespaceIndexer from './autoload-namespace/AutoloadNamespaceIndexer';
 import { clear } from 'typescript-memoize';
+import EventsIndexer from './events/EventsIndexer';
 
 class IndexManager {
   protected indexers: Indexer[] = [];
   protected indexStorage: IndexStorage;
 
   public constructor() {
-    this.indexers = [new DiIndexer(), new ModuleIndexer(), new AutoloadNamespaceIndexer()];
+    this.indexers = [
+      new DiIndexer(),
+      new ModuleIndexer(),
+      new AutoloadNamespaceIndexer(),
+      new EventsIndexer(),
+    ];
     this.indexStorage = new IndexStorage();
   }
 
