@@ -23,4 +23,8 @@ export class PhpInterface extends PhpNode<NodeKind.Interface> {
   public get methods(): PhpMethod[] {
     return this.searchAst(NodeKind.Method).map(ast => new PhpMethod(ast, this));
   }
+
+  public get extends(): string[] {
+    return this.ast.extends?.map(ext => this.getIdentifierName(ext)) ?? [];
+  }
 }

@@ -6,6 +6,7 @@ import PluginClassGenerator from 'generator/plugin/PluginClassGenerator';
 import PluginDiGenerator from 'generator/plugin/PluginDiGenerator';
 import PhpParser from 'parser/php/Parser';
 import { PhpMethod } from 'parser/php/PhpMethod';
+import Common from 'util/Common';
 import * as vscode from 'vscode';
 import PluginContextWizard from 'wizard/PluginContextWizard';
 
@@ -19,6 +20,13 @@ export default class GenerateContextPluginCommand extends Command {
 
     if (!editor) {
       vscode.window.showErrorMessage('No active editor');
+      return;
+    }
+
+    const workspaceFolder = Common.getActiveWorkspaceFolder();
+
+    if (!workspaceFolder) {
+      vscode.window.showErrorMessage('No active workspace folder');
       return;
     }
 
@@ -64,8 +72,6 @@ export default class GenerateContextPluginCommand extends Command {
       new PluginClassGenerator(data, classlike, method),
       new PluginDiGenerator(data, classlike, method),
     ]);
-
-    const workspaceFolder = vscode.workspace.workspaceFolders![0];
 
     await manager.generate(workspaceFolder.uri);
     await manager.writeFiles();

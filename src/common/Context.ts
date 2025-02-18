@@ -1,28 +1,29 @@
-import PhpParser from 'parser/php/Parser';
 import { commands, TextEditor } from 'vscode';
-import { PhpFile } from 'parser/php/PhpFile';
-import DocumentCache from 'cache/DocumentCache';
+import PhpDocumentParser from './php/PhpDocumentParser';
+import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
 
 export interface EditorContext {
   canGeneratePlugin: boolean;
+  supportedMagentoPathExtensions: string[];
 }
 
 class Context {
-  public editorContext: EditorContext = {
-    canGeneratePlugin: false,
-  };
+  private editorContext: EditorContext;
+
+  constructor() {
+    this.editorContext = this.getDefaultContext();
+  }
 
   public async updateContext(type: 'editor' | 'selection', editor?: TextEditor) {
     if (!editor) {
-      await this.setContext({
-        canGeneratePlugin: false,
-      });
+      await this.setContext(this.getDefaultContext());
 
       return;
     }
 
     if (type === 'editor') {
       await this.setContext({
+        ...this.editorContext,
         canGeneratePlugin: await this.canGeneratePlugin(editor),
       });
     }
@@ -39,12 +40,23 @@ class Context {
     await Promise.all(promises);
   }
 
+  public getDefaultContext(): EditorContext {
+    return {
+      canGeneratePlugin: false,
+      supportedMagentoPathExtensions: [
+        ...CopyMagentoPathCommand.TEMPLATE_EXTENSIONS,
+        ...CopyMagentoPathCommand.WEB_EXTENSIONS,
+        ...CopyMagentoPathCommand.IMAGE_EXTENSIONS,
+      ],
+    };
+  }
+
   private async canGeneratePlugin(editor: TextEditor): Promise<boolean> {
     if (editor.document.languageId !== 'php') {
       return false;
     }
 
-    const phpFile = await this.getParsedPhpFile(editor);
+    const phpFile = await PhpDocumentParser.parse(editor.document);
     const phpClass = phpFile.classes[0];
 
     if (phpClass) {
@@ -70,19 +82,6 @@ class Context {
     }
 
     return false;
-  }
-
-  private async getParsedPhpFile(editor: TextEditor): Promise<PhpFile> {
-    const cacheKey = `php-file`;
-
-    if (DocumentCache.has(editor.document, cacheKey)) {
-      return DocumentCache.get(editor.document, cacheKey);
-    }
-
-    const phpParser = new PhpParser();
-    const phpFile = await phpParser.parseDocument(editor.document);
-    DocumentCache.set(editor.document, cacheKey, phpFile);
-    return phpFile;
   }
 }
 

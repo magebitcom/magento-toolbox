@@ -1,5 +1,6 @@
-import IndexStorage from 'common/IndexStorage';
-import DiIndexer from 'indexer/DiIndexer';
+import { DiIndexData } from 'indexer/di/DiIndexData';
+import DiIndexer from 'indexer/di/DiIndexer';
+import IndexManager from 'indexer/IndexManager';
 import { PhpClass } from 'parser/php/PhpClass';
 import { PhpFile } from 'parser/php/PhpFile';
 import { PhpInterface } from 'parser/php/PhpInterface';
@@ -9,9 +10,9 @@ export default class PluginSubjectInfo {
   constructor(private readonly phpFile: PhpFile) {}
 
   public getPlugins(phpClasslike: PhpClass | PhpInterface) {
-    const diIndex = IndexStorage.get(DiIndexer.KEY);
+    const diIndexData = IndexManager.getIndexData(DiIndexer.KEY);
 
-    if (!diIndex) {
+    if (!diIndexData) {
       return [];
     }
 
@@ -21,7 +22,7 @@ export default class PluginSubjectInfo {
       return [];
     }
 
-    const pluginClassData = diIndex.findPluginsForType(fqn);
+    const pluginClassData = diIndexData.findPluginsForType(fqn);
 
     return pluginClassData;
   }

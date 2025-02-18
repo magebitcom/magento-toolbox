@@ -23,4 +23,16 @@ export class PhpClass extends PhpNode<NodeKind.Class> {
   public get methods(): PhpMethod[] {
     return this.searchAst(NodeKind.Method).map(ast => new PhpMethod(ast, this));
   }
+
+  public get extends(): string | undefined {
+    if (!this.ast.extends) {
+      return;
+    }
+
+    return this.getIdentifierName(this.ast.extends);
+  }
+
+  public get implements(): string[] {
+    return this.ast.implements?.map(impl => this.getIdentifierName(impl)) ?? [];
+  }
 }

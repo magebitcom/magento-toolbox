@@ -36,4 +36,8 @@ export class PhpFile extends PhpNode<NodeKind.Program> {
   public get useItems() {
     return this.searchAst(NodeKind.UseItem).map(ast => new PhpUseItem(ast, this));
   }
+
+  public get comments(): string[] {
+    return this.ast.comments?.map(comment => comment.value) ?? [];
+  }
 }

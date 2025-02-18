@@ -1,10 +1,14 @@
-import { DecorationOptions, MarkdownString, TextEditorDecorationType, window, Range } from 'vscode';
+import {
+  DecorationOptions,
+  MarkdownString,
+  TextEditorDecorationType,
+  window,
+  Range,
+  Uri,
+} from 'vscode';
 import path from 'path';
-import { DiPlugin } from 'indexer/data/DiIndexData';
-import IndexStorage from 'common/IndexStorage';
 import MarkdownMessageBuilder from 'common/MarkdownMessageBuilder';
 import PhpNamespace from 'common/PhpNamespace';
-import AutoloadNamespaceIndexer from 'indexer/AutoloadNamespaceIndexer';
 import TextDocumentDecorationProvider from './TextDocumentDecorationProvider';
 import PhpParser from 'parser/php/Parser';
 import Position from 'util/Position';
@@ -14,6 +18,12 @@ import Magento from 'util/Magento';
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import { PhpClass } from 'parser/php/PhpClass';
 import { PhpInterface } from 'parser/php/PhpInterface';
+import IndexManager from 'indexer/IndexManager';
+import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
+import { AutoloadNamespaceIndexData } from 'indexer/autoload-namespace/AutoloadNamespaceIndexData';
+import { DiPlugin } from 'indexer/di/types';
+import PhpDocumentParser from 'common/php/PhpDocumentParser';
+import Common from 'util/Common';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
@@ -28,8 +38,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
 
   public async getDecorations(): Promise<DecorationOptions[]> {
     const decorations: DecorationOptions[] = [];
-    const parser = new PhpParser();
-    const phpFile = await parser.parseDocument(this.document);
+    const phpFile = await PhpDocumentParser.parse(this.document);
 
     const classLikeNode: PhpClass | PhpInterface | undefined =
       phpFile.classes[0] || phpFile.interfaces[0];
@@ -52,7 +61,13 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
       return decorations;
     }
 
-    const hoverMessage = await this.getInterceptorHoverMessage(classPlugins);
+    const namespaceIndexData = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
+
+    if (!namespaceIndexData) {
+      return decorations;
+    }
+
+    const hoverMessage = await this.getInterceptorHoverMessage(classPlugins, namespaceIndexData);
 
     decorations.push({
       range: nameRange,
@@ -60,7 +75,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     });
 
     const promises = classPlugins.map(async plugin => {
-      const fileUri = await IndexStorage.get(AutoloadNamespaceIndexer.KEY)!.findClassByNamespace(
+      const fileUri = await namespaceIndexData.findClassByNamespace(
         PhpNamespace.fromString(plugin.type)
       );
 
@@ -68,7 +83,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
         return;
       }
 
-      const pluginPhpFile = await parser.parse(fileUri);
+      const pluginPhpFile = await PhpDocumentParser.parseUri(this.document, fileUri);
       const pluginInfo = new PluginInfo(pluginPhpFile);
       const pluginMethods = pluginInfo.getPluginMethods(pluginPhpFile.classes[0]);
 
@@ -79,7 +94,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
           return;
         }
 
-        const subjectMethod = classlikeInfo.getMethodByName(phpFile.classes[0], subjectMethodName);
+        const subjectMethod = classlikeInfo.getMethodByName(classLikeNode, subjectMethodName);
 
         if (!subjectMethod) {
           return;
@@ -95,8 +110,8 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
         );
 
         const message = MarkdownMessageBuilder.create('Interceptors');
-        const link = `[${plugin.type}](${fileUri})`;
-        message.appendMarkdown(`- ${link} [(di.xml)](${plugin.diUri})\n`);
+        const link = `[${plugin.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})`;
+        message.appendMarkdown(`- ${link} [(di.xml)](${Uri.file(plugin.diPath)})\n`);
 
         return {
           range,
@@ -112,15 +127,20 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     return decorations;
   }
 
-  private async getInterceptorHoverMessage(classInterceptors: DiPlugin[]): Promise<MarkdownString> {
+  private async getInterceptorHoverMessage(
+    classInterceptors: DiPlugin[],
+    namespaceIndexData: AutoloadNamespaceIndexData
+  ): Promise<MarkdownString> {
     const message = MarkdownMessageBuilder.create('Interceptors');
 
     for (const interceptor of classInterceptors) {
-      const fileUri = await IndexStorage.get(AutoloadNamespaceIndexer.KEY)!.findClassByNamespace(
+      const fileUri = await namespaceIndexData.findClassByNamespace(
         PhpNamespace.fromString(interceptor.type)
       );
 
-      message.appendMarkdown(`- [${interceptor.type}](${fileUri ?? '#'})\n`);
+      message.appendMarkdown(
+        `- [${interceptor.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})\n`
+      );
     }
 
     return message.build();

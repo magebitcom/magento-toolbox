@@ -1,30 +1,17 @@
 import { RelativePattern, Uri } from 'vscode';
-import { Indexer } from './Indexer';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
-import { Module, ModuleIndexData } from './data/ModuleIndexData';
+import { Module } from './types';
+import { Indexer } from 'indexer/Indexer';
+import FileSystem from 'util/FileSystem';
 
-declare global {
-  interface IndexerData {
-    [ModuleIndexer.KEY]: ModuleIndexData;
-  }
-}
-
-export default class ModuleIndexer extends Indexer {
-  public static readonly KEY = 'moduleName';
-
-  private data: {
-    modules: Module[];
-  };
+export default class ModuleIndexer extends Indexer<Module> {
+  public static readonly KEY = 'module';
 
   private xmlParser: XMLParser;
 
   public constructor() {
     super();
-
-    this.data = {
-      modules: [],
-    };
 
     this.xmlParser = new XMLParser({
       ignoreAttributes: false,
@@ -35,20 +22,20 @@ export default class ModuleIndexer extends Indexer {
     });
   }
 
-  public getId(): keyof IndexerData {
+  public getId(): string {
     return ModuleIndexer.KEY;
   }
 
   public getName(): string {
-    return 'Module indexer';
+    return 'module.xml';
   }
 
   public getPattern(uri: Uri): RelativePattern {
     return new RelativePattern(uri, '**/etc/module.xml');
   }
 
-  public async indexFile(uri: Uri): Promise<void> {
-    const xml = await this.readFile(uri);
+  public async indexFile(uri: Uri): Promise<Module> {
+    const xml = await FileSystem.readFile(uri);
 
     const parsed = this.xmlParser.parse(xml);
 
@@ -56,20 +43,12 @@ export default class ModuleIndexer extends Indexer {
     const setupVersion = get(parsed, 'config.module.@_setup_version');
     const sequence = get(parsed, 'config.module.sequence.module', []);
 
-    this.data.modules.push({
+    return {
       name: moduleName,
       version: setupVersion,
       sequence: sequence.map((module: any) => module['@_name']),
-      uri: Uri.joinPath(uri, '..', '..'),
-      location: uri.path.includes('vendor') ? 'vendor' : 'app',
-    });
-  }
-
-  public getData(): ModuleIndexData {
-    return new ModuleIndexData([...this.data.modules]);
-  }
-
-  public clear(): void {
-    this.data.modules = [];
+      path: Uri.joinPath(uri, '..', '..').fsPath,
+      location: uri.fsPath.includes('vendor') ? 'vendor' : 'app',
+    };
   }
 }

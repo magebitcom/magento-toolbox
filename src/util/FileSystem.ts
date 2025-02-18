@@ -17,4 +17,8 @@ export default class FileSystem {
     const content = await workspace.fs.readFile(uri);
     return content.toString();
   }
+
+  public static async writeFile(uri: Uri, content: string): Promise<void> {
+    await workspace.fs.writeFile(uri, Buffer.from(content));
+  }
 }

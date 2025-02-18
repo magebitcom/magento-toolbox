@@ -10,18 +10,34 @@ import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvid
 import ChangeTextEditorSelectionObserver from 'observer/ChangeTextEditorSelectionObserver';
 import DocumentCache from 'cache/DocumentCache';
 import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
+import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
+import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
+import Common from 'util/Common';
+import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
+import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
+import ObserverCodelensProvider from 'codelens/ObserverCodelensProvider';
+import GenerateObserverCommand from 'command/GenerateObserverCommand';
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log('[Magento Toolbox] Activating extension');
-  const commands = [IndexWorkspaceCommand, GenerateModuleCommand, GenerateContextPluginCommand];
+
+  const commands = [
+    IndexWorkspaceCommand,
+    GenerateModuleCommand,
+    GenerateContextPluginCommand,
+    CopyMagentoPathCommand,
+    GenerateXmlCatalogCommand,
+    GenerateObserverCommand,
+  ];
 
   ExtensionState.init(context);
 
   commands.forEach(command => {
     const instance = new command();
 
-    console.log('Registering command', instance.getCommand());
+    Common.log('Registering command', instance.getCommand());
 
     const disposable = vscode.commands.registerCommand(instance.getCommand(), (...args) => {
       instance.execute(...args);
@@ -35,6 +51,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const activeTextEditorChangeObserver = new ActiveTextEditorChangeObserver();
   const changeTextEditorSelectionObserver = new ChangeTextEditorSelectionObserver();
 
+  // window observers
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(event => {
       activeTextEditorChangeObserver.execute(event);
@@ -48,6 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // workspace observers
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(event => {
       DiagnosticCollectionProvider.updateDiagnostics(event.document);
@@ -66,13 +84,28 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  // definition providers
+  context.subscriptions.push(
+    vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider())
+  );
+
+  // codelens providers
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider('php', new ObserverCodelensProvider())
+  );
+
+  // hover providers
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider())
+  );
+
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);
 
   if (vscode.window.activeTextEditor) {
     DiagnosticCollectionProvider.updateDiagnostics(vscode.window.activeTextEditor.document);
   }
 
-  console.log('[Magento Toolbox] Done');
+  console.log('[Magento Toolbox] Loaded');
 }
 
 // This method is called when your extension is deactivated
