@@ -4,6 +4,7 @@ import { MagentoScope } from 'types';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';
+import { WizardTabBuilder } from 'webview/WizardTabBuilder';
 
 export interface PluginContextWizardData {
   module: string;
@@ -32,7 +33,11 @@ export default class PluginContextWizard extends GeneratorWizard {
     builder.setTitle('Generate a new plugin');
     builder.setDescription('Generates a plugin for a method.');
 
-    builder.addField(
+    const tab = new WizardTabBuilder();
+    tab.setId('plugin');
+    tab.setTitle('Plugin');
+
+    tab.addField(
       WizardFieldBuilder.select('module', 'Module')
         .setDescription(['Module where plugin will be generated in'])
         .setOptions(modules)
@@ -40,24 +45,24 @@ export default class PluginContextWizard extends GeneratorWizard {
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.select('method', 'Method')
         .setOptions(allowedMethods.map(method => ({ label: method, value: method })))
         .setInitialValue(initialMethod)
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('className', 'Plugin class name')
         .setDescription(['E.g. "MyPlugin"'])
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('name', 'Plugin name').setDescription(['E.g. "my_plugin"']).build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.select('type', 'Plugin type')
         .setOptions([
           { label: 'Before', value: 'before' },
@@ -68,14 +73,16 @@ export default class PluginContextWizard extends GeneratorWizard {
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.select('scope', 'Scope')
         .setOptions(Object.values(MagentoScope).map(scope => ({ label: scope, value: scope })))
         .setInitialValue(MagentoScope.Global)
         .build()
     );
 
-    builder.addField(WizardFieldBuilder.number('sortOrder', 'Sort order').build());
+    tab.addField(WizardFieldBuilder.number('sortOrder', 'Sort order').build());
+
+    builder.addTab(tab.build());
 
     builder.addValidation('module', 'required');
     builder.addValidation('method', 'required');

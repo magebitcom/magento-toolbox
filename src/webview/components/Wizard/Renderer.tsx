@@ -1,4 +1,4 @@
-import { Form, Formik, FormikValues } from 'formik';
+import { Form, Formik, FormikProps, FormikValues } from 'formik';
 import { useCallback } from 'react';
 import { WebviewApi } from 'vscode-webview';
 import Validator from 'validatorjs';
@@ -11,13 +11,17 @@ interface Props {
 }
 
 export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
-  const initialValues: FormikValues = wizard.fields.reduce((acc: FormikValues, field) => {
-    if (field.type === WizardInput.Select && field.multiple) {
-      acc[field.id] = field.initialValue ?? [];
-      return acc;
-    }
+  const initialValues: FormikValues = wizard.tabs.reduce((acc: FormikValues, tab) => {
+    tab.fields.reduce((acc: FormikValues, field) => {
+      if (field.type === WizardInput.Select && field.multiple) {
+        acc[field.id] = field.initialValue ?? [];
+        return acc;
+      }
 
-    acc[field.id] = field.initialValue ?? '';
+      acc[field.id] = field.initialValue ?? '';
+      return acc;
+    }, {});
+
     return acc;
   }, {});
 
@@ -27,7 +31,6 @@ export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
 
   const handleValidation = useCallback((values: FormikValues) => {
     if (wizard.validation) {
-      console.log(wizard.validation);
       const validation = new Validator(values, wizard.validation, wizard.validationMessages);
 
       validation.passes();
@@ -39,16 +42,34 @@ export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
   }, []);
 
   return (
-    <main className="p-6 w-full">
+    <main>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validate={handleValidation}>
-        <Form>
-          {wizard.fields.map(field => {
-            return <FieldRenderer key={field.id} field={field} />;
-          })}
-          <div className="mt-4 flex gap-4">
-            <vscode-button type="submit">Submit</vscode-button>
-          </div>
-        </Form>
+        {(props: FormikProps<any>) => {
+          return (
+            <>
+              <vscode-tabs>
+                {wizard.tabs.map(tab => {
+                  return (
+                    <>
+                      <vscode-tab-header slot="header">{tab.title}</vscode-tab-header>
+                      <vscode-tab-panel>
+                        <p>{tab.description}</p>
+                        <br />
+                        {tab.fields.map(field => {
+                          return <FieldRenderer key={field.id} field={field} />;
+                        })}
+                      </vscode-tab-panel>
+                    </>
+                  );
+                })}
+              </vscode-tabs>
+              <br />
+              <vscode-button disabled={!props.dirty || !props.isValid} type="submit">
+                Submit
+              </vscode-button>
+            </>
+          );
+        }}
       </Formik>
     </main>
   );

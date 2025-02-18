@@ -3,6 +3,7 @@ import ModuleIndexer from 'indexer/module/ModuleIndexer';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';
+import { WizardTabBuilder } from 'webview/WizardTabBuilder';
 
 export interface BlockWizardData {
   module: string;
@@ -25,18 +26,24 @@ export default class BlockWizard extends GeneratorWizard {
     builder.setTitle('Generate a new block');
     builder.setDescription('Generates a new Magento2 block class.');
 
-    builder.addField(WizardFieldBuilder.select('module', 'Module*').setOptions(modules).build());
+    const tab = new WizardTabBuilder();
+    tab.setId('block');
+    tab.setTitle('Block');
 
-    builder.addField(
+    tab.addField(WizardFieldBuilder.select('module', 'Module*').setOptions(modules).build());
+
+    tab.addField(
       WizardFieldBuilder.text('name', 'Block Name*').setPlaceholder('Block class name').build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('path', 'Block Directory*')
         .setPlaceholder('Block/Path')
         .setInitialValue('Block')
         .build()
     );
+
+    builder.addTab(tab.build());
 
     builder.addValidation('module', 'required');
     builder.addValidation('name', 'required|min:1');

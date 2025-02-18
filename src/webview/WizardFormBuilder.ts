@@ -1,15 +1,19 @@
 import { ErrorMessages, Rules, TypeCheckingRule } from 'validatorjs';
-import { Wizard, WizardField } from './types';
+import { Wizard, WizardTab } from './types';
 
 export class WizardFormBuilder {
   private title?: string;
   private description?: string;
-  private fields: WizardField[] = [];
+  private tabs: WizardTab[] = [];
   private validation: Rules = {};
   private validationMessages: ErrorMessages = {};
 
   public static new(): WizardFormBuilder {
     return new WizardFormBuilder();
+  }
+
+  public addTab(tab: WizardTab): void {
+    this.tabs.push(tab);
   }
 
   public setTitle(title: string): void {
@@ -18,10 +22,6 @@ export class WizardFormBuilder {
 
   public setDescription(description: string): void {
     this.description = description;
-  }
-
-  public addField(field: WizardField): void {
-    this.fields.push(field);
   }
 
   public addValidation(
@@ -40,14 +40,14 @@ export class WizardFormBuilder {
       throw new Error('Title is required');
     }
 
-    if (!this.fields.length) {
-      throw new Error('Fields are required');
+    if (!this.tabs.length) {
+      throw new Error('Tabs are required');
     }
 
     return {
       title: this.title,
       description: this.description,
-      fields: this.fields,
+      tabs: this.tabs,
       validation: this.validation,
       validationMessages: this.validationMessages,
     };

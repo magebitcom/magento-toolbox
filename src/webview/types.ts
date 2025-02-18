@@ -20,10 +20,17 @@ export type WizardMessage = Message<Wizard>;
 export interface Wizard {
   title: string;
   description?: string;
-  fields: WizardField[];
+  tabs: WizardTab[];
   validationSchema?: any;
   validation?: Rules;
   validationMessages?: ErrorMessages;
+}
+
+export interface WizardTab {
+  id: string;
+  title: string;
+  description?: string;
+  fields: WizardField[];
 }
 
 export type WizardField =

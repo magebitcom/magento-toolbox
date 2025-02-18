@@ -5,6 +5,7 @@ import { MagentoScope } from 'types';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';
+import { WizardTabBuilder } from 'webview/WizardTabBuilder';
 
 export interface ObserverWizardData {
   module: string;
@@ -30,7 +31,11 @@ export default class ObserverWizard extends GeneratorWizard {
     builder.setTitle('Generate a new observer');
     builder.setDescription('Generates a new observer.');
 
-    builder.addField(
+    const tab = new WizardTabBuilder();
+    tab.setId('observer');
+    tab.setTitle('Observer');
+
+    tab.addField(
       WizardFieldBuilder.select('module', 'Module')
         .setDescription(['Module where observer will be generated in'])
         .setOptions(modules)
@@ -38,34 +43,37 @@ export default class ObserverWizard extends GeneratorWizard {
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.select('area', 'Area')
         .setOptions(Object.values(MagentoScope).map(scope => ({ label: scope, value: scope })))
         .setInitialValue(MagentoScope.Global)
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('eventName', 'Event name')
         .setPlaceholder('event_name')
         .setInitialValue(initialEventName)
         .build()
     );
-    builder.addField(
+
+    tab.addField(
       WizardFieldBuilder.text('observerName', 'Observer name')
         .setPlaceholder('observer_name')
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('className', 'Observer class name')
         .setPlaceholder('ObserverName')
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('directoryPath', 'Directory path').setInitialValue('Observer').build()
     );
+
+    builder.addTab(tab.build());
 
     builder.addValidation('module', 'required');
     builder.addValidation('area', 'required');
