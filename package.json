@@ -71,6 +71,10 @@
       {
         "command": "magento-toolbox.generateObserver",
         "title": "Magento Toolbox: Generate Observer"
+      },
+      {
+        "command": "magento-toolbox.dynamicRowExample",
+        "title": "Magento Toolbox: Dynamic Row Example"
       }
     ],
     "menus": {

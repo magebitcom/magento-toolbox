@@ -11,9 +11,15 @@ interface Props {
 }
 
 export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
+  const isSingleTab = wizard.tabs.length === 1;
   const initialValues: FormikValues = wizard.tabs.reduce((acc: FormikValues, tab) => {
     tab.fields.reduce((acc: FormikValues, field) => {
       if (field.type === WizardInput.Select && field.multiple) {
+        acc[field.id] = field.initialValue ?? [];
+        return acc;
+      }
+
+      if (field.type === WizardInput.DynamicRow) {
         acc[field.id] = field.initialValue ?? [];
         return acc;
       }
@@ -50,21 +56,26 @@ export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
               <vscode-tabs>
                 {wizard.tabs.map(tab => {
                   return (
-                    <>
-                      <vscode-tab-header slot="header">{tab.title}</vscode-tab-header>
-                      <vscode-tab-panel>
+                    <div key={tab.id}>
+                      {!isSingleTab && (
+                        <vscode-tab-header slot="header">{tab.title}</vscode-tab-header>
+                      )}
+                      <vscode-tab-panel className="tab-panel">
                         <p>{tab.description}</p>
                         <br />
                         {tab.fields.map(field => {
-                          return <FieldRenderer key={field.id} field={field} />;
+                          return <FieldRenderer key={`${field.id}-field}`} field={field} />;
                         })}
                       </vscode-tab-panel>
-                    </>
+                    </div>
                   );
                 })}
               </vscode-tabs>
               <br />
-              <vscode-button disabled={!props.dirty || !props.isValid} type="submit">
+              <vscode-button
+                onClick={() => props.submitForm()}
+                disabled={!props.dirty || !props.isValid}
+              >
                 Submit
               </vscode-button>
             </>

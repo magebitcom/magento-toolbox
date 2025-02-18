@@ -2,22 +2,36 @@ import { Option } from '@vscode-elements/elements/dist/includes/vscode-select/ty
 import { useField, useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef } from 'react';
 import { WizardField, WizardInput, WizardSelectOption } from 'webview/types';
+import { DynamicRowInput } from './DynamicRowInput';
+import { FieldErrorMessage } from './FieldErrorMessage';
 
 interface Props {
   field: WizardField;
+  prefix?: string;
+  simple?: boolean;
 }
 
-const getFieldProps = (field: WizardField) => {
+const getFieldId = (field: WizardField, prefix?: string) => {
+  if (prefix) {
+    return `${prefix}.${field.id}`;
+  }
+
+  return field.id;
+};
+
+const getFieldProps = (field: WizardField, prefix?: string) => {
   switch (field.type) {
     case WizardInput.Readonly:
       return { readonly: true };
     case WizardInput.Checkbox:
-      return { name: field.id, checked: false };
+      return { name: getFieldId(field, prefix), checked: false };
     case WizardInput.Select:
-      return { name: field.id };
+      return { name: getFieldId(field, prefix) };
+    case WizardInput.DynamicRow:
+      return { name: getFieldId(field, prefix) };
     default:
       return {
-        name: field.id,
+        name: getFieldId(field, prefix),
         placeholder: field.placeholder,
       };
   }
@@ -33,10 +47,10 @@ const mapOption = (option: WizardSelectOption): Option => {
   };
 };
 
-export const FieldRenderer: React.FC<Props> = ({ field }) => {
+export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }) => {
   const { values } = useFormikContext<any>();
   const el = useRef<any>(null);
-  const [fieldProps, meta] = useField(getFieldProps(field));
+  const [fieldProps, meta] = useField(getFieldProps(field, prefix));
 
   /**
    * vscode-elements do not support (yet) onChange prop
@@ -86,6 +100,9 @@ export const FieldRenderer: React.FC<Props> = ({ field }) => {
           />
         );
       }
+      case WizardInput.DynamicRow: {
+        return <DynamicRowInput field={field} />;
+      }
       case WizardInput.Checkbox: {
         return <vscode-checkbox {...fieldProps} ref={el} />;
       }
@@ -99,9 +116,25 @@ export const FieldRenderer: React.FC<Props> = ({ field }) => {
   }
 
   if (fieldInner) {
+    if (simple) {
+      return (
+        <>
+          {fieldInner}
+          <vscode-form-helper>
+            <p className="error">
+              <FieldErrorMessage name={fieldProps.name} />
+            </p>
+          </vscode-form-helper>
+        </>
+      );
+    }
+
     return (
       <vscode-form-group>
-        <vscode-label>{field.label}</vscode-label>
+        {field.type !== WizardInput.DynamicRow && <vscode-label>{field.label}</vscode-label>}
+        {field.type === WizardInput.DynamicRow && (
+          <div className="dynamic-row-title">{field.label}</div>
+        )}
         {fieldInner}
         <vscode-form-helper>
           {meta.touched && meta.error && <p className="error">{meta.error}</p>}

@@ -38,7 +38,8 @@ export type WizardField =
   | WizardNumberField
   | WizardSelectField
   | WizardReadonlyField
-  | WizardCheckboxField;
+  | WizardCheckboxField
+  | WizardDynamicRowField;
 
 export interface WizardTextField extends WizardGenericField {
   type: WizardInput.Text;
@@ -66,7 +67,12 @@ export interface WizardCheckboxField extends WizardGenericField {
   type: WizardInput.Checkbox;
 }
 
-export type FieldValue = string | number | boolean;
+export interface WizardDynamicRowField extends WizardGenericField {
+  type: WizardInput.DynamicRow;
+  fields: WizardField[];
+}
+
+export type FieldValue = string | number | boolean | Record<string, string | number | boolean>;
 
 export interface FieldDependency {
   field: string;
@@ -87,6 +93,7 @@ export enum WizardInput {
   Select = 'select',
   Checkbox = 'checkbox',
   Readonly = 'readonly',
+  DynamicRow = 'dynamic-row',
 }
 
 export interface WizardSelectOption {
