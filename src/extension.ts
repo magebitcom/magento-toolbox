@@ -17,6 +17,7 @@ import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
 import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
 import ObserverCodelensProvider from 'codelens/ObserverCodelensProvider';
 import GenerateObserverCommand from 'command/GenerateObserverCommand';
+import GenerateBlockCommand from 'command/GenerateBlockCommand';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -30,6 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
     CopyMagentoPathCommand,
     GenerateXmlCatalogCommand,
     GenerateObserverCommand,
+    GenerateBlockCommand,
   ];
 
   ExtensionState.init(context);

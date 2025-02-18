@@ -24,6 +24,11 @@
           "type": "string",
           "default": "bin/magento",
           "description": "Path to Magento CLI tool. Relative to workspace root or absolute path."
+        },
+        "magento-toolbox.phpFileHeaderComment": {
+          "type": "string",
+          "default": "",
+          "description": "PHP file header comment. %module% will be replaced with the module name. Do not add comment symbols like /* or */, they will be added automatically. Separate lines with the newline character."
         }
       }
     },
@@ -41,6 +46,10 @@
       {
         "command": "magento-toolbox.generateModule",
         "title": "Magento Toolbox: Generate Module"
+      },
+      {
+        "command": "magento-toolbox.generateBlock",
+        "title": "Magento Toolbox: Generate Block"
       },
       {
         "command": "magento-toolbox.indexWorkspace",
