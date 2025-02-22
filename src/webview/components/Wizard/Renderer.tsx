@@ -13,7 +13,7 @@ interface Props {
 export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
   const isSingleTab = wizard.tabs.length === 1;
   const initialValues: FormikValues = wizard.tabs.reduce((acc: FormikValues, tab) => {
-    tab.fields.reduce((acc: FormikValues, field) => {
+    tab.fields.reduce((_: FormikValues, field) => {
       if (field.type === WizardInput.Select && field.multiple) {
         acc[field.id] = field.initialValue ?? [];
         return acc;
