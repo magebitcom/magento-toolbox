@@ -97,6 +97,10 @@
       {
         "command": "magento-toolbox.generateDiXmlFile",
         "title": "Magento Toolbox: Generate DI XML"
+      },
+      {
+        "command": "magento-toolbox.generateWebapiXmlFile",
+        "title": "Magento Toolbox: Generate Webapi XML"
       }
     ],
     "menus": {
@@ -161,6 +165,10 @@
         },
         {
           "command": "magento-toolbox.generateDiXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateWebapiXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
