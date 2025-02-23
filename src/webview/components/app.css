@@ -22,4 +22,5 @@
 
 .tab-panel {
   padding: 16px;
+  overflow: visible;
 }

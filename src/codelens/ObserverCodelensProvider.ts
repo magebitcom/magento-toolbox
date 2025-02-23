@@ -61,7 +61,7 @@ export default class ObserverCodelensProvider implements CodeLensProvider {
       const codelens = new CodeLens(range, {
         title: 'Create an Observer',
         command: 'magento-toolbox.generateObserver',
-        arguments: [event.name],
+        arguments: [undefined, event.name],
       });
 
       codelenses.push(codelens);

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<% if (fileHeader) { -%>
+<%- fileHeader %>
+<% } -%>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="<%= routerId %>">
+        <route id="<%= routeId %>" frontName="<%= frontName %>">
+            <module name="<%= module %>"/>
+        </route>
+    </router>
+</config>

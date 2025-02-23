@@ -1,4 +1,4 @@
-import { ErrorMessages, Rules } from 'validatorjs';
+import { ErrorMessages, Rules, TypeCheckingRule } from 'validatorjs';
 
 export enum Page {
   Wizard = 'wizard',
@@ -25,6 +25,8 @@ export interface Wizard {
   validation?: Rules;
   validationMessages?: ErrorMessages;
 }
+
+export type WizardValidationRule = string | Array<string | TypeCheckingRule> | Rules;
 
 export interface WizardTab {
   id: string;

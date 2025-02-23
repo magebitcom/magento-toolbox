@@ -2,22 +2,37 @@ import { Command } from 'command/Command';
 import BlockClassGenerator from 'generator/block/BlockClassGenerator';
 import BlockWizard, { BlockWizardData } from 'wizard/BlockWizard';
 import FileGeneratorManager from 'generator/FileGeneratorManager';
-import { window } from 'vscode';
+import { Uri, window } from 'vscode';
 import Common from 'util/Common';
 import WizzardClosedError from 'webview/error/WizzardClosedError';
+import IndexManager from 'indexer/IndexManager';
+import ModuleIndexer from 'indexer/module/ModuleIndexer';
 
 export default class GenerateBlockCommand extends Command {
   constructor() {
     super('magento-toolbox.generateBlock');
   }
 
-  public async execute(...args: any[]): Promise<void> {
+  public async execute(uri?: Uri): Promise<void> {
+    const moduleIndex = IndexManager.getIndexData(ModuleIndexer.KEY);
+    let contextModule: string | undefined;
+
+    const contextUri = uri || window.activeTextEditor?.document.uri;
+
+    if (moduleIndex && contextUri) {
+      const module = moduleIndex.getModuleByUri(contextUri);
+
+      if (module) {
+        contextModule = module.name;
+      }
+    }
+
     const blockWizard = new BlockWizard();
 
     let data: BlockWizardData;
 
     try {
-      data = await blockWizard.show();
+      data = await blockWizard.show(contextModule);
     } catch (error) {
       if (error instanceof WizzardClosedError) {
         return;

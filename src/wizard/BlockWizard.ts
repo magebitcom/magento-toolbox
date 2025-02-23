@@ -12,7 +12,7 @@ export interface BlockWizardData {
 }
 
 export default class BlockWizard extends GeneratorWizard {
-  public async show(): Promise<BlockWizardData> {
+  public async show(contextModule?: string): Promise<BlockWizardData> {
     const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
 
     if (!moduleIndexData) {
@@ -30,7 +30,12 @@ export default class BlockWizard extends GeneratorWizard {
     tab.setId('block');
     tab.setTitle('Block');
 
-    tab.addField(WizardFieldBuilder.select('module', 'Module*').setOptions(modules).build());
+    tab.addField(
+      WizardFieldBuilder.select('module', 'Module*')
+        .setOptions(modules)
+        .setInitialValue(contextModule || modules[0].value)
+        .build()
+    );
 
     tab.addField(
       WizardFieldBuilder.text('name', 'Block Name*').setPlaceholder('Block class name').build()

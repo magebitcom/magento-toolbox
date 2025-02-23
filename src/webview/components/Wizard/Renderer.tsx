@@ -72,10 +72,7 @@ export const Renderer: React.FC<Props> = ({ wizard, vscode }) => {
                 })}
               </vscode-tabs>
               <br />
-              <vscode-button
-                onClick={() => props.submitForm()}
-                disabled={!props.dirty || !props.isValid}
-              >
+              <vscode-button onClick={() => props.submitForm()} disabled={!props.isValid}>
                 Submit
               </vscode-button>
             </>

@@ -30,6 +30,12 @@
           "editPresentation": "multilineText",
           "default": "",
           "markdownDescription": "`%module%` will be replaced with the module name. \n\n **Do not add comment symbols like `/*` or `*/`, they will be added automatically.** \n\n Separate lines with the newline character `\\n`"
+        },
+        "magento-toolbox.xmlFileHeaderComment": {
+          "type": "string",
+          "editPresentation": "multilineText",
+          "default": "",
+          "markdownDescription": "`%module%` will be replaced with the module name. \n\n **Do not add comment symbols like `<!--` or `-->`, they will be added automatically.**"
         }
       }
     },
@@ -73,8 +79,24 @@
         "title": "Magento Toolbox: Generate Observer"
       },
       {
-        "command": "magento-toolbox.dynamicRowExample",
-        "title": "Magento Toolbox: Dynamic Row Example"
+        "command": "magento-toolbox.generateEventsXml",
+        "title": "Magento Toolbox: Generate Events XML"
+      },
+      {
+        "command": "magento-toolbox.generateGraphqlSchemaFile",
+        "title": "Magento Toolbox: Generate GraphQL Schema File"
+      },
+      {
+        "command": "magento-toolbox.generateRoutesXmlFile",
+        "title": "Magento Toolbox: Generate Routes XML"
+      },
+      {
+        "command": "magento-toolbox.generateAclXmlFile",
+        "title": "Magento Toolbox: Generate ACL XML"
+      },
+      {
+        "command": "magento-toolbox.generateDiXmlFile",
+        "title": "Magento Toolbox: Generate DI XML"
       }
     ],
     "menus": {
@@ -111,6 +133,35 @@
           "command": "magento-toolbox.copyMagentoPath",
           "title": "Magento Toolbox: Copy Magento Path",
           "when": "resourceExtname in magento-toolbox.supportedMagentoPathExtensions && resourcePath =~ /view/"
+        },
+        {
+          "command": "magento-toolbox.generateObserver",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i",
+          "arguments": []
+        },
+        {
+          "command": "magento-toolbox.generateBlock",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateEventsXml",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateGraphqlSchemaFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateRoutesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateAclXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateDiXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
     }
@@ -171,6 +222,7 @@
     "php-parser": "^3.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "slugify": "^1.6.6",
     "typescript-json-serializer": "^6.0.1",
     "typescript-memoize": "^1.1.1",
     "validatorjs": "^3.22.1"

@@ -17,7 +17,10 @@ export interface ObserverWizardData {
 }
 
 export default class ObserverWizard extends GeneratorWizard {
-  public async show(initialEventName?: string): Promise<ObserverWizardData> {
+  public async show(
+    initialEventName?: string,
+    contextModule?: string
+  ): Promise<ObserverWizardData> {
     const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
 
     if (!moduleIndexData) {
@@ -39,7 +42,7 @@ export default class ObserverWizard extends GeneratorWizard {
       WizardFieldBuilder.select('module', 'Module')
         .setDescription(['Module where observer will be generated in'])
         .setOptions(modules)
-        .setInitialValue(modules[0].value)
+        .setInitialValue(contextModule || modules[0].value)
         .build()
     );
 
