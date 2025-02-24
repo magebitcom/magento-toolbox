@@ -1,11 +1,16 @@
 {
-  "name": "magento-toolbox",
+  "name": "magebit-magento-toolbox",
   "displayName": "Magento Toolbox",
   "description": "Magento 2 code generation, inspection and utility tools",
   "publisher": "magebit",
+  "icon": "assets/logo.png",
   "version": "1.0.1",
   "engines": {
     "vscode": "^1.93.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magebitcom/magento-toolbox.git"
   },
   "categories": [
     "Other"
@@ -205,7 +210,7 @@
     "@typescript-eslint/parser": "^8.17.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
