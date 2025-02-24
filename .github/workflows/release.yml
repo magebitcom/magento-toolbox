@@ -14,8 +14,6 @@ jobs:
       - name: Install
         run: npm install
       - name: Package
-        run: npm run package
-      - name: Create Release
         run: npm run package-vsix
       - name: Release
         uses: softprops/action-gh-release@v2
