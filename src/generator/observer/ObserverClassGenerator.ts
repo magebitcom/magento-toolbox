@@ -1,3 +1,4 @@
+import FileHeader from 'common/php/FileHeader';
 import PhpNamespace from 'common/PhpNamespace';
 import GeneratedFile from 'generator/GeneratedFile';
 import ModuleFileGenerator from 'generator/ModuleFileGenerator';
@@ -20,6 +21,12 @@ export default class ObserverClassGenerator extends ModuleFileGenerator {
 
     const phpFile = new PhpFile();
     phpFile.setStrictTypes(true);
+
+    const header = FileHeader.getHeader(this.data.module);
+
+    if (header) {
+      phpFile.addComment(header);
+    }
 
     const namespace = phpFile.addNamespace(PhpNamespace.fromParts(namespaceParts).toString());
     namespace.addUse(ObserverClassGenerator.OBSERVER_INTERFACE);

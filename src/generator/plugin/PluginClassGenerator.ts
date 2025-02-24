@@ -1,3 +1,4 @@
+import FileHeader from 'common/php/FileHeader';
 import GeneratedFile from 'generator/GeneratedFile';
 import ModuleFileGenerator from 'generator/ModuleFileGenerator';
 import { upperFirst } from 'lodash-es';
@@ -28,6 +29,12 @@ export default class PluginClassGenerator extends ModuleFileGenerator {
 
     const phpFile = new PhpFile();
     phpFile.setStrictTypes(true);
+
+    const header = FileHeader.getHeader(this.data.module);
+
+    if (header) {
+      phpFile.addComment(header);
+    }
 
     const namespace = phpFile.addNamespace(parts.join('\\'));
     const phpClass = namespace.addClass(pluginName);

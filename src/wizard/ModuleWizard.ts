@@ -4,6 +4,7 @@ import { License } from 'types';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';
+import { WizardTabBuilder } from 'webview/WizardTabBuilder';
 
 interface ModuleWizardBaseData {
   vendor: string;
@@ -40,21 +41,26 @@ export default class ModuleWizard extends GeneratorWizard {
     builder.setTitle('Generate a new module');
     builder.setDescription('Generates the basic structure of a Magento2 module.');
 
-    builder.addField(
+    const tab = new WizardTabBuilder();
+    tab.setId('module');
+    tab.setTitle('Module');
+
+    tab.addField(
       WizardFieldBuilder.text('vendor', 'Vendor*').setPlaceholder('Vendor name').build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('module', 'Module*').setPlaceholder('Module name').build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.select('sequence', 'Dependencies')
         .setOptions(modules)
         .setMultiple(true)
         .build()
     );
-    builder.addField(
+
+    tab.addField(
       WizardFieldBuilder.select('license', 'License')
         .setOptions([
           { label: 'No license', value: 'none' },
@@ -65,27 +71,31 @@ export default class ModuleWizard extends GeneratorWizard {
         ])
         .build()
     );
-    builder.addField(
+
+    tab.addField(
       WizardFieldBuilder.text('version', 'Version')
         .setPlaceholder('Version')
         .setInitialValue('1.0.0')
         .build()
     );
-    builder.addField(WizardFieldBuilder.checkbox('composer', 'Generate composer.json').build());
 
-    builder.addField(
+    tab.addField(WizardFieldBuilder.checkbox('composer', 'Generate composer.json').build());
+
+    tab.addField(
       WizardFieldBuilder.text('composerName', 'Package name')
         .setPlaceholder('module/name')
         .addDependsOn('composer', true)
         .build()
     );
 
-    builder.addField(
+    tab.addField(
       WizardFieldBuilder.text('composerDescription', 'Package description')
         .setPlaceholder('Package description')
         .addDependsOn('composer', true)
         .build()
     );
+
+    builder.addTab(tab.build());
 
     builder.addValidation('vendor', 'required|min:1');
     builder.addValidation('module', 'required|min:1');

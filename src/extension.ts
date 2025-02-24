@@ -17,6 +17,12 @@ import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
 import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
 import ObserverCodelensProvider from 'codelens/ObserverCodelensProvider';
 import GenerateObserverCommand from 'command/GenerateObserverCommand';
+import GenerateBlockCommand from 'command/GenerateBlockCommand';
+import GenerateEventsXmlCommand from 'command/GenerateEventsXmlCommand';
+import GenerateGraphqlSchemaFileCommand from 'command/GenerateGraphqlSchemaFile';
+import GenerateRoutesXmlFileCommand from 'command/GenerateRoutesXmlFileCommand';
+import GenerateAclXmlFileCommand from 'command/GenerateAclXmlFileCommand';
+import GenerateDiXmlFileCommand from 'command/GenerateDiXmlFileCommand';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -30,6 +36,12 @@ export async function activate(context: vscode.ExtensionContext) {
     CopyMagentoPathCommand,
     GenerateXmlCatalogCommand,
     GenerateObserverCommand,
+    GenerateBlockCommand,
+    GenerateEventsXmlCommand,
+    GenerateGraphqlSchemaFileCommand,
+    GenerateRoutesXmlFileCommand,
+    GenerateAclXmlFileCommand,
+    GenerateDiXmlFileCommand,
   ];
 
   ExtensionState.init(context);

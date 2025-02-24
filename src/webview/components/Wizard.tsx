@@ -12,7 +12,7 @@ const Wizard: React.FC<WizardProps> = ({ data, vscode }) => {
     <div>
       <h1>{data.title}</h1>
       <p>{data.description}</p>
-      <vscode-divider></vscode-divider>
+      <br />
       <Renderer wizard={data} vscode={vscode} />
     </div>
   );

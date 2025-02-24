@@ -17,7 +17,8 @@ export class WizardFieldBuilder {
     private id: string | undefined = undefined,
     private label: string | undefined = undefined,
     private description: string[] | undefined = undefined,
-    private dependsOn: FieldDependency | undefined = undefined
+    private dependsOn: FieldDependency | undefined = undefined,
+    private fields: WizardField[] | undefined = undefined
   ) {}
 
   public static new(): WizardFieldBuilder {
@@ -38,6 +39,10 @@ export class WizardFieldBuilder {
 
   public static checkbox(id?: string, label?: string): WizardFieldBuilder {
     return new WizardFieldBuilder(WizardInput.Checkbox, id, label);
+  }
+
+  public static dynamicRow(id?: string, label?: string): WizardFieldBuilder {
+    return new WizardFieldBuilder(WizardInput.DynamicRow, id, label);
   }
 
   public setId(id: string): WizardFieldBuilder {
@@ -76,6 +81,11 @@ export class WizardFieldBuilder {
 
   public addDependsOn(field: string, value: FieldValue): WizardFieldBuilder {
     this.dependsOn = { field, value };
+    return this;
+  }
+
+  public addFields(fields: WizardField[]): WizardFieldBuilder {
+    this.fields = fields;
     return this;
   }
 
@@ -120,6 +130,15 @@ export class WizardFieldBuilder {
           options: this.options,
           multiple: this.multiple,
           initialValue: this.initialValue,
+          type: this.type,
+        };
+      case WizardInput.DynamicRow:
+        return {
+          id: this.id,
+          label: this.label,
+          description: this.description,
+          dependsOn: this.dependsOn,
+          fields: this.fields ?? [],
           type: this.type,
         };
       case WizardInput.Checkbox:

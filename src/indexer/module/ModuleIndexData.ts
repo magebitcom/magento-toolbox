@@ -17,9 +17,9 @@ export class ModuleIndexData extends AbstractIndexData<Module> {
     return this.getValues().find(module => module.name === name);
   }
 
-  public getModuleByUri(uri: Uri): Module | undefined {
+  public getModuleByUri(uri: Uri, appOnly = true): Module | undefined {
     const module = this.getValues().find(module => {
-      return uri.fsPath.startsWith(module.path);
+      return uri.fsPath.startsWith(module.path) && (!appOnly || module.location === 'app');
     });
 
     return module;

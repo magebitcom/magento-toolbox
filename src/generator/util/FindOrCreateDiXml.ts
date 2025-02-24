@@ -1,6 +1,7 @@
 import { Uri } from 'vscode';
 import FileSystem from 'util/FileSystem';
 import GenerateFromTemplate from './GenerateFromTemplate';
+import FileHeader from 'common/xml/FileHeader';
 
 export default class FindOrCreateDiXml {
   public static async execute(workspaceUri: Uri, vendor: string, module: string): Promise<string> {
@@ -10,6 +11,10 @@ export default class FindOrCreateDiXml {
       return await FileSystem.readFile(diFile);
     }
 
-    return await GenerateFromTemplate.generate('xml/blank-di');
+    const fileHeader = FileHeader.getHeader(module);
+
+    return await GenerateFromTemplate.generate('xml/blank-di', {
+      fileHeader,
+    });
   }
 }

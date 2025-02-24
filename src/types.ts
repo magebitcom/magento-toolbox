@@ -14,7 +14,8 @@ export enum MagentoScope {
   Global = 'global',
   Frontend = 'frontend',
   Adminhtml = 'adminhtml',
-  Webapi = 'webapi',
+  WebapiRest = 'webapi_rest',
+  WebapiSoap = 'webapi_soap',
   Graphql = 'graphql',
   Cron = 'cron',
 }

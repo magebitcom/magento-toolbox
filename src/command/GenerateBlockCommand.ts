@@ -1,22 +1,19 @@
 import { Command } from 'command/Command';
-import ObserverWizard, { ObserverWizardData } from 'wizard/ObserverWizard';
-import WizzardClosedError from 'webview/error/WizzardClosedError';
+import BlockClassGenerator from 'generator/block/BlockClassGenerator';
+import BlockWizard, { BlockWizardData } from 'wizard/BlockWizard';
 import FileGeneratorManager from 'generator/FileGeneratorManager';
-import Common from 'util/Common';
 import { Uri, window } from 'vscode';
-import ObserverClassGenerator from 'generator/observer/ObserverClassGenerator';
-import ObserverEventsGenerator from 'generator/observer/ObserverEventsGenerator';
+import Common from 'util/Common';
+import WizzardClosedError from 'webview/error/WizzardClosedError';
 import IndexManager from 'indexer/IndexManager';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
 
-export default class GenerateObserverCommand extends Command {
+export default class GenerateBlockCommand extends Command {
   constructor() {
-    super('magento-toolbox.generateObserver');
+    super('magento-toolbox.generateBlock');
   }
 
-  public async execute(uri?: Uri, eventName?: string): Promise<void> {
-    eventName = typeof eventName === 'string' ? eventName : undefined;
-
+  public async execute(uri?: Uri): Promise<void> {
     const moduleIndex = IndexManager.getIndexData(ModuleIndexer.KEY);
     let contextModule: string | undefined;
 
@@ -30,12 +27,12 @@ export default class GenerateObserverCommand extends Command {
       }
     }
 
-    const observerWizard = new ObserverWizard();
+    const blockWizard = new BlockWizard();
 
-    let data: ObserverWizardData;
+    let data: BlockWizardData;
 
     try {
-      data = await observerWizard.show(eventName, contextModule);
+      data = await blockWizard.show(contextModule);
     } catch (error) {
       if (error instanceof WizzardClosedError) {
         return;
@@ -44,10 +41,7 @@ export default class GenerateObserverCommand extends Command {
       throw error;
     }
 
-    const manager = new FileGeneratorManager([
-      new ObserverClassGenerator(data),
-      new ObserverEventsGenerator(data),
-    ]);
+    const manager = new FileGeneratorManager([new BlockClassGenerator(data)]);
 
     const workspaceFolder = Common.getActiveWorkspaceFolder();
 
