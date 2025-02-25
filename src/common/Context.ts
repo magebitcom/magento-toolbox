@@ -4,6 +4,7 @@ import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
 
 export interface EditorContext {
   canGeneratePlugin: boolean;
+  canGeneratePreference: boolean;
   supportedMagentoPathExtensions: string[];
 }
 
@@ -25,6 +26,7 @@ class Context {
       await this.setContext({
         ...this.editorContext,
         canGeneratePlugin: await this.canGeneratePlugin(editor),
+        canGeneratePreference: await this.canGeneratePreference(editor),
       });
     }
 
@@ -43,6 +45,7 @@ class Context {
   public getDefaultContext(): EditorContext {
     return {
       canGeneratePlugin: false,
+      canGeneratePreference: false,
       supportedMagentoPathExtensions: [
         ...CopyMagentoPathCommand.TEMPLATE_EXTENSIONS,
         ...CopyMagentoPathCommand.WEB_EXTENSIONS,
@@ -82,6 +85,15 @@ class Context {
     }
 
     return false;
+  }
+
+  private async canGeneratePreference(editor: TextEditor): Promise<boolean> {
+    if (editor.document.languageId !== 'php') {
+      return false;
+    }
+
+    const phpFile = await PhpDocumentParser.parse(editor.document);
+    return phpFile.classes.length > 0 || phpFile.interfaces.length > 0;
   }
 }
 

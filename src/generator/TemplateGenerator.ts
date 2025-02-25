@@ -1,9 +1,9 @@
 import { Uri } from 'vscode';
-import ModuleFileGenerator from './ModuleFileGenerator';
+import FileGenerator from './FileGenerator';
 import GeneratedFile from './GeneratedFile';
 import GenerateFromTemplate from './util/GenerateFromTemplate';
 
-export default class TemplateGenerator extends ModuleFileGenerator {
+export default class TemplateGenerator extends FileGenerator {
   public constructor(
     protected fileName: string,
     protected templateName: string,

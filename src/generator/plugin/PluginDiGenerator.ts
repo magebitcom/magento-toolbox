@@ -1,5 +1,5 @@
 import GeneratedFile from 'generator/GeneratedFile';
-import ModuleFileGenerator from 'generator/ModuleFileGenerator';
+import FileGenerator from 'generator/FileGenerator';
 import FindOrCreateDiXml from 'generator/util/FindOrCreateDiXml';
 import GenerateFromTemplate from 'generator/util/GenerateFromTemplate';
 import { PhpClass } from 'parser/php/PhpClass';
@@ -8,8 +8,9 @@ import { Uri } from 'vscode';
 import { PluginContextWizardData } from 'wizard/PluginContextWizard';
 import indentString from 'indent-string';
 import { PhpInterface } from 'parser/php/PhpInterface';
+import Magento from 'util/Magento';
 
-export default class PluginDiGenerator extends ModuleFileGenerator {
+export default class PluginDiGenerator extends FileGenerator {
   public constructor(
     protected data: PluginContextWizardData,
     protected subjectClass: PhpClass | PhpInterface,
@@ -20,16 +21,19 @@ export default class PluginDiGenerator extends ModuleFileGenerator {
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const moduleDirectory = this.getModuleDirectory(vendor, module, workspaceUri);
+    const etcDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri, 'etc');
+    const diFile = Magento.getUriWithArea(etcDirectory, 'di.xml', this.data.scope);
     const subjectNamespace = this.subjectClass.namespace + '\\' + this.subjectClass.name;
-    const pluginType = this.getModuleNamespace(vendor, module) + '\\Plugin\\' + this.data.className;
-    const diFile = Uri.joinPath(moduleDirectory, 'etc', 'di.xml');
-    const diXml = await FindOrCreateDiXml.execute(workspaceUri, vendor, module);
+    const pluginType = Magento.getModuleNamespace(vendor, module).append(
+      'Plugin',
+      this.data.className
+    );
+    const diXml = await FindOrCreateDiXml.execute(workspaceUri, vendor, module, this.data.scope);
     const insertPosition = this.getInsertPosition(diXml);
 
     const pluginXml = await GenerateFromTemplate.generate('xml/plugin', {
       pluginName: this.data.name,
-      pluginType,
+      pluginType: pluginType.toString(),
       sortOrder: this.data.sortOrder,
       subjectNamespace,
     });

@@ -1,6 +1,5 @@
 import FileHeader from 'common/php/FileHeader';
 import GeneratedFile from 'generator/GeneratedFile';
-import ModuleFileGenerator from 'generator/ModuleFileGenerator';
 import { upperFirst } from 'lodash-es';
 import { PhpFile, PsrPrinter } from 'node-php-generator';
 import { PhpClass } from 'parser/php/PhpClass';
@@ -8,8 +7,10 @@ import { PhpInterface } from 'parser/php/PhpInterface';
 import { PhpMethod } from 'parser/php/PhpMethod';
 import { Uri } from 'vscode';
 import { PluginContextWizardData } from 'wizard/PluginContextWizard';
+import FileGenerator from 'generator/FileGenerator';
+import Magento from 'util/Magento';
 
-export default class PluginClassGenerator extends ModuleFileGenerator {
+export default class PluginClassGenerator extends FileGenerator {
   public constructor(
     protected data: PluginContextWizardData,
     protected subjectClass: PhpClass | PhpInterface,
@@ -22,8 +23,9 @@ export default class PluginClassGenerator extends ModuleFileGenerator {
     const [vendor, module] = this.data.module.split('_');
     const nameParts = this.data.className.split(/[\\/]+/);
     const pluginName = nameParts.pop() as string;
+
     const parts = [vendor, module, 'Plugin', ...nameParts];
-    const moduleDirectory = this.getModuleDirectory(vendor, module, workspaceUri);
+    const moduleDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri);
 
     const pluginMethodName = `${this.data.type}${upperFirst(this.data.method)}`;
 
