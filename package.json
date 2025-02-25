@@ -4,7 +4,7 @@
   "description": "Magento 2 code generation, inspection and utility tools",
   "publisher": "magebit",
   "icon": "assets/logo.png",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.93.1"
   },
@@ -106,6 +106,10 @@
       {
         "command": "magento-toolbox.generateWebapiXmlFile",
         "title": "Magento Toolbox: Generate Webapi XML"
+      },
+      {
+        "command": "magento-toolbox.generatePreference",
+        "title": "Magento Toolbox: Generate Preference"
       }
     ],
     "menus": {
@@ -135,6 +139,10 @@
         {
           "command": "magento-toolbox.generateContextPlugin",
           "when": "magento-toolbox.canGeneratePlugin"
+        },
+        {
+          "command": "magento-toolbox.generatePreference",
+          "when": "magento-toolbox.canGeneratePreference"
         }
       ],
       "magento-toolbox.explorer-submenu": [

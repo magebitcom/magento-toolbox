@@ -59,6 +59,6 @@ export default class GenerateObserverCommand extends Command {
     await manager.generate(workspaceFolder.uri);
     await manager.writeFiles();
     await manager.refreshIndex(workspaceFolder);
-    manager.openFirstFile();
+    manager.openAllFiles();
   }
 }

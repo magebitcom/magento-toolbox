@@ -1,25 +1,23 @@
 import GeneratedFile from 'generator/GeneratedFile';
-import ModuleFileGenerator from 'generator/ModuleFileGenerator';
+import FileGenerator from 'generator/FileGenerator';
 import GenerateFromTemplate from 'generator/util/GenerateFromTemplate';
 import { Uri } from 'vscode';
 import { ObserverWizardData } from 'wizard/ObserverWizard';
 import indentString from 'indent-string';
 import PhpNamespace from 'common/PhpNamespace';
 import FindOrCreateEventsXml from 'generator/util/FindOrCreateEventsXml';
-import { MagentoScope } from 'types';
+import Magento from 'util/Magento';
 
-export default class ObserverDiGenerator extends ModuleFileGenerator {
+export default class ObserverDiGenerator extends FileGenerator {
   public constructor(protected data: ObserverWizardData) {
     super();
   }
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const moduleDirectory = this.getModuleDirectory(vendor, module, workspaceUri);
+    const etcDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri, 'etc');
     const observerNamespace = PhpNamespace.fromParts([vendor, module, this.data.directoryPath]);
-    const areaPath = this.data.area === MagentoScope.Global ? '' : this.data.area;
-
-    const eventsFile = Uri.joinPath(moduleDirectory, 'etc', areaPath, 'events.xml');
+    const eventsFile = Magento.getUriWithArea(etcDirectory, 'events.xml', this.data.area);
     const eventsXml = await FindOrCreateEventsXml.execute(
       workspaceUri,
       vendor,

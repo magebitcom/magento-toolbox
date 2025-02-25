@@ -23,6 +23,7 @@ import GenerateGraphqlSchemaFileCommand from 'command/GenerateGraphqlSchemaFile'
 import GenerateRoutesXmlFileCommand from 'command/GenerateRoutesXmlFileCommand';
 import GenerateAclXmlFileCommand from 'command/GenerateAclXmlFileCommand';
 import GenerateDiXmlFileCommand from 'command/GenerateDiXmlFileCommand';
+import GeneratePreferenceCommand from 'command/GeneratePreferenceCommand';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -42,6 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
     GenerateRoutesXmlFileCommand,
     GenerateAclXmlFileCommand,
     GenerateDiXmlFileCommand,
+    GeneratePreferenceCommand,
   ];
 
   ExtensionState.init(context);

@@ -1,16 +1,17 @@
+import FileGenerator from 'generator/FileGenerator';
 import GeneratedFile from 'generator/GeneratedFile';
-import ModuleFileGenerator from 'generator/ModuleFileGenerator';
+import Magento from 'util/Magento';
 import { Uri } from 'vscode';
 import { ModuleWizardComposerData } from 'wizard/ModuleWizard';
 
-export default class ModuleComposerGenerator extends ModuleFileGenerator {
+export default class ModuleComposerGenerator extends FileGenerator {
   public constructor(protected data: ModuleWizardComposerData) {
     super();
   }
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const content = this.getComposerContent();
-    const moduleDirectory = this.getModuleDirectory(
+    const moduleDirectory = Magento.getModuleDirectory(
       this.data.vendor,
       this.data.module,
       workspaceUri
@@ -20,6 +21,8 @@ export default class ModuleComposerGenerator extends ModuleFileGenerator {
   }
 
   public getComposerContent(): string {
+    const namespace = Magento.getModuleNamespace(this.data.vendor, this.data.module);
+
     const object: any = {
       name: this.data.composerName,
       description: this.data.composerDescription,
@@ -30,7 +33,7 @@ export default class ModuleComposerGenerator extends ModuleFileGenerator {
       autoload: {
         files: ['registration.php'],
         psr4: {
-          [`${this.data.vendor}\\${this.data.module}\\`]: '',
+          [namespace.toString() + '\\']: 'src/',
         },
       },
     };
