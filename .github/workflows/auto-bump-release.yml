@@ -2,7 +2,7 @@ name: Auto bump version
 on:
   push:
     branches:
-      - release
+      - master
 
 jobs:
   version:
