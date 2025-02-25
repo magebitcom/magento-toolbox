@@ -3,7 +3,7 @@
   "displayName": "Magento Toolbox",
   "description": "Magento 2 code generation, inspection and utility tools",
   "publisher": "magebit",
-  "icon": "assets/logo.png",
+  "icon": "resources/logo.jpg",
   "version": "1.1.0",
   "engines": {
     "vscode": "^1.93.1"
