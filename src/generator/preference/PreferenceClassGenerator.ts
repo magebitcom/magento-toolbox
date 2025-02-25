@@ -1,21 +1,19 @@
 import FileHeader from 'common/php/FileHeader';
-import FileGenerator from 'generator/FileGenerator';
 import GeneratedFile from 'generator/GeneratedFile';
 import { PhpFile, PsrPrinter } from 'node-php-generator';
-import Magento from 'util/Magento';
 import { Uri } from 'vscode';
-import { BlockWizardData } from 'wizard/BlockWizard';
+import { PreferenceWizardData } from 'wizard/PreferenceWizard';
+import FileGenerator from 'generator/FileGenerator';
+import Magento from 'util/Magento';
 
-export default class BlockClassGenerator extends FileGenerator {
-  private static readonly BLOCK_CLASS_PARENT = 'Magento\\Framework\\View\\Element\\Template';
-
-  public constructor(protected data: BlockWizardData) {
+export default class PreferenceClassGenerator extends FileGenerator {
+  public constructor(protected data: PreferenceWizardData) {
     super();
   }
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const namespaceParts = [vendor, module, this.data.path];
+    const namespaceParts = [vendor, module, this.data.directory];
     const moduleDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri);
 
     const header = FileHeader.getHeader(this.data.module);
@@ -27,16 +25,17 @@ export default class BlockClassGenerator extends FileGenerator {
     phpFile.setStrictTypes(true);
 
     const namespace = phpFile.addNamespace(namespaceParts.join('\\'));
-    namespace.addUse(BlockClassGenerator.BLOCK_CLASS_PARENT);
 
-    const blockClass = namespace.addClass(this.data.name);
+    const preferenceClass = namespace.addClass(this.data.className);
 
-    blockClass.setExtends(BlockClassGenerator.BLOCK_CLASS_PARENT);
+    if (this.data.inheritClass && this.data.parentClass) {
+      preferenceClass.setExtends(this.data.parentClass);
+    }
 
     const printer = new PsrPrinter();
 
     return new GeneratedFile(
-      Uri.joinPath(moduleDirectory, this.data.path, `${this.data.name}.php`),
+      Uri.joinPath(moduleDirectory, this.data.directory, `${this.data.className}.php`),
       printer.printFile(phpFile)
     );
   }
