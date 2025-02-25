@@ -1,12 +1,13 @@
 import FileHeader from 'common/php/FileHeader';
 import PhpNamespace from 'common/PhpNamespace';
 import GeneratedFile from 'generator/GeneratedFile';
-import ModuleFileGenerator from 'generator/ModuleFileGenerator';
+import FileGenerator from 'generator/FileGenerator';
 import { PhpFile, PsrPrinter } from 'node-php-generator';
 import { Uri } from 'vscode';
 import { ObserverWizardData } from 'wizard/ObserverWizard';
+import Magento from 'util/Magento';
 
-export default class ObserverClassGenerator extends ModuleFileGenerator {
+export default class ObserverClassGenerator extends FileGenerator {
   private static readonly OBSERVER_INTERFACE = 'Magento\\Framework\\Event\\ObserverInterface';
   private static readonly OBSERVER_CLASS = 'Magento\\Framework\\Event\\Observer';
 
@@ -17,7 +18,7 @@ export default class ObserverClassGenerator extends ModuleFileGenerator {
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
     const namespaceParts = [vendor, module, this.data.directoryPath];
-    const moduleDirectory = this.getModuleDirectory(vendor, module, workspaceUri);
+    const moduleDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri);
 
     const phpFile = new PhpFile();
     phpFile.setStrictTypes(true);

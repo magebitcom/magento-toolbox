@@ -25,12 +25,17 @@ export default class PhpNamespace {
     return this.parts.join(PhpNamespace.NS_SEPARATOR);
   }
 
-  public append(part: string | PhpNamespace): PhpNamespace {
-    if (typeof part === 'string') {
-      return new PhpNamespace([...this.parts, part]);
-    }
+  public append(...parts: (string | PhpNamespace)[]): PhpNamespace {
+    return new PhpNamespace([
+      ...this.parts,
+      ...parts.flatMap(part => {
+        if (typeof part === 'string') {
+          return [part];
+        }
 
-    return new PhpNamespace([...this.parts, ...part.getParts()]);
+        return part.getParts();
+      }),
+    ]);
   }
 
   public prepend(part: string | PhpNamespace): PhpNamespace {

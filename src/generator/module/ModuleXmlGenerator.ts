@@ -1,10 +1,11 @@
 import GeneratedFile from 'generator/GeneratedFile';
-import ModuleFileGenerator from 'generator/ModuleFileGenerator';
 import XmlGenerator from 'generator/XmlGenerator';
 import { Uri } from 'vscode';
 import { ModuleWizardComposerData, ModuleWizardData } from 'wizard/ModuleWizard';
+import FileGenerator from '../FileGenerator';
+import Magento from 'util/Magento';
 
-export default class ModuleXmlGenerator extends ModuleFileGenerator {
+export default class ModuleXmlGenerator extends FileGenerator {
   public constructor(protected data: ModuleWizardData | ModuleWizardComposerData) {
     super();
   }
@@ -12,19 +13,18 @@ export default class ModuleXmlGenerator extends ModuleFileGenerator {
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const xmlContent = this.getXmlContent();
 
-    const moduleDirectory = this.getModuleDirectory(
+    const moduleFile = Magento.getModuleDirectory(
       this.data.vendor,
       this.data.module,
-      workspaceUri
+      workspaceUri,
+      'etc/module.xml'
     );
-
-    const moduleFile = Uri.joinPath(moduleDirectory, 'etc', 'module.xml');
 
     return new GeneratedFile(moduleFile, xmlContent);
   }
 
   protected getXmlContent(): string {
-    const moduleName = this.data.vendor + '_' + this.data.module;
+    const moduleName = Magento.getModuleName(this.data.vendor, this.data.module);
     const xml = {
       '?xml': {
         '@_version': '1.0',

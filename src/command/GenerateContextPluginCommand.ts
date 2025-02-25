@@ -76,7 +76,7 @@ export default class GenerateContextPluginCommand extends Command {
     await manager.generate(workspaceFolder.uri);
     await manager.writeFiles();
     await manager.refreshIndex(workspaceFolder);
-    manager.openFirstFile();
+    manager.openAllFiles();
   }
 
   private resolvePluginMethod(pluginSubjectInfo: PluginSubjectInfo): PhpMethod | undefined {
