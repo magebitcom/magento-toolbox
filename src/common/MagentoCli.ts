@@ -36,6 +36,14 @@ export default class MagentoCli {
     });
   }
 
+  public dispose() {
+    const terminal = vscode.window.terminals.find(t => t.name === MagentoCli.TERMINAL_NAME);
+
+    if (terminal) {
+      terminal.dispose();
+    }
+  }
+
   private getOrCreateTerminal(): vscode.Terminal {
     const terminal = vscode.window.terminals.find(t => t.name === MagentoCli.TERMINAL_NAME);
 
