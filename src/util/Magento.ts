@@ -1,8 +1,8 @@
 import PhpNamespace from 'common/PhpNamespace';
 import lowerFirst from 'lodash-es/lowerFirst';
 import { MagentoScope } from 'types';
-import { Uri } from 'vscode';
-
+import { Uri, WorkspaceFolder } from 'vscode';
+import FileSystem from './FileSystem';
 export default class Magento {
   public static isPluginMethod(method: string) {
     return /^around|^before|^after/.test(method);
@@ -39,5 +39,15 @@ export default class Magento {
 
   public static getModuleNamespace(vendor: string, module: string): PhpNamespace {
     return PhpNamespace.fromParts([vendor, module]);
+  }
+
+  public static async isMagentoWorkspace(workspaceFolder: WorkspaceFolder): Promise<boolean> {
+    const diXmlPath = Uri.joinPath(workspaceFolder.uri, 'app/etc/di.xml');
+    // Check if the signature Magento file exists in the workspace
+    try {
+      return await FileSystem.fileExists(diXmlPath);
+    } catch (error) {
+      return false;
+    }
   }
 }

@@ -24,6 +24,8 @@ import GenerateRoutesXmlFileCommand from 'command/GenerateRoutesXmlFileCommand';
 import GenerateAclXmlFileCommand from 'command/GenerateAclXmlFileCommand';
 import GenerateDiXmlFileCommand from 'command/GenerateDiXmlFileCommand';
 import GeneratePreferenceCommand from 'command/GeneratePreferenceCommand';
+import Magento from 'util/Magento';
+import { WorkspaceFolder } from 'vscode';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -46,15 +48,32 @@ export async function activate(context: vscode.ExtensionContext) {
     GeneratePreferenceCommand,
   ];
 
-  ExtensionState.init(context);
+  const magentoWorkspaces: WorkspaceFolder[] = [];
+
+  if (vscode.workspace.workspaceFolders) {
+    for (const folder of vscode.workspace.workspaceFolders) {
+      if (await Magento.isMagentoWorkspace(folder)) {
+        magentoWorkspaces.push(folder);
+      }
+    }
+  }
+
+  ExtensionState.init(context, magentoWorkspaces);
 
   commands.forEach(command => {
     const instance = new command();
 
     Common.log('Registering command', instance.getCommand());
 
-    const disposable = vscode.commands.registerCommand(instance.getCommand(), (...args) => {
-      instance.execute(...args);
+    const disposable = vscode.commands.registerCommand(instance.getCommand(), async (...args) => {
+      try {
+        await instance.execute(...args);
+      } catch (error) {
+        console.error(error);
+        vscode.window.showErrorMessage(
+          'An error occurred while executing the command: ' + instance.getCommand()
+        );
+      }
     });
 
     context.subscriptions.push(disposable);
