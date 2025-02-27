@@ -29,7 +29,7 @@ export default class GenerateXmlCatalogCommand extends Command {
     const catalogLocation = Uri.joinPath(workspaceFolder.uri, '.vscode/magento-catalog.xml');
 
     if (!(await FileSystem.fileExists(catalogLocation))) {
-      const success = await this.generateCatalog(workspaceFolder);
+      const success = await this.generateCatalog();
 
       if (!success) {
         return;
@@ -39,7 +39,9 @@ export default class GenerateXmlCatalogCommand extends Command {
     await this.formatAndWriteCatalog(catalogLocation, workspaceFolder.uri);
     await this.updateXmlConfig(workspaceFolder, catalogLocation);
 
-    window.showInformationMessage('XML URN catalog generated and configured successfully');
+    window.showInformationMessage(
+      'XML URN catalog generated and configured successfully. You might need to reload the editor for changes to take effect.'
+    );
   }
 
   private async formatAndWriteCatalog(catalogLocation: Uri, workspaceUri: Uri) {
@@ -83,23 +85,23 @@ export default class GenerateXmlCatalogCommand extends Command {
     await FileSystem.writeFile(catalogLocation, formattedCatalog);
   }
 
-  private async generateCatalog(workspaceFolder: WorkspaceFolder): Promise<boolean> {
-    const catalogLocation = Uri.joinPath(workspaceFolder.uri, '.vscode/magento-catalog.xml');
-
+  private async generateCatalog(): Promise<boolean> {
     const magentoCli = new MagentoCli();
 
     try {
-      await magentoCli.run('dev:urn-catalog:generate', [catalogLocation.fsPath]);
+      await magentoCli.run('dev:urn-catalog:generate', ['.vscode/magento-catalog.xml']);
     } catch (error) {
       console.error(error);
 
       window.showErrorMessage(
         'Failed to generate URN catalog. Try running this command manually: \n\n' +
-          `bin/magento dev:urn-catalog:generate ${catalogLocation.fsPath}`
+          `bin/magento dev:urn-catalog:generate .vscode/magento-catalog.xml`
       );
 
       return false;
     }
+
+    magentoCli.dispose();
 
     return true;
   }
