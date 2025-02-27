@@ -1,3 +1,4 @@
+import ExtensionState from 'common/ExtensionState';
 import { workspace, WorkspaceFolder, window } from 'vscode';
 
 export default class Common {
@@ -32,14 +33,14 @@ export default class Common {
       throw new Error('Workspace is empty');
     }
 
-    if (workspace.workspaceFolders.length === 1) {
-      return workspace.workspaceFolders[0];
+    if (window.activeTextEditor?.document.uri) {
+      return workspace.getWorkspaceFolder(window.activeTextEditor.document.uri);
     }
 
-    if (!window.activeTextEditor?.document.uri) {
-      throw new Error('No active text editor');
+    if (ExtensionState.magentoWorkspaces.length > 0) {
+      return ExtensionState.magentoWorkspaces[0];
     }
 
-    return workspace.getWorkspaceFolder(window.activeTextEditor.document.uri);
+    return undefined;
   }
 }
