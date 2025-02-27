@@ -34,7 +34,7 @@
           "type": "string",
           "editPresentation": "multilineText",
           "default": "",
-          "markdownDescription": "`%module%` will be replaced with the module name. \n\n **Do not add comment symbols like `/*` or `*/`, they will be added automatically.** \n\n Separate lines with the newline character `\\n`"
+          "markdownDescription": "`%module%` will be replaced with the module name. \n\n **Do not add comment symbols like `/*` or `*/`, they will be added automatically.**"
         },
         "magento-toolbox.xmlFileHeaderComment": {
           "type": "string",

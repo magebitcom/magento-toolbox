@@ -12,4 +12,22 @@ export default class FileHeader {
 
     return header.replace('%module%', module);
   }
+
+  public static getHeaderAsComment(module: string): string {
+    const header = this.getHeader(module);
+
+    if (!header) {
+      return '';
+    }
+
+    let comment = `/**\n`;
+
+    header.split(/[\r\n]+/).forEach(line => {
+      comment += ` * ${line}\n`;
+    });
+
+    comment += ` */\n`;
+
+    return comment;
+  }
 }
