@@ -12,5 +12,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strict": true
-  }
+  },
+  "include": ["src"]
 }

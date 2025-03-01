@@ -12,7 +12,6 @@ import DocumentCache from 'cache/DocumentCache';
 import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
 import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
 import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
-import Common from 'util/Common';
 import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
 import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
 import ObserverCodelensProvider from 'codelens/ObserverCodelensProvider';
@@ -26,11 +25,12 @@ import GenerateDiXmlFileCommand from 'command/GenerateDiXmlFileCommand';
 import GeneratePreferenceCommand from 'command/GeneratePreferenceCommand';
 import Magento from 'util/Magento';
 import { WorkspaceFolder } from 'vscode';
+import Logger from 'util/Logger';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('[Magento Toolbox] Activating extension');
+  console.log('[Magento Toolbox] Activating extension', typeof context);
 
   const commands = [
     IndexWorkspaceCommand,
@@ -63,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
   commands.forEach(command => {
     const instance = new command();
 
-    Common.log('Registering command', instance.getCommand());
+    Logger.log('Registering command', instance.getCommand());
 
     const disposable = vscode.commands.registerCommand(instance.getCommand(), async (...args) => {
       try {
@@ -139,6 +139,8 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   console.log('[Magento Toolbox] Loaded');
+
+  return context;
 }
 
 // This method is called when your extension is deactivated
