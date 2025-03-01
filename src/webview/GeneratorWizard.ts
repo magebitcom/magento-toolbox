@@ -49,6 +49,8 @@ export class GeneratorWizard extends Webview {
         if (!loaded) {
           this.panel?.dispose();
 
+          console.error('Failed to load wizard', pageData);
+
           reject(new Error('Failed to load wizard'));
         }
       }, 5000);

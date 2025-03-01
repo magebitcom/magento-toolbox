@@ -1,4 +1,4 @@
-import { Form, Formik, FormikProps, FormikValues } from 'formik';
+import { Formik, FormikProps, FormikValues } from 'formik';
 import { useCallback } from 'react';
 import { WebviewApi } from 'vscode-webview';
 import Validator from 'validatorjs';
