@@ -36,7 +36,7 @@ suite('ModuleRegistrationGenerator Tests', () => {
     const generator = new ModuleRegistrationGenerator(moduleWizardData);
 
     // Use a test workspace URI
-    const workspaceUri = Uri.file(path.resolve(__dirname, '../../../'));
+    const workspaceUri = Uri.file(FileSystem.getExtensionPath('test-resources/workspace'));
 
     // Generate the file
     const generatedFile = await generator.generate(workspaceUri);
@@ -45,9 +45,6 @@ suite('ModuleRegistrationGenerator Tests', () => {
     const resourcePath = FileSystem.getExtensionPath('test-resources');
     const refFilePath = path.resolve(resourcePath, 'reference/generator/module/registration.php');
     const referenceContent = fs.readFileSync(refFilePath, 'utf8');
-
-    console.log(generatedFile.content);
-    console.log(referenceContent);
 
     assert.strictEqual(generatedFile.content, referenceContent);
   });
@@ -64,7 +61,7 @@ suite('ModuleRegistrationGenerator Tests', () => {
     FileHeader.getHeader = () => 'This is a test comment';
 
     // Use a test workspace URI
-    const workspaceUri = Uri.file(path.resolve(__dirname, '../../../'));
+    const workspaceUri = Uri.file(FileSystem.getExtensionPath('test-resources/workspace'));
 
     try {
       // Generate the file

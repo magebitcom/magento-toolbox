@@ -25,7 +25,7 @@ export default class FileSystem {
   }
 
   public static getExtensionPath(dir: string): string {
-    console.log(ExtensionState.context.extensionPath);
+    ExtensionState.context.extensionPath;
     return path.join(ExtensionState.context.extensionPath, 'dist', dir);
   }
 }

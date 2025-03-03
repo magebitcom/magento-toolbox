@@ -138,8 +138,6 @@ export async function activate(context: vscode.ExtensionContext) {
     DiagnosticCollectionProvider.updateDiagnostics(vscode.window.activeTextEditor.document);
   }
 
-  console.log('[Magento Toolbox] Loaded');
-
   return context;
 }
 
