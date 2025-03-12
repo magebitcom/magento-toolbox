@@ -4,6 +4,15 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.3] - 3/12/2025
+
+- Fixed: Block, observer, plugin and preference class generation fails if class name includes backslashes
+- Fixed: Composer.json license is not capitalized
+- Fixed: Module generation module.xml sequence elements are not added
+- Fixed: Observer XML generation fails if file header comment is not configured
+- Fixed: Preference type attribute does not include full class namespace
+- Chore: added unit tests for generator commands
+
 ## [1.1.2] - 2/27/2025
 
 - Fixed: Module generator creates an invalid registration.php file
