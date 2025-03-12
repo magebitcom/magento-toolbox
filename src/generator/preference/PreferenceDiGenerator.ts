@@ -14,6 +14,10 @@ export default class PreferenceDiGenerator extends FileGenerator {
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
+    const directoryParts = this.data.directory.split('/');
+    const namespaceParts = [vendor, module, ...directoryParts, this.data.className];
+    const typeNamespace = namespaceParts.join('\\');
+
     const etcDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri, 'etc');
     const diFile = Magento.getUriWithArea(etcDirectory, 'di.xml', this.data.area);
     const diXml = await FindOrCreateDiXml.execute(workspaceUri, vendor, module, this.data.area);
@@ -21,7 +25,7 @@ export default class PreferenceDiGenerator extends FileGenerator {
 
     const pluginXml = await GenerateFromTemplate.generate('xml/preference', {
       forClass: this.data.parentClass,
-      typeClass: this.data.className,
+      typeClass: typeNamespace,
     });
 
     const newDiXml =

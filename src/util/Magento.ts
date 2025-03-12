@@ -3,6 +3,7 @@ import lowerFirst from 'lodash-es/lowerFirst';
 import { MagentoScope } from 'types';
 import { Uri, WorkspaceFolder } from 'vscode';
 import FileSystem from './FileSystem';
+
 export default class Magento {
   public static isPluginMethod(method: string) {
     return /^around|^before|^after/.test(method);

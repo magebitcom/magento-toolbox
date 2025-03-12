@@ -1,4 +1,6 @@
 import { Uri, workspace } from 'vscode';
+import * as path from 'path';
+import ExtensionState from 'common/ExtensionState';
 
 export default class FileSystem {
   public static async fileExists(uri: Uri): Promise<boolean> {
@@ -20,5 +22,10 @@ export default class FileSystem {
 
   public static async writeFile(uri: Uri, content: string): Promise<void> {
     await workspace.fs.writeFile(uri, Buffer.from(content));
+  }
+
+  public static getExtensionPath(dir: string): string {
+    ExtensionState.context.extensionPath;
+    return path.join(ExtensionState.context.extensionPath, 'dist', dir);
   }
 }

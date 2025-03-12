@@ -19,7 +19,6 @@ const App: React.FC = () => {
           setPage(Page.Wizard);
           setPageData(message.data);
 
-          console.log(message.data);
           break;
       }
     });

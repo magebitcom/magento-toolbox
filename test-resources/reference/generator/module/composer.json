@@ -1,0 +1,17 @@
+{
+    "name": "foo/bar-module",
+    "description": "A test module",
+    "type": "magento2-module",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr4": {
+            "Foo\\Bar\\": ""
+        }
+    },
+    "version": "1.0.0"
+}
