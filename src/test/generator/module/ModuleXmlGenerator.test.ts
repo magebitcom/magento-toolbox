@@ -3,9 +3,10 @@ import { License } from 'types';
 import * as assert from 'assert';
 import { Uri } from 'vscode';
 import ModuleXmlGenerator from 'generator/module/ModuleXmlGenerator';
-import { describe, it, before } from 'mocha';
+import { describe, it, before, afterEach } from 'mocha';
 import { setup } from 'test/setup';
 import { getReferenceFile, getTestWorkspaceUri } from 'test/util';
+import sinon from 'sinon';
 
 describe('ModuleXmlGenerator Tests', () => {
   const moduleWizardData: ModuleWizardData = {
@@ -20,6 +21,10 @@ describe('ModuleXmlGenerator Tests', () => {
 
   before(async () => {
     await setup();
+  });
+
+  afterEach(() => {
+    sinon.restore();
   });
 
   it('should generate module.xml', async () => {
