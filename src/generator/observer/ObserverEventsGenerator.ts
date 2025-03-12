@@ -7,6 +7,7 @@ import indentString from 'indent-string';
 import PhpNamespace from 'common/PhpNamespace';
 import FindOrCreateEventsXml from 'generator/util/FindOrCreateEventsXml';
 import Magento from 'util/Magento';
+import FileHeader from 'common/xml/FileHeader';
 
 export default class ObserverDiGenerator extends FileGenerator {
   public constructor(protected data: ObserverWizardData) {
