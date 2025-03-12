@@ -75,7 +75,7 @@ export default class PluginClassGenerator extends FileGenerator {
 
     const printer = new PsrPrinter();
     return new GeneratedFile(
-      Uri.joinPath(moduleDirectory, 'Plugin', `${pluginName}.php`),
+      Uri.joinPath(moduleDirectory, 'Plugin', ...nameParts, `${pluginName}.php`),
       printer.printFile(phpFile)
     );
   }

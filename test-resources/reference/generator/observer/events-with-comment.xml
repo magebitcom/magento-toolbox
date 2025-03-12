@@ -6,6 +6,6 @@ Foo_Bar
     xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
 
     <event name="test_event">
-        <observer name="test_observer" instance="Foo\Bar\Observer\TestObserver"/>
+        <observer name="test_observer" instance="Foo\Bar\Observer\TestObserver" />
     </event>
 </config>

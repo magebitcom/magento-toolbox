@@ -3,9 +3,13 @@ import fs from 'fs';
 import path from 'path';
 import { Uri } from 'vscode';
 
-export function getReferenceFile(filePath: string) {
+export function getReferenceFilePath(filePath: string) {
   const resourcePath = FileSystem.getExtensionPath('test-resources');
-  const refFilePath = path.resolve(resourcePath, 'reference', filePath);
+  return path.resolve(resourcePath, 'reference', filePath);
+}
+
+export function getReferenceFile(filePath: string) {
+  const refFilePath = getReferenceFilePath(filePath);
   return fs.readFileSync(refFilePath, 'utf8');
 }
 

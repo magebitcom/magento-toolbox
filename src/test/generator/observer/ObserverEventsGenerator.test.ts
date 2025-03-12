@@ -110,8 +110,6 @@ describe('ObserverEventsGenerator Tests', () => {
     // Get the reference file content
     const referenceContent = getReferenceFile('generator/observer/events-with-comment.xml');
 
-    console.log(generatedFile.content, referenceContent);
-
     // Compare the generated content with reference
     assert.strictEqual(generatedFile.content, referenceContent);
   });
