@@ -13,7 +13,8 @@ export default class PreferenceClassGenerator extends FileGenerator {
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const namespaceParts = [vendor, module, this.data.directory];
+    const directoryParts = this.data.directory.split('/');
+    const namespaceParts = [vendor, module, ...directoryParts];
     const moduleDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri);
 
     const header = FileHeader.getHeader(this.data.module);
