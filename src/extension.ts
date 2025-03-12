@@ -30,7 +30,7 @@ import Logger from 'util/Logger';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('[Magento Toolbox] Activating extension', typeof context);
+  console.log('[Magento Toolbox] Activating extension');
 
   const commands = [
     IndexWorkspaceCommand,

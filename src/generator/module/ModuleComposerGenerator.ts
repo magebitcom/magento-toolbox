@@ -27,13 +27,13 @@ export default class ModuleComposerGenerator extends FileGenerator {
       name: this.data.composerName,
       description: this.data.composerDescription,
       type: 'magento2-module',
-      license: this.data.license,
+      license: this.data.license.toUpperCase(),
       'minimum-stability': 'dev',
       require: {},
       autoload: {
         files: ['registration.php'],
         psr4: {
-          [namespace.toString() + '\\']: 'src/',
+          [namespace.toString() + '\\']: '',
         },
       },
     };
