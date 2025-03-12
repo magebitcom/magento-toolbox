@@ -17,7 +17,8 @@ export default class ObserverClassGenerator extends FileGenerator {
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const namespaceParts = [vendor, module, this.data.directoryPath];
+    const pathParts = this.data.directoryPath.split('/');
+    const namespaceParts = [vendor, module, ...pathParts];
     const moduleDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri);
 
     const phpFile = new PhpFile();

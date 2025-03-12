@@ -25,7 +25,7 @@ export default class ModuleXmlGenerator extends FileGenerator {
 
   protected getXmlContent(): string {
     const moduleName = Magento.getModuleName(this.data.vendor, this.data.module);
-    const xml = {
+    const xml: any = {
       '?xml': {
         '@_version': '1.0',
       },
@@ -38,7 +38,18 @@ export default class ModuleXmlGenerator extends FileGenerator {
       },
     };
 
+    if (this.data.sequence.length > 0) {
+      xml.config.module.sequence = this.data.sequence.map(module => ({
+        module: {
+          '@_name': module,
+        },
+      }));
+    }
+
     const xmlGenerator = new XmlGenerator(xml);
-    return xmlGenerator.toString();
+    return xmlGenerator.toString({
+      unpairedTags: ['module'],
+      suppressUnpairedNode: false,
+    });
   }
 }

@@ -2,6 +2,7 @@ import { Uri } from 'vscode';
 import FileSystem from 'util/FileSystem';
 import GenerateFromTemplate from './GenerateFromTemplate';
 import { MagentoScope } from 'types';
+import FileHeader from 'common/xml/FileHeader';
 
 export default class FindOrCreateEventsXml {
   public static async execute(
@@ -26,6 +27,10 @@ export default class FindOrCreateEventsXml {
       return await FileSystem.readFile(eventsFile);
     }
 
-    return await GenerateFromTemplate.generate('xml/blank-events');
+    const fileHeader = FileHeader.getHeader(`${vendor}_${module}`);
+
+    return await GenerateFromTemplate.generate('xml/blank-events', {
+      fileHeader,
+    });
   }
 }

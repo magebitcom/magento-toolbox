@@ -13,6 +13,7 @@ export default class XmlGenerator {
     const builder = new XMLBuilder({
       attributeNamePrefix: '@_',
       ignoreAttributes: false,
+      oneListGroup: true,
       textNodeName: '#text',
       indentBy: '    ',
       format: true,

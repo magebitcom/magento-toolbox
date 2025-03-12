@@ -1,7 +1,9 @@
 import { render } from 'ejs';
 import { resolve } from 'path';
 import FileSystem from 'util/FileSystem';
+import Logger from 'util/Logger';
 import { Uri } from 'vscode';
+
 export default class GenerateFromTemplate {
   public static async generate(template: string, data?: any): Promise<string> {
     try {
@@ -16,6 +18,6 @@ export default class GenerateFromTemplate {
   }
 
   protected static getTemplatePath(templateName: string): string {
-    return resolve(__dirname, 'templates', templateName + '.ejs');
+    return resolve(FileSystem.getExtensionPath('templates'), templateName + '.ejs');
   }
 }

@@ -15,7 +15,8 @@ export default class BlockClassGenerator extends FileGenerator {
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const [vendor, module] = this.data.module.split('_');
-    const namespaceParts = [vendor, module, this.data.path];
+    const pathParts = this.data.path.split('/');
+    const namespaceParts = [vendor, module, ...pathParts];
     const moduleDirectory = Magento.getModuleDirectory(vendor, module, workspaceUri);
 
     const header = FileHeader.getHeader(this.data.module);

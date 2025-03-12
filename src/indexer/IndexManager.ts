@@ -12,6 +12,7 @@ import { DiIndexData } from './di/DiIndexData';
 import { ModuleIndexData } from './module/ModuleIndexData';
 import { AutoloadNamespaceIndexData } from './autoload-namespace/AutoloadNamespaceIndexData';
 import { EventsIndexData } from './events/EventsIndexData';
+import Logger from 'util/Logger';
 
 type IndexerInstance = DiIndexer | ModuleIndexer | AutoloadNamespaceIndexer | EventsIndexer;
 
@@ -51,7 +52,7 @@ class IndexManager {
   ): Promise<void> {
     const workspaceUri = workspaceFolder.uri;
 
-    Common.startStopwatch('indexWorkspace');
+    Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
       if (!force && !this.shouldIndex(indexer)) {
@@ -61,8 +62,7 @@ class IndexManager {
 
       const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
 
-      const timer = `indexer_${indexer.getId()}`;
-      Common.startStopwatch(timer);
+      Logger.logWithTime('Indexing', indexer.getName());
       const files = await workspace.findFiles(indexer.getPattern(workspaceUri), 'dev/**');
 
       let doneCount = 0;
@@ -90,16 +90,16 @@ class IndexManager {
 
       clear([indexer.getId()]);
 
-      Common.stopStopwatch(timer);
+      Logger.logWithTime('Indexing', indexer.getName(), 'done');
 
       progress.report({ increment: 100 });
     }
 
-    Common.stopStopwatch('indexWorkspace');
+    Logger.logWithTime('Finished indexing workspace', workspaceFolder.name);
   }
 
   public async indexFile(workspaceFolder: WorkspaceFolder, file: Uri): Promise<void> {
-    Common.startStopwatch('indexFile');
+    Logger.logWithTime('Indexing file', file.fsPath);
 
     await Promise.all(
       this.indexers.map(async indexer => {
@@ -107,17 +107,17 @@ class IndexManager {
       })
     );
 
-    Common.stopStopwatch('indexFile');
+    Logger.logWithTime('Finished indexing file', file.fsPath);
   }
 
   public async indexFiles(workspaceFolder: WorkspaceFolder, files: Uri[]): Promise<void> {
-    Common.startStopwatch('indexFiles');
+    Logger.logWithTime(`Indexing ${files.length} files`);
 
     for (const indexer of this.indexers) {
       await Promise.all(files.map(file => this.indexFileInner(workspaceFolder, file, indexer)));
     }
 
-    Common.stopStopwatch('indexFiles');
+    Logger.logWithTime(`Finished indexing ${files.length} files`);
   }
 
   public getIndexStorageData<T = any>(
