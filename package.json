@@ -193,7 +193,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:test": "node esbuild.test.js --watch",
-    "package": "npm run build",
+    "package": "npm run compile",
     "compile-tests": "node esbuild.test.js",
     "pretest": "npm run compile && npm run compile-tests && npm run lint",
     "check-types": "tsc --noEmit",
