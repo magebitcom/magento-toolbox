@@ -17,6 +17,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added: Generator command for sample mview.xml file
 - Added: Generator command for sample widget.xml file
 - Added: Generator command for sample extension_attributes.xml file
+- Added: Generator command for sample system.xml file
 
 ## [1.1.3] - 3/12/2025
 

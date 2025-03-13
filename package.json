@@ -154,6 +154,10 @@
       {
         "command": "magento-toolbox.generateExtensionAttributesXmlFile",
         "title": "Magento Toolbox: Generate Extension Attributes XML"
+      },
+      {
+        "command": "magento-toolbox.generateSystemXmlFile",
+        "title": "Magento Toolbox: Generate System XML"
       }
     ],
     "menus": {
@@ -270,6 +274,10 @@
         },
         {
           "command": "magento-toolbox.generateExtensionAttributesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSystemXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

@@ -23,3 +23,4 @@ export { default as GenerateIndexerXmlFileCommand } from './GenerateIndexerXmlFi
 export { default as GenerateMviewXmlFileCommand } from './GenerateMviewXmlFileCommand';
 export { default as GenerateWidgetXmlFileCommand } from './GenerateWidgetXmlFileCommand';
 export { default as GenerateExtensionAttributesXmlFileCommand } from './GenerateExtensionAttributesXmlFileCommand';
+export { default as GenerateSystemXmlFileCommand } from './GenerateSystemXmlFileCommand';
