@@ -28,7 +28,7 @@ export default class GenerateEventsXmlCommand extends SimpleTemplateGeneratorCom
     return FileHeader.getHeader(data.module);
   }
 
-  getTemplatePath(data: TemplateWizardData): string {
+  getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
     if (data.area && data.area !== MagentoScope.Global) {

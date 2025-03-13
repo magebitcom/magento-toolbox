@@ -16,7 +16,7 @@ export abstract class SimpleTemplateGeneratorCommand extends Command {
     return [];
   }
 
-  abstract getTemplatePath(data: TemplateWizardData): string;
+  abstract getFilePath(data: TemplateWizardData): string;
 
   abstract getTemplateName(data: TemplateWizardData): string;
 
@@ -60,7 +60,7 @@ export abstract class SimpleTemplateGeneratorCommand extends Command {
     );
 
     const manager = new FileGeneratorManager([
-      new TemplateGenerator(this.getTemplatePath(data), this.getTemplateName(data), {
+      new TemplateGenerator(this.getFilePath(data), this.getTemplateName(data), {
         ...this.getTemplateData(data),
         fileHeader: this.getFileHeader(data) ?? '',
       }),

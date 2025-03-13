@@ -13,3 +13,4 @@ export { default as GenerateDiXmlFileCommand } from './GenerateDiXmlFileCommand'
 export { default as GeneratePreferenceCommand } from './GeneratePreferenceCommand';
 export { default as GenerateLayoutXmlCommand } from './GenerateLayoutXmlCommand';
 export { default as GenerateWebapiXmlFileCommand } from './GenerateWebapiXmlFileCommand';
+export { default as GeneratePageTypesXmlCommand } from './GeneratePageTypesXmlCommand';
