@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Added: Generator command for sample Layout XML file
 - Added: Generator command for sample page_types.xml file
+- Added: Generator command for sample crontab.xml file
 
 ## [1.1.3] - 3/12/2025
 

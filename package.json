@@ -118,6 +118,10 @@
       {
         "command": "magento-toolbox.generatePageTypesXmlFile",
         "title": "Magento Toolbox: Generate Page Types XML"
+      },
+      {
+        "command": "magento-toolbox.generateCrontabXmlFile",
+        "title": "Magento Toolbox: Generate Crontab XML"
       }
     ],
     "menus": {
@@ -198,6 +202,10 @@
         },
         {
           "command": "magento-toolbox.generatePageTypesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCrontabXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
