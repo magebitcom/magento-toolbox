@@ -10,7 +10,7 @@ export default class GenerateGraphqlSchemaFileCommand extends SimpleTemplateGene
     return 'GraphQL Schema File';
   }
 
-  getTemplatePath(data: TemplateWizardData): string {
+  getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
     return `app/code/${vendor}/${module}/etc/schema.graphqls`;

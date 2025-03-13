@@ -114,6 +114,10 @@
       {
         "command": "magento-toolbox.generateLayoutXmlFile",
         "title": "Magento Toolbox: Generate Layout XML"
+      },
+      {
+        "command": "magento-toolbox.generatePageTypesXmlFile",
+        "title": "Magento Toolbox: Generate Page Types XML"
       }
     ],
     "menus": {
@@ -190,6 +194,10 @@
         },
         {
           "command": "magento-toolbox.generateLayoutXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generatePageTypesXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

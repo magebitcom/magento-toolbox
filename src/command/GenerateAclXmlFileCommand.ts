@@ -10,7 +10,7 @@ export default class GenerateAclXmlFileCommand extends SimpleTemplateGeneratorCo
     return 'ACL XML File';
   }
 
-  getTemplatePath(data: TemplateWizardData): string {
+  getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
     return `app/code/${vendor}/${module}/etc/acl.xml`;

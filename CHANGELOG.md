@@ -6,7 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Added: Generator command for sample layout.xml file
+- Added: Generator command for sample Layout XML file
+- Added: Generator command for sample page_types.xml file
 
 ## [1.1.3] - 3/12/2025
 

@@ -23,7 +23,7 @@ export default class GenerateDiXmlFileCommand extends SimpleTemplateGeneratorCom
     return 'DI XML File';
   }
 
-  getTemplatePath(data: TemplateWizardData): string {
+  getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
     if (data.area && data.area !== MagentoScope.Global) {
