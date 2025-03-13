@@ -19,3 +19,4 @@ export { default as GenerateEmailTemplatesXmlCommand } from './GenerateEmailTemp
 export { default as GenerateSectionsXmlCommand } from './GenerateSectionsXmlCommand';
 export { default as GenerateFieldsetXmlCommand } from './GenerateFieldsetXmlCommand';
 export { default as GenerateViewXmlFile } from './GenerateViewXmlFile';
+export { default as GenerateIndexerXmlFileCommand } from './GenerateIndexerXmlFileCommand';
