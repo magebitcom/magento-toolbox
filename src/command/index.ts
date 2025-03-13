@@ -16,3 +16,4 @@ export { default as GenerateWebapiXmlFileCommand } from './GenerateWebapiXmlFile
 export { default as GeneratePageTypesXmlCommand } from './GeneratePageTypesXmlCommand';
 export { default as GenerateCrontabXmlCommand } from './GenerateCrontabXmlCommand';
 export { default as GenerateEmailTemplatesXmlCommand } from './GenerateEmailTemplatesXmlCommand';
+export { default as GenerateSectionsXmlCommand } from './GenerateSectionsXmlCommand';

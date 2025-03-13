@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added: Generator command for sample page_types.xml file
 - Added: Generator command for sample crontab.xml file
 - Added: Generator command for sample email_templates.xml file
+- Added: Generator command for sample sections.xml file
 
 ## [1.1.3] - 3/12/2025
 

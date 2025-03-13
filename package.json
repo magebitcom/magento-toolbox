@@ -126,6 +126,10 @@
       {
         "command": "magento-toolbox.generateEmailTemplatesXmlFile",
         "title": "Magento Toolbox: Generate Email Templates XML"
+      },
+      {
+        "command": "magento-toolbox.generateSectionsXmlFile",
+        "title": "Magento Toolbox: Generate Sections XML"
       }
     ],
     "menus": {
@@ -214,6 +218,10 @@
         },
         {
           "command": "magento-toolbox.generateEmailTemplatesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSectionsXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
