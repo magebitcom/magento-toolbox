@@ -20,3 +20,4 @@ export { default as GenerateSectionsXmlCommand } from './GenerateSectionsXmlComm
 export { default as GenerateFieldsetXmlCommand } from './GenerateFieldsetXmlCommand';
 export { default as GenerateViewXmlFile } from './GenerateViewXmlFile';
 export { default as GenerateIndexerXmlFileCommand } from './GenerateIndexerXmlFileCommand';
+export { default as GenerateMviewXmlFileCommand } from './GenerateMviewXmlFileCommand';
