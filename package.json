@@ -142,6 +142,10 @@
       {
         "command": "magento-toolbox.generateIndexerXmlFile",
         "title": "Magento Toolbox: Generate Indexer XML"
+      },
+      {
+        "command": "magento-toolbox.generateMviewXmlFile",
+        "title": "Magento Toolbox: Generate MVIEW XML"
       }
     ],
     "menus": {
@@ -246,6 +250,10 @@
         },
         {
           "command": "magento-toolbox.generateIndexerXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateMviewXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
