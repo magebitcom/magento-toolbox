@@ -1,7 +1,3 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import GenerateModuleCommand from 'command/GenerateModuleCommand';
-import IndexWorkspaceCommand from 'command/IndexWorkspaceCommand';
 import ExtensionState from 'common/ExtensionState';
 import IndexRunner from 'indexer/IndexRunner';
 import ActiveTextEditorChangeObserver from 'observer/ActiveTextEditorChangeObserver';
@@ -9,44 +5,19 @@ import * as vscode from 'vscode';
 import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvider';
 import ChangeTextEditorSelectionObserver from 'observer/ChangeTextEditorSelectionObserver';
 import DocumentCache from 'cache/DocumentCache';
-import GenerateContextPluginCommand from 'command/GenerateContextPluginCommand';
 import { XmlClasslikeDefinitionProvider } from 'definition/XmlClasslikeDefinitionProvider';
-import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
-import GenerateXmlCatalogCommand from 'command/GenerateXmlCatalogCommand';
 import XmlClasslikeHoverProvider from 'hover/XmlClasslikeHoverProvider';
 import ObserverCodelensProvider from 'codelens/ObserverCodelensProvider';
-import GenerateObserverCommand from 'command/GenerateObserverCommand';
-import GenerateBlockCommand from 'command/GenerateBlockCommand';
-import GenerateEventsXmlCommand from 'command/GenerateEventsXmlCommand';
-import GenerateGraphqlSchemaFileCommand from 'command/GenerateGraphqlSchemaFile';
-import GenerateRoutesXmlFileCommand from 'command/GenerateRoutesXmlFileCommand';
-import GenerateAclXmlFileCommand from 'command/GenerateAclXmlFileCommand';
-import GenerateDiXmlFileCommand from 'command/GenerateDiXmlFileCommand';
-import GeneratePreferenceCommand from 'command/GeneratePreferenceCommand';
+import * as commands from 'command';
 import Magento from 'util/Magento';
 import { WorkspaceFolder } from 'vscode';
 import Logger from 'util/Logger';
+import { Command } from 'command/Command';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log('[Magento Toolbox] Activating extension');
-
-  const commands = [
-    IndexWorkspaceCommand,
-    GenerateModuleCommand,
-    GenerateContextPluginCommand,
-    CopyMagentoPathCommand,
-    GenerateXmlCatalogCommand,
-    GenerateObserverCommand,
-    GenerateBlockCommand,
-    GenerateEventsXmlCommand,
-    GenerateGraphqlSchemaFileCommand,
-    GenerateRoutesXmlFileCommand,
-    GenerateAclXmlFileCommand,
-    GenerateDiXmlFileCommand,
-    GeneratePreferenceCommand,
-  ];
 
   const magentoWorkspaces: WorkspaceFolder[] = [];
 
@@ -60,8 +31,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   ExtensionState.init(context, magentoWorkspaces);
 
-  commands.forEach(command => {
-    const instance = new command();
+  Object.values(commands).forEach(command => {
+    const instance = new command() as Command;
 
     Logger.log('Registering command', instance.getCommand());
 
