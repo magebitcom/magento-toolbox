@@ -15,3 +15,4 @@ export { default as GenerateLayoutXmlCommand } from './GenerateLayoutXmlCommand'
 export { default as GenerateWebapiXmlFileCommand } from './GenerateWebapiXmlFileCommand';
 export { default as GeneratePageTypesXmlCommand } from './GeneratePageTypesXmlCommand';
 export { default as GenerateCrontabXmlCommand } from './GenerateCrontabXmlCommand';
+export { default as GenerateEmailTemplatesXmlCommand } from './GenerateEmailTemplatesXmlCommand';

@@ -122,6 +122,10 @@
       {
         "command": "magento-toolbox.generateCrontabXmlFile",
         "title": "Magento Toolbox: Generate Crontab XML"
+      },
+      {
+        "command": "magento-toolbox.generateEmailTemplatesXmlFile",
+        "title": "Magento Toolbox: Generate Email Templates XML"
       }
     ],
     "menus": {
@@ -206,6 +210,10 @@
         },
         {
           "command": "magento-toolbox.generateCrontabXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateEmailTemplatesXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
