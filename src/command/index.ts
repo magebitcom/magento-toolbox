@@ -18,3 +18,4 @@ export { default as GenerateCrontabXmlCommand } from './GenerateCrontabXmlComman
 export { default as GenerateEmailTemplatesXmlCommand } from './GenerateEmailTemplatesXmlCommand';
 export { default as GenerateSectionsXmlCommand } from './GenerateSectionsXmlCommand';
 export { default as GenerateFieldsetXmlCommand } from './GenerateFieldsetXmlCommand';
+export { default as GenerateViewXmlFile } from './GenerateViewXmlFile';

@@ -134,6 +134,10 @@
       {
         "command": "magento-toolbox.generateFieldsetXmlFile",
         "title": "Magento Toolbox: Generate Fieldset XML"
+      },
+      {
+        "command": "magento-toolbox.generateViewXmlFile",
+        "title": "Magento Toolbox: Generate View XML"
       }
     ],
     "menus": {
@@ -230,6 +234,10 @@
         },
         {
           "command": "magento-toolbox.generateFieldsetXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateViewXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
