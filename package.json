@@ -146,6 +146,10 @@
       {
         "command": "magento-toolbox.generateMviewXmlFile",
         "title": "Magento Toolbox: Generate MVIEW XML"
+      },
+      {
+        "command": "magento-toolbox.generateWidgetXmlFile",
+        "title": "Magento Toolbox: Generate Widget XML"
       }
     ],
     "menus": {
@@ -254,6 +258,10 @@
         },
         {
           "command": "magento-toolbox.generateMviewXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateWidgetXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
