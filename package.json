@@ -110,6 +110,10 @@
       {
         "command": "magento-toolbox.generatePreference",
         "title": "Magento Toolbox: Generate Preference"
+      },
+      {
+        "command": "magento-toolbox.generateLayoutXmlFile",
+        "title": "Magento Toolbox: Generate Layout XML"
       }
     ],
     "menus": {
@@ -182,6 +186,10 @@
         },
         {
           "command": "magento-toolbox.generateWebapiXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateLayoutXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
