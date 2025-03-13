@@ -1,15 +1,13 @@
+import { MagentoScope } from 'types';
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
-import { MagentoScope } from 'types';
+import { WizardField, WizardValidationRule } from 'webview/types';
+import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import FileHeader from 'common/xml/FileHeader';
 
-export default class GenerateEventsXmlCommand extends SimpleTemplateGeneratorCommand {
+export default class GenerateLayoutXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
-    super('magento-toolbox.generateEventsXml');
-  }
-
-  getWizardTitle(): string {
-    return 'Events XML File';
+    super('magento-toolbox.generateLayoutXmlFile');
   }
 
   getAreas(): MagentoScope[] {
@@ -28,17 +26,31 @@ export default class GenerateEventsXmlCommand extends SimpleTemplateGeneratorCom
     return FileHeader.getHeader(data.module);
   }
 
+  getWizardTitle(): string {
+    return 'Layout XML File';
+  }
+
   getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
     if (data.area && data.area !== MagentoScope.Global) {
-      return `app/code/${vendor}/${module}/etc/${data.area}/events.xml`;
+      return `app/code/${vendor}/${module}/view/${data.area}/layout/${data.name}.xml`;
     }
 
-    return `app/code/${vendor}/${module}/etc/events.xml`;
+    return `app/code/${vendor}/${module}/view/base/layout/${data.name}.xml`;
   }
 
   getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-events';
+    return 'xml/blank-layout';
+  }
+
+  getWizardFields(): WizardField[] {
+    return [WizardFieldBuilder.text('name', 'Layout Name').build()];
+  }
+
+  getWizardValidation(): Record<string, WizardValidationRule> {
+    return {
+      name: 'required',
+    };
   }
 }

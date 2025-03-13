@@ -22,7 +22,7 @@ export default class GenerateRoutesXmlFileCommand extends SimpleTemplateGenerato
     return FileHeader.getHeader(data.module);
   }
 
-  getTemplatePath(data: TemplateWizardData): string {
+  getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
     return `app/code/${vendor}/${module}/etc/${data.area}/routes.xml`;

@@ -2,13 +2,13 @@ import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
 
-export default class GenerateWebapiXmlFileCommand extends SimpleTemplateGeneratorCommand {
+export default class GenerateSectionsXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
-    super('magento-toolbox.generateWebapiXmlFile');
+    super('magento-toolbox.generateSectionsXmlFile');
   }
 
   getWizardTitle(): string {
-    return 'Webapi XML File';
+    return 'Sections XML File';
   }
 
   getFileHeader(data: TemplateWizardData): string | undefined {
@@ -18,10 +18,10 @@ export default class GenerateWebapiXmlFileCommand extends SimpleTemplateGenerato
   getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
-    return `app/code/${vendor}/${module}/etc/webapi.xml`;
+    return `app/code/${vendor}/${module}/etc/frontend/sections.xml`;
   }
 
   getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-webapi';
+    return 'xml/blank-sections';
   }
 }

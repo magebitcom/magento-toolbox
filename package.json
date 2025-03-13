@@ -110,6 +110,58 @@
       {
         "command": "magento-toolbox.generatePreference",
         "title": "Magento Toolbox: Generate Preference"
+      },
+      {
+        "command": "magento-toolbox.generateLayoutXmlFile",
+        "title": "Magento Toolbox: Generate Layout XML"
+      },
+      {
+        "command": "magento-toolbox.generatePageTypesXmlFile",
+        "title": "Magento Toolbox: Generate Page Types XML"
+      },
+      {
+        "command": "magento-toolbox.generateCrontabXmlFile",
+        "title": "Magento Toolbox: Generate Crontab XML"
+      },
+      {
+        "command": "magento-toolbox.generateEmailTemplatesXmlFile",
+        "title": "Magento Toolbox: Generate Email Templates XML"
+      },
+      {
+        "command": "magento-toolbox.generateSectionsXmlFile",
+        "title": "Magento Toolbox: Generate Sections XML"
+      },
+      {
+        "command": "magento-toolbox.generateFieldsetXmlFile",
+        "title": "Magento Toolbox: Generate Fieldset XML"
+      },
+      {
+        "command": "magento-toolbox.generateViewXmlFile",
+        "title": "Magento Toolbox: Generate View XML"
+      },
+      {
+        "command": "magento-toolbox.generateIndexerXmlFile",
+        "title": "Magento Toolbox: Generate Indexer XML"
+      },
+      {
+        "command": "magento-toolbox.generateMviewXmlFile",
+        "title": "Magento Toolbox: Generate MVIEW XML"
+      },
+      {
+        "command": "magento-toolbox.generateWidgetXmlFile",
+        "title": "Magento Toolbox: Generate Widget XML"
+      },
+      {
+        "command": "magento-toolbox.generateExtensionAttributesXmlFile",
+        "title": "Magento Toolbox: Generate Extension Attributes XML"
+      },
+      {
+        "command": "magento-toolbox.generateSystemXmlFile",
+        "title": "Magento Toolbox: Generate System XML"
+      },
+      {
+        "command": "magento-toolbox.generateConfigXmlFile",
+        "title": "Magento Toolbox: Generate Config XML"
       }
     ],
     "menus": {
@@ -183,6 +235,58 @@
         {
           "command": "magento-toolbox.generateWebapiXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateLayoutXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generatePageTypesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCrontabXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateEmailTemplatesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSectionsXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateFieldsetXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateViewXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateIndexerXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateMviewXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateWidgetXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateExtensionAttributesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSystemXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateConfigXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
     }
@@ -201,7 +305,8 @@
     "test": "vscode-test",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
-    "package-vsix": "vsce package"
+    "package-vsix": "vsce package",
+    "deploy": "vsce publish"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",

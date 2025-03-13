@@ -2,13 +2,13 @@ import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
 
-export default class GenerateWebapiXmlFileCommand extends SimpleTemplateGeneratorCommand {
+export default class GeneratePageTypesXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
-    super('magento-toolbox.generateWebapiXmlFile');
+    super('magento-toolbox.generatePageTypesXmlFile');
   }
 
   getWizardTitle(): string {
-    return 'Webapi XML File';
+    return 'Page Types XML File';
   }
 
   getFileHeader(data: TemplateWizardData): string | undefined {
@@ -18,10 +18,10 @@ export default class GenerateWebapiXmlFileCommand extends SimpleTemplateGenerato
   getFilePath(data: TemplateWizardData): string {
     const [vendor, module] = data.module.split('_');
 
-    return `app/code/${vendor}/${module}/etc/webapi.xml`;
+    return `app/code/${vendor}/${module}/etc/frontend/page_types.xml`;
   }
 
   getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-webapi';
+    return 'xml/blank-page-types';
   }
 }
