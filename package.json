@@ -305,7 +305,8 @@
     "test": "vscode-test",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
-    "package-vsix": "vsce package"
+    "package-vsix": "vsce package",
+    "deploy": "vsce publish"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.5",
