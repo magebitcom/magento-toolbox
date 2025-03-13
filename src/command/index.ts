@@ -24,3 +24,4 @@ export { default as GenerateMviewXmlFileCommand } from './GenerateMviewXmlFileCo
 export { default as GenerateWidgetXmlFileCommand } from './GenerateWidgetXmlFileCommand';
 export { default as GenerateExtensionAttributesXmlFileCommand } from './GenerateExtensionAttributesXmlFileCommand';
 export { default as GenerateSystemXmlFileCommand } from './GenerateSystemXmlFileCommand';
+export { default as GenerateConfigXmlFileCommand } from './GenerateConfigXmlFileCommand';
