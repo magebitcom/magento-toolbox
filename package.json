@@ -158,6 +158,10 @@
       {
         "command": "magento-toolbox.generateSystemXmlFile",
         "title": "Magento Toolbox: Generate System XML"
+      },
+      {
+        "command": "magento-toolbox.generateConfigXmlFile",
+        "title": "Magento Toolbox: Generate Config XML"
       }
     ],
     "menus": {
@@ -278,6 +282,10 @@
         },
         {
           "command": "magento-toolbox.generateSystemXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateConfigXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
