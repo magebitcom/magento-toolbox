@@ -4,7 +4,7 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.2.0]
 
 - Added: Generator command for sample Layout XML file
 - Added: Generator command for sample page_types.xml file
