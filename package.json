@@ -130,6 +130,10 @@
       {
         "command": "magento-toolbox.generateSectionsXmlFile",
         "title": "Magento Toolbox: Generate Sections XML"
+      },
+      {
+        "command": "magento-toolbox.generateFieldsetXmlFile",
+        "title": "Magento Toolbox: Generate Fieldset XML"
       }
     ],
     "menus": {
@@ -222,6 +226,10 @@
         },
         {
           "command": "magento-toolbox.generateSectionsXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateFieldsetXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
