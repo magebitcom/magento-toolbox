@@ -150,6 +150,10 @@
       {
         "command": "magento-toolbox.generateWidgetXmlFile",
         "title": "Magento Toolbox: Generate Widget XML"
+      },
+      {
+        "command": "magento-toolbox.generateExtensionAttributesXmlFile",
+        "title": "Magento Toolbox: Generate Extension Attributes XML"
       }
     ],
     "menus": {
@@ -262,6 +266,10 @@
         },
         {
           "command": "magento-toolbox.generateWidgetXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateExtensionAttributesXmlFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

@@ -22,3 +22,4 @@ export { default as GenerateViewXmlFile } from './GenerateViewXmlFile';
 export { default as GenerateIndexerXmlFileCommand } from './GenerateIndexerXmlFileCommand';
 export { default as GenerateMviewXmlFileCommand } from './GenerateMviewXmlFileCommand';
 export { default as GenerateWidgetXmlFileCommand } from './GenerateWidgetXmlFileCommand';
+export { default as GenerateExtensionAttributesXmlFileCommand } from './GenerateExtensionAttributesXmlFileCommand';
