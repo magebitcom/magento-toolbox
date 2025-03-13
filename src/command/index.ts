@@ -17,3 +17,4 @@ export { default as GeneratePageTypesXmlCommand } from './GeneratePageTypesXmlCo
 export { default as GenerateCrontabXmlCommand } from './GenerateCrontabXmlCommand';
 export { default as GenerateEmailTemplatesXmlCommand } from './GenerateEmailTemplatesXmlCommand';
 export { default as GenerateSectionsXmlCommand } from './GenerateSectionsXmlCommand';
+export { default as GenerateFieldsetXmlCommand } from './GenerateFieldsetXmlCommand';
