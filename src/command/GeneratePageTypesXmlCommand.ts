@@ -1,4 +1,3 @@
-import { MagentoScope } from 'types';
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
@@ -6,10 +5,6 @@ import FileHeader from 'common/xml/FileHeader';
 export default class GeneratePageTypesXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
     super('magento-toolbox.generatePageTypesXmlFile');
-  }
-
-  getAreas(): MagentoScope[] {
-    return [MagentoScope.Frontend];
   }
 
   getWizardTitle(): string {
