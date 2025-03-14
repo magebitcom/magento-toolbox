@@ -1,15 +1,14 @@
 import GeneratedFile from 'generator/GeneratedFile';
 import FileGenerator from 'generator/FileGenerator';
-import GenerateFromTemplate from 'generator/util/GenerateFromTemplate';
 import { Uri } from 'vscode';
 import { ObserverWizardData } from 'wizard/ObserverWizard';
 import indentString from 'indent-string';
 import PhpNamespace from 'common/PhpNamespace';
 import FindOrCreateEventsXml from 'generator/util/FindOrCreateEventsXml';
 import Magento from 'util/Magento';
-import FileHeader from 'common/xml/FileHeader';
+import HandlebarsTemplateRenderer from 'generator/HandlebarsTemplateRenderer';
 
-export default class ObserverDiGenerator extends FileGenerator {
+export default class ObserverEventsGenerator extends FileGenerator {
   public constructor(protected data: ObserverWizardData) {
     super();
   }
@@ -27,7 +26,9 @@ export default class ObserverDiGenerator extends FileGenerator {
     );
     const insertPosition = this.getInsertPosition(eventsXml);
 
-    const observerXml = await GenerateFromTemplate.generate('xml/observer', {
+    const renderer = new HandlebarsTemplateRenderer();
+
+    const observerXml = await renderer.render('xml/observer', {
       name: this.data.observerName,
       className: observerNamespace.append(this.data.className).toString(),
       eventName: this.data.eventName,
