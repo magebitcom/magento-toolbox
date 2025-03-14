@@ -13,8 +13,10 @@ export class ModuleIndexData extends AbstractIndexData<Module> {
       }));
   }
 
-  public getModule(name: string): Module | undefined {
-    return this.getValues().find(module => module.name === name);
+  public getModule(name: string, caseSensitive = false): Module | undefined {
+    return this.getValues().find(module =>
+      caseSensitive ? module.name === name : module.name.toLowerCase() === name.toLowerCase()
+    );
   }
 
   public getModuleByUri(uri: Uri, appOnly = true): Module | undefined {
