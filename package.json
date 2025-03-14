@@ -92,32 +92,32 @@
       },
       {
         "command": "magento-toolbox.generateEventsXml",
-        "title": "Generate Events XML",
+        "title": "Generate Sample events.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateGraphqlSchemaFile",
-        "title": "Generate GraphQL Schema File",
+        "title": "Generate Sample schema.graphqls",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateRoutesXmlFile",
-        "title": "Generate Routes XML",
+        "title": "Generate Sample routes.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateAclXmlFile",
-        "title": "Generate ACL XML",
+        "title": "Generate Sample acl.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateDiXmlFile",
-        "title": "Generate DI XML",
+        "title": "Generate Sample di.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateWebapiXmlFile",
-        "title": "Generate Webapi XML",
+        "title": "Generate Sample webapi.xml",
         "category": "Magento Toolbox"
       },
       {
@@ -132,62 +132,62 @@
       },
       {
         "command": "magento-toolbox.generatePageTypesXmlFile",
-        "title": "Generate Page Types XML",
+        "title": "Generate Sample page_types.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateCrontabXmlFile",
-        "title": "Generate Crontab XML",
+        "title": "Generate Sample crontab.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateEmailTemplatesXmlFile",
-        "title": "Generate Email Templates XML",
+        "title": "Generate Sample email_templates.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateSectionsXmlFile",
-        "title": "Generate Sections XML",
+        "title": "Generate Sample sections.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateFieldsetXmlFile",
-        "title": "Generate Fieldset XML",
+        "title": "Generate Sample fieldset.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateViewXmlFile",
-        "title": "Generate View XML",
+        "title": "Generate Sample view.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateIndexerXmlFile",
-        "title": "Generate Indexer XML",
+        "title": "Generate Sample indexer.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateMviewXmlFile",
-        "title": "Generate MVIEW XML",
+        "title": "Generate Sample mview.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateWidgetXmlFile",
-        "title": "Generate Widget XML",
+        "title": "Generate Sample widget.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateExtensionAttributesXmlFile",
-        "title": "Generate Extension Attributes XML",
+        "title": "Generate Sample extension_attributes.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateSystemXmlFile",
-        "title": "Generate System XML",
+        "title": "Generate Sample system.xml",
         "category": "Magento Toolbox"
       },
       {
         "command": "magento-toolbox.generateConfigXmlFile",
-        "title": "Generate Config XML",
+        "title": "Generate Sample config.xml",
         "category": "Magento Toolbox"
       },
       {
