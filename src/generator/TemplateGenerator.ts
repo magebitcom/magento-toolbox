@@ -1,9 +1,11 @@
 import { Uri } from 'vscode';
 import FileGenerator from './FileGenerator';
 import GeneratedFile from './GeneratedFile';
-import GenerateFromTemplate from './util/GenerateFromTemplate';
+import HandlebarsTemplateRenderer from './HandlebarsTemplateRenderer';
 
 export default class TemplateGenerator extends FileGenerator {
+  protected renderer: HandlebarsTemplateRenderer | undefined;
+
   public constructor(
     protected fileName: string,
     protected templateName: string,
@@ -16,8 +18,20 @@ export default class TemplateGenerator extends FileGenerator {
     return this.data;
   }
 
+  protected getTemplateRenderer(): HandlebarsTemplateRenderer {
+    if (!this.renderer) {
+      this.renderer = new HandlebarsTemplateRenderer();
+    }
+
+    return this.renderer;
+  }
+
+  protected getTemplateContent(): Promise<string> {
+    return this.getTemplateRenderer().render(this.templateName, this.getTemplateData());
+  }
+
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
-    const content = await GenerateFromTemplate.generate(this.templateName, this.getTemplateData());
+    const content = await this.getTemplateContent();
 
     const path = Uri.joinPath(workspaceUri, this.fileName);
     return new GeneratedFile(path, content);

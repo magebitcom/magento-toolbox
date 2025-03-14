@@ -1,11 +1,11 @@
 import GeneratedFile from 'generator/GeneratedFile';
 import FindOrCreateDiXml from 'generator/util/FindOrCreateDiXml';
-import GenerateFromTemplate from 'generator/util/GenerateFromTemplate';
 import { Uri } from 'vscode';
 import { PreferenceWizardData } from 'wizard/PreferenceWizard';
 import indentString from 'indent-string';
 import Magento from 'util/Magento';
 import FileGenerator from 'generator/FileGenerator';
+import HandlebarsTemplateRenderer from 'generator/HandlebarsTemplateRenderer';
 
 export default class PreferenceDiGenerator extends FileGenerator {
   public constructor(protected data: PreferenceWizardData) {
@@ -23,7 +23,9 @@ export default class PreferenceDiGenerator extends FileGenerator {
     const diXml = await FindOrCreateDiXml.execute(workspaceUri, vendor, module, this.data.area);
     const insertPosition = this.getInsertPosition(diXml);
 
-    const pluginXml = await GenerateFromTemplate.generate('xml/preference', {
+    const renderer = new HandlebarsTemplateRenderer();
+
+    const pluginXml = await renderer.render('xml/preference', {
       forClass: this.data.parentClass,
       typeClass: typeNamespace,
     });
