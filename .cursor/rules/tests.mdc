@@ -1,0 +1,11 @@
+---
+description: Describes how to write tests
+globs: *.test.ts
+alwaysApply: false
+---
+- Tests are located in the src/test directory
+- Utilities for tests can be found in this file [util.ts](mdc:src/test/util.ts)
+- Some parts of the extension require the ExtensionContext to be present. To make sure it's set, tests should run the setup function from [setup.ts](mdc:src/test/setup.ts)
+- Tests are written using Mocha framework (`mocha` package) in Typescript and must end with .test.ts file extension. Do NOT use `chai`
+- Test spies, stubs and mocks can be written using the Sinon.js library
+- Reference files for tests are stored in the test-resources directory

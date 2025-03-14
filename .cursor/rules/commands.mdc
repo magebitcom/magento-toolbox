@@ -1,0 +1,10 @@
+---
+description: Describes how to create and register new commands
+globs: src/command/*.ts
+alwaysApply: false
+---
+- Commands are located in `src/command` directory
+- Commands must extend the [Command.ts](mdc:src/command/Command.ts) abstract class or any other class that inherits it
+- Command name must be defined in format: `magentoToolbox.commandName`
+- New commands must be added to [index.ts](mdc:src/command/index.ts) file so that they are loaded. Commands also need to be added to [package.json](mdc:package.json) under contributes -> commands
+- Commands that only generate files based on a pre-defined template can extend the [SimpleTemplateGeneratorCommand.ts](mdc:src/command/SimpleTemplateGeneratorCommand.ts) class
