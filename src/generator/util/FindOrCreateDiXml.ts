@@ -1,9 +1,9 @@
 import { Uri } from 'vscode';
 import FileSystem from 'util/FileSystem';
-import GenerateFromTemplate from './GenerateFromTemplate';
 import FileHeader from 'common/xml/FileHeader';
 import { MagentoScope } from 'types';
 import Magento from 'util/Magento';
+import HandlebarsTemplateRenderer from '../HandlebarsTemplateRenderer';
 
 export default class FindOrCreateDiXml {
   public static async execute(
@@ -21,7 +21,9 @@ export default class FindOrCreateDiXml {
 
     const fileHeader = FileHeader.getHeader(module);
 
-    return await GenerateFromTemplate.generate('xml/blank-di', {
+    const renderer = new HandlebarsTemplateRenderer();
+
+    return await renderer.render('xml/blank-di', {
       fileHeader,
     });
   }

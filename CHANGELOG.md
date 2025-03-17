@@ -4,7 +4,13 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [1.2.0]
+## [Unreleased]
+
+- Added: Jump to module command
+- Changed: All dropdown inputs now support searching
+- Changed: Migrated ejs templates to handlebars
+
+## [1.2.0] - 2025-03-13
 
 - Added: Generator command for sample Layout XML file
 - Added: Generator command for sample page_types.xml file
@@ -20,7 +26,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added: Generator command for sample system.xml file
 - Added: Generator command for sample config.xml file
 
-## [1.1.3] - 3/12/2025
+## [1.1.3] - 2025-03-12
 
 - Fixed: Block, observer, plugin and preference class generation fails if class name includes backslashes
 - Fixed: Composer.json license is not capitalized
@@ -29,19 +35,19 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Fixed: Preference type attribute does not include full class namespace
 - Chore: Added unit tests for generator commands
 
-## [1.1.2] - 2/27/2025
+## [1.1.2] - 2025-02-27
 
 - Fixed: Module generator creates an invalid registration.php file
 
-## [1.1.1] - 2/27/2025
+## [1.1.1] - 2025-02-27
 
 - Fixed: urn catalog not generated in dockerized environments
 - Fixed: codegen fails in multi-folder workspaces
 
-## [1.1.0] - 2/25/2025
+## [1.1.0] - 2025-02-25
 
 - Added preference generation command
 
-## [1.0.0] - 2/24/2025
+## [1.0.0] - 2025-02-24
 
 - Initial release
