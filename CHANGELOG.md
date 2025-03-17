@@ -7,6 +7,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 - Added: Jump to module command
+- Changed: All dropdown inputs now support searching
+- Changed: Migrated ejs templates to handlebars
 
 ## [1.2.0] - 2025-03-13
 
