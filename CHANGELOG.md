@@ -4,6 +4,9 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+- Fixed: Generated plugin class arguments contain an incorrect namespace
+
 ## [1.3.0] - 2025-03-17
 
 - Added: Jump to module command
