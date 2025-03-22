@@ -4,10 +4,11 @@ import GeneratedFile from 'generator/GeneratedFile';
 import Magento from 'util/Magento';
 import TemplateGenerator from 'generator/TemplateGenerator';
 import FileHeader from 'common/php/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
-export default class ModuleRegistrationGenerator extends TemplateGenerator {
+export default class ModuleRegistrationGenerator extends TemplateGenerator<TemplatePath.PhpRegistration> {
   public constructor(protected data: ModuleWizardData | ModuleWizardComposerData) {
-    super('registration.php', 'php/registration', data);
+    super('registration.php', TemplatePath.PhpRegistration, data);
   }
 
   public getTemplateData(): any {

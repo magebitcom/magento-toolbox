@@ -6,6 +6,7 @@ import indentString from 'indent-string';
 import Magento from 'util/Magento';
 import FileGenerator from 'generator/FileGenerator';
 import HandlebarsTemplateRenderer from 'generator/HandlebarsTemplateRenderer';
+import { TemplatePath } from 'types/handlebars';
 
 export default class PreferenceDiGenerator extends FileGenerator {
   public constructor(protected data: PreferenceWizardData) {
@@ -25,7 +26,7 @@ export default class PreferenceDiGenerator extends FileGenerator {
 
     const renderer = new HandlebarsTemplateRenderer();
 
-    const pluginXml = await renderer.render('xml/preference', {
+    const pluginXml = await renderer.render(TemplatePath.XmlDiPreference, {
       forClass: this.data.parentClass,
       typeClass: typeNamespace,
     });

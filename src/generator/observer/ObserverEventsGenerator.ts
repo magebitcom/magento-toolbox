@@ -7,6 +7,7 @@ import PhpNamespace from 'common/PhpNamespace';
 import FindOrCreateEventsXml from 'generator/util/FindOrCreateEventsXml';
 import Magento from 'util/Magento';
 import HandlebarsTemplateRenderer from 'generator/HandlebarsTemplateRenderer';
+import { TemplatePath } from 'types/handlebars';
 
 export default class ObserverEventsGenerator extends FileGenerator {
   public constructor(protected data: ObserverWizardData) {
@@ -28,16 +29,25 @@ export default class ObserverEventsGenerator extends FileGenerator {
 
     const renderer = new HandlebarsTemplateRenderer();
 
-    const observerXml = await renderer.render('xml/observer', {
+    const observerXml = await renderer.render(TemplatePath.XmlEventsObserver, {
       name: this.data.observerName,
       className: observerNamespace.append(this.data.className).toString(),
-      eventName: this.data.eventName,
     });
+
+    const eventXml = await renderer.render(
+      TemplatePath.XmlEventsEvent,
+      {
+        eventName: this.data.eventName,
+      },
+      {
+        eventContent: observerXml,
+      }
+    );
 
     const newEventsXml =
       eventsXml.slice(0, insertPosition) +
       '\n' +
-      indentString(observerXml, 4) +
+      indentString(eventXml, 4) +
       '\n' +
       eventsXml.slice(insertPosition);
 

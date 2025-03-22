@@ -4,6 +4,7 @@ import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import { WizardField, WizardValidationRule } from 'types/webview';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateLayoutXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -40,8 +41,8 @@ export default class GenerateLayoutXmlCommand extends SimpleTemplateGeneratorCom
     return `app/code/${vendor}/${module}/view/base/layout/${data.name}.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-layout';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankLayout;
   }
 
   getWizardFields(): WizardField[] {

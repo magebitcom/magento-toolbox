@@ -2,19 +2,23 @@ import { Uri } from 'vscode';
 import FileGenerator from './FileGenerator';
 import GeneratedFile from './GeneratedFile';
 import HandlebarsTemplateRenderer from './HandlebarsTemplateRenderer';
+import { TemplatePath, TemplateParams } from 'types/handlebars';
 
-export default class TemplateGenerator extends FileGenerator {
+export default class TemplateGenerator<
+  T extends TemplatePath,
+  P extends TemplateParams[T] = TemplateParams[T],
+> extends FileGenerator {
   protected renderer: HandlebarsTemplateRenderer | undefined;
 
   public constructor(
     protected fileName: string,
-    protected templateName: string,
-    protected data: Record<string, any>
+    protected templateName: T,
+    protected data: P
   ) {
     super();
   }
 
-  public getTemplateData(): Record<string, any> {
+  public getTemplateData(): P {
     return this.data;
   }
 

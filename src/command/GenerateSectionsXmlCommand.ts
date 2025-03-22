@@ -1,7 +1,7 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
-
+import { TemplatePath } from 'types/handlebars';
 export default class GenerateSectionsXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
     super('magento-toolbox.generateSectionsXmlFile');
@@ -21,7 +21,7 @@ export default class GenerateSectionsXmlCommand extends SimpleTemplateGeneratorC
     return `app/code/${vendor}/${module}/etc/frontend/sections.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-sections';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankSections;
   }
 }
