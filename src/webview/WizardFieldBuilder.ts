@@ -4,7 +4,7 @@ import {
   WizardField,
   WizardInput,
   WizardSelectOption,
-} from 'webview/types';
+} from 'types/webview';
 
 export class WizardFieldBuilder {
   private placeholder: string | undefined = undefined;

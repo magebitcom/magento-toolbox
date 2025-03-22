@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { WizardDynamicRowField, WizardField } from 'webview/types';
+import { WizardDynamicRowField, WizardField } from 'types/webview';
 import { FieldRenderer } from './FieldRenderer';
 import { FieldArray, useFormikContext } from 'formik';
 

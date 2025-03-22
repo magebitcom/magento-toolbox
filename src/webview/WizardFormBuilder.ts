@@ -1,5 +1,5 @@
 import { ErrorMessages, Rules, TypeCheckingRule } from 'validatorjs';
-import { Wizard, WizardTab } from './types';
+import { Wizard, WizardTab } from 'types/webview';
 
 export class WizardFormBuilder {
   private title?: string;

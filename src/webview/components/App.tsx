@@ -2,7 +2,7 @@ import '@vscode-elements/elements';
 import './app.css';
 import { useEffect, useState } from 'react';
 import Wizard from './Wizard';
-import { Command, Page, Wizard as WizardType } from '../types';
+import { Command, Page, Wizard as WizardType } from 'types/webview';
 
 const vscode = (window as any).acquireVsCodeApi();
 

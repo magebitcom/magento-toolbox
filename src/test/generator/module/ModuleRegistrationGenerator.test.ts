@@ -1,5 +1,5 @@
 import { ModuleWizardData } from 'wizard/ModuleWizard';
-import { License } from 'types';
+import { License } from 'types/global';
 import * as assert from 'assert';
 import ModuleRegistrationGenerator from 'generator/module/ModuleRegistrationGenerator';
 import FileHeader from 'common/php/FileHeader';
