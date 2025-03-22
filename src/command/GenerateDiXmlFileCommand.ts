@@ -1,4 +1,4 @@
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 

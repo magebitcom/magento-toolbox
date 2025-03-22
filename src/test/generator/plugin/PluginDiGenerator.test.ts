@@ -5,7 +5,7 @@ import PluginDiGenerator from 'generator/plugin/PluginDiGenerator';
 import { describe, it, before } from 'mocha';
 import { setup } from 'test/setup';
 import { getReferenceFile, getReferenceFilePath, getTestWorkspaceUri } from 'test/util';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { PhpClass } from 'parser/php/PhpClass';
 import PhpParser from 'parser/php/Parser';
 import { PhpMethod } from 'parser/php/PhpMethod';

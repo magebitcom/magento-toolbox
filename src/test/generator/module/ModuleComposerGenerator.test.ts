@@ -1,5 +1,5 @@
 import { ModuleWizardComposerData } from 'wizard/ModuleWizard';
-import { License } from 'types';
+import { License } from 'types/global';
 import * as assert from 'assert';
 import ModuleComposerGenerator from 'generator/module/ModuleComposerGenerator';
 import { describe, it, before } from 'mocha';

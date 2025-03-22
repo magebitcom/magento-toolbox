@@ -1,7 +1,7 @@
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
-import { WizardField, WizardValidationRule } from 'webview/types';
+import { WizardField, WizardValidationRule } from 'types/webview';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import FileHeader from 'common/xml/FileHeader';
 

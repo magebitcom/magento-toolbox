@@ -6,7 +6,7 @@ import { describe, it, before, afterEach } from 'mocha';
 import { setup } from 'test/setup';
 import { getReferenceFile, getTestWorkspaceUri } from 'test/util';
 import sinon from 'sinon';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 
 describe('PreferenceDiGenerator Tests', () => {
   const preferenceWizardData: PreferenceWizardData = {

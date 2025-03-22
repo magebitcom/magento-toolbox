@@ -1,4 +1,4 @@
-import { WizardField, WizardTab } from './types';
+import { WizardField, WizardTab } from 'types/webview';
 
 export class WizardTabBuilder {
   private id?: string;

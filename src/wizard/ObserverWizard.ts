@@ -1,7 +1,7 @@
 import Validation from 'common/Validation';
 import IndexManager from 'indexer/IndexManager';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';

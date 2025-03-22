@@ -1,9 +1,9 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import FileHeader from 'common/xml/FileHeader';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
-import { WizardField, WizardValidationRule } from 'webview/types';
+import { WizardField, WizardValidationRule } from 'types/webview';
 
 export default class GenerateRoutesXmlFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {

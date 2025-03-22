@@ -1,5 +1,5 @@
 import { ModuleWizardData } from 'wizard/ModuleWizard';
-import { License } from 'types';
+import { License } from 'types/global';
 import * as assert from 'assert';
 import { Uri } from 'vscode';
 import ModuleXmlGenerator from 'generator/module/ModuleXmlGenerator';
