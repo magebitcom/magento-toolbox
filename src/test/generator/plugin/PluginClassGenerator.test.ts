@@ -9,7 +9,7 @@ import FileHeader from 'common/php/FileHeader';
 import sinon from 'sinon';
 import { PhpClass } from 'parser/php/PhpClass';
 import { PhpMethod } from 'parser/php/PhpMethod';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import PhpParser from 'parser/php/Parser';
 
 describe('PluginClassGenerator Tests', () => {

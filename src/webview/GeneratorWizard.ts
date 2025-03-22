@@ -1,7 +1,7 @@
 import { Webview } from './Webview';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { Command, Message, Wizard } from './types';
+import { Command, Message, Wizard } from 'types/webview';
 import ExtensionState from 'common/ExtensionState';
 import WizzardClosedError from './error/WizzardClosedError';
 

@@ -7,7 +7,7 @@ import { setup } from 'test/setup';
 import { getReferenceFile, getTestWorkspaceUri } from 'test/util';
 import FileHeader from 'common/php/FileHeader';
 import sinon from 'sinon';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 
 describe('PreferenceClassGenerator Tests', () => {
   const preferenceWizardData: PreferenceWizardData = {

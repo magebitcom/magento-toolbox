@@ -5,7 +5,7 @@ import ObserverEventsGenerator from 'generator/observer/ObserverEventsGenerator'
 import { describe, it, before, afterEach } from 'mocha';
 import { setup } from 'test/setup';
 import { getReferenceFile, getTestWorkspaceUri } from 'test/util';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import FileHeader from 'common/xml/FileHeader';
 import sinon from 'sinon';
 

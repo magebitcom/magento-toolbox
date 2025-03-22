@@ -1,6 +1,6 @@
 import PhpNamespace from 'common/PhpNamespace';
 import lowerFirst from 'lodash-es/lowerFirst';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { Uri, WorkspaceFolder } from 'vscode';
 import FileSystem from './FileSystem';
 

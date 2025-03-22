@@ -6,8 +6,8 @@ import FileGeneratorManager from 'generator/FileGeneratorManager';
 import TemplateGenerator from 'generator/TemplateGenerator';
 import Common from 'util/Common';
 import SimpleTemplateWizard, { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
-import { MagentoScope } from 'types';
-import { WizardField, WizardValidationRule } from 'webview/types';
+import { MagentoScope } from 'types/global';
+import { WizardField, WizardValidationRule } from 'types/webview';
 
 export abstract class SimpleTemplateGeneratorCommand extends Command {
   abstract getWizardTitle(): string;

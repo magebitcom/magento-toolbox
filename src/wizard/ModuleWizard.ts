@@ -1,6 +1,6 @@
 import IndexManager from 'indexer/IndexManager';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
-import { License } from 'types';
+import { License } from 'types/global';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';

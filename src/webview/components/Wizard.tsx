@@ -1,5 +1,5 @@
 import { WebviewApi } from 'vscode-webview';
-import { Wizard as WizardType } from '../types';
+import { Wizard as WizardType } from 'types/webview';
 import { Renderer } from './Wizard/Renderer';
 
 interface WizardProps {

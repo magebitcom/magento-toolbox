@@ -10,13 +10,24 @@ export default class HandlebarsTemplateRenderer {
   public constructor() {
     this.handlebars = create();
     this.registerHelpers();
-    this.registerPartials();
+    this.registerGlobalPartials();
   }
 
-  public async render(template: string, data?: Record<string, any>): Promise<string> {
+  public async render(
+    template: string,
+    data?: Record<string, any>,
+    partials?: Record<string, string>
+  ): Promise<string> {
     try {
       const templatePath = this.getTemplatePath(template);
       const templateContent = await FileSystem.readFile(Uri.file(templatePath));
+
+      if (partials) {
+        for (const [name, content] of Object.entries(partials)) {
+          this.handlebars.registerPartial(name, content + '\n');
+        }
+      }
+
       const compiledTemplate = this.handlebars.compile(templateContent);
       const content = compiledTemplate(data);
       return content;
@@ -39,7 +50,7 @@ export default class HandlebarsTemplateRenderer {
     });
   }
 
-  protected registerPartials(): void {
+  protected registerGlobalPartials(): void {
     this.handlebars.registerPartial('fileHeader', '{{#if fileHeader}}\n{{{fileHeader}}}\n{{/if}}');
   }
 }

@@ -1,6 +1,6 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import FileHeader from 'common/xml/FileHeader';
 
 export default class GenerateEventsXmlCommand extends SimpleTemplateGeneratorCommand {

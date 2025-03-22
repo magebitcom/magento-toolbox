@@ -1,4 +1,4 @@
-import { WizardSelectOption } from 'webview/types';
+import { WizardSelectOption } from 'types/webview';
 import { Module } from './types';
 import { Uri } from 'vscode';
 import { AbstractIndexData } from 'indexer/AbstractIndexData';

@@ -1,7 +1,7 @@
 import { Option } from '@vscode-elements/elements/dist/includes/vscode-select/types';
 import { useField, useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef } from 'react';
-import { WizardField, WizardInput, WizardSelectOption } from 'webview/types';
+import { WizardField, WizardInput, WizardSelectOption } from 'types/webview';
 import { DynamicRowInput } from './DynamicRowInput';
 import { FieldErrorMessage } from './FieldErrorMessage';
 

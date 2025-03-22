@@ -33,17 +33,26 @@ export default class PluginDiGenerator extends FileGenerator {
 
     const renderer = new HandlebarsTemplateRenderer();
 
-    const pluginXml = await renderer.render('xml/plugin', {
+    const pluginXml = await renderer.render('xml/di/plugin', {
       pluginName: this.data.name,
       pluginType: pluginType.toString(),
       sortOrder: this.data.sortOrder,
-      subjectNamespace,
     });
+
+    const diType = await renderer.render(
+      'xml/di/type',
+      {
+        subjectNamespace,
+      },
+      {
+        typeContent: pluginXml,
+      }
+    );
 
     const newDiXml =
       diXml.slice(0, insertPosition) +
       '\n' +
-      indentString(pluginXml, 4) +
+      indentString(diType, 4) +
       '\n' +
       diXml.slice(insertPosition);
 

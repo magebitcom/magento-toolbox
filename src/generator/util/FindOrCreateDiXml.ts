@@ -1,7 +1,7 @@
 import { Uri } from 'vscode';
 import FileSystem from 'util/FileSystem';
 import FileHeader from 'common/xml/FileHeader';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import Magento from 'util/Magento';
 import HandlebarsTemplateRenderer from '../HandlebarsTemplateRenderer';
 
