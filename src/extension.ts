@@ -13,6 +13,7 @@ import Magento from 'util/Magento';
 import { WorkspaceFolder } from 'vscode';
 import Logger from 'util/Logger';
 import { Command } from 'command/Command';
+import { XmlSnippetProvider } from 'completion/XmlSnippetProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -101,6 +102,14 @@ export async function activate(context: vscode.ExtensionContext) {
   // hover providers
   context.subscriptions.push(
     vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider())
+  );
+
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      'xml',
+      new XmlSnippetProvider(),
+      ...XmlSnippetProvider.TRIGGER_CHARACTERS
+    )
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);

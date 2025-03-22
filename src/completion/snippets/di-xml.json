@@ -1,0 +1,30 @@
+{
+  "Insert a preference element": {
+    "prefix": "preference",
+    "body": [
+      "<preference for=\"${1:ClassName}\" type=\"${2:ClassName}\" />"
+    ],
+    "description": "Insert a preference element to the current file"
+  },
+  "Insert a type element": {
+    "prefix": "type",
+    "body": [
+      "<type name=\"${1:ClassName}\">\n</type>"
+    ],
+    "description": "Insert a type element to the current file"
+  },
+  "Insert a arguments element": {
+    "prefix": "arguments",
+    "body": [
+      "<arguments>\n</arguments>"
+    ],
+    "description": "Insert an arguments element to the current file"
+  },
+  "Insert a argument element": {
+    "prefix": "argument",
+    "body": [
+      "<argument name=\"${1:Name}\" xsi:type=\"${2:Type}\">${3:Value}</argument>"
+    ],
+    "description": "Insert an argument element to the current file"
+  }
+}
