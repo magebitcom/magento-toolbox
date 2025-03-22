@@ -4,6 +4,7 @@ import FileHeader from 'common/xml/FileHeader';
 import { MagentoScope } from 'types/global';
 import Magento from 'util/Magento';
 import HandlebarsTemplateRenderer from '../HandlebarsTemplateRenderer';
+import { TemplatePath } from 'types/handlebars';
 
 export default class FindOrCreateDiXml {
   public static async execute(
@@ -23,7 +24,7 @@ export default class FindOrCreateDiXml {
 
     const renderer = new HandlebarsTemplateRenderer();
 
-    return await renderer.render('xml/blank-di', {
+    return await renderer.render(TemplatePath.XmlBlankDi, {
       fileHeader,
     });
   }

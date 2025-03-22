@@ -1,6 +1,7 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateViewXmlFile extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -21,7 +22,7 @@ export default class GenerateViewXmlFile extends SimpleTemplateGeneratorCommand 
     return `app/code/${vendor}/${module}/etc/view.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-view';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankView;
   }
 }

@@ -1,5 +1,6 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateGraphqlSchemaFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -16,7 +17,7 @@ export default class GenerateGraphqlSchemaFileCommand extends SimpleTemplateGene
     return `app/code/${vendor}/${module}/etc/schema.graphqls`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'graphql/blank-schema';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.GraphqlBlankSchema;
   }
 }
