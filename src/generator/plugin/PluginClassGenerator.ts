@@ -89,9 +89,22 @@ export default class PluginClassGenerator extends FileGenerator {
       return type;
     }
 
-    const namespace = this.subjectClass.namespace;
-    const typeName = type.startsWith('\\') ? type.slice(1) : type;
+    if (type.startsWith('\\')) {
+      return type;
+    }
 
-    return `${namespace}\\${typeName}`;
+    if (type === this.subjectClass.name) {
+      return `${this.subjectClass.namespace}\\${type}`;
+    }
+
+    const useItems = this.subjectClass.parent.useItems;
+
+    for (const useItem of useItems) {
+      if (useItem.name === type) {
+        return useItem.fullName;
+      }
+    }
+
+    return type;
   }
 }
