@@ -4,6 +4,7 @@ import { MagentoScope } from 'types/global';
 import FileHeader from 'common/xml/FileHeader';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardField, WizardValidationRule } from 'types/webview';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateRoutesXmlFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -28,8 +29,8 @@ export default class GenerateRoutesXmlFileCommand extends SimpleTemplateGenerato
     return `app/code/${vendor}/${module}/etc/${data.area}/routes.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-routes';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankRoutes;
   }
 
   getWizardFields(): WizardField[] {
@@ -85,7 +86,7 @@ export default class GenerateRoutesXmlFileCommand extends SimpleTemplateGenerato
     };
   }
 
-  getTemplateData(data: TemplateWizardData): Record<string, string> {
+  getTemplateData(data: TemplateWizardData): Record<string, any> {
     return {
       ...data,
       routerId: data.frontendRouterId || data.adminRouterId || 'default',

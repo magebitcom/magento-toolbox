@@ -1,6 +1,7 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GeneratePageTypesXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -21,7 +22,7 @@ export default class GeneratePageTypesXmlCommand extends SimpleTemplateGenerator
     return `app/code/${vendor}/${module}/etc/frontend/page_types.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-page-types';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankPageTypes;
   }
 }

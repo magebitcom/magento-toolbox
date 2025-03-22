@@ -1,6 +1,7 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateExtensionAttributesXmlFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -21,7 +22,7 @@ export default class GenerateExtensionAttributesXmlFileCommand extends SimpleTem
     return `app/code/${vendor}/${module}/etc/extension_attributes.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-extension-attributes';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankExtensionAttributes;
   }
 }

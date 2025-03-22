@@ -2,6 +2,7 @@ import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import { MagentoScope } from 'types/global';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateEventsXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -38,7 +39,7 @@ export default class GenerateEventsXmlCommand extends SimpleTemplateGeneratorCom
     return `app/code/${vendor}/${module}/etc/events.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-events';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankEvents;
   }
 }

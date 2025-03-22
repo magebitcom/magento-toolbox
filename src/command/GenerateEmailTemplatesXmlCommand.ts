@@ -1,6 +1,7 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateEmailTemplatesXmlCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -21,7 +22,7 @@ export default class GenerateEmailTemplatesXmlCommand extends SimpleTemplateGene
     return `app/code/${vendor}/${module}/etc/email_templates.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-email-templates';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankEmailTemplates;
   }
 }
