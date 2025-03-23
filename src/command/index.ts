@@ -5,6 +5,7 @@ export { default as CopyMagentoPathCommand } from './CopyMagentoPathCommand';
 export { default as GenerateXmlCatalogCommand } from './GenerateXmlCatalogCommand';
 export { default as GenerateObserverCommand } from './GenerateObserverCommand';
 export { default as GenerateBlockCommand } from './GenerateBlockCommand';
+export { default as GenerateViewModelCommand } from './GenerateViewModelCommand';
 export { default as GenerateEventsXmlCommand } from './GenerateEventsXmlCommand';
 export { default as GenerateGraphqlSchemaFileCommand } from './GenerateGraphqlSchemaFile';
 export { default as GenerateRoutesXmlFileCommand } from './GenerateRoutesXmlFileCommand';

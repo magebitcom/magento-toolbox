@@ -66,6 +66,11 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateViewModel",
+        "title": "Generate ViewModel",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.indexWorkspace",
         "title": "Index Workspace",
         "category": "Magento Toolbox"
@@ -242,6 +247,10 @@
         },
         {
           "command": "magento-toolbox.generateBlock",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateViewModel",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
