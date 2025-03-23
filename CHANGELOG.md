@@ -4,6 +4,9 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+- Added: Generator command for a ViewModel class
+
 ## [1.3.1] - 2025-03-23
 - Fixed: Generated plugin class arguments contain an incorrect namespace
 
