@@ -10,7 +10,6 @@ import path from 'path';
 import MarkdownMessageBuilder from 'common/MarkdownMessageBuilder';
 import PhpNamespace from 'common/PhpNamespace';
 import TextDocumentDecorationProvider from './TextDocumentDecorationProvider';
-import PhpParser from 'parser/php/Parser';
 import Position from 'util/Position';
 import PluginSubjectInfo from 'common/php/PluginSubjectInfo';
 import PluginInfo from 'common/php/PluginInfo';
@@ -18,12 +17,12 @@ import Magento from 'util/Magento';
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import { PhpClass } from 'parser/php/PhpClass';
 import { PhpInterface } from 'parser/php/PhpInterface';
+import { PhpMethod } from 'parser/php/PhpMethod';
 import IndexManager from 'indexer/IndexManager';
 import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
 import { AutoloadNamespaceIndexData } from 'indexer/autoload-namespace/AutoloadNamespaceIndexData';
 import { DiPlugin } from 'indexer/di/types';
 import PhpDocumentParser from 'common/php/PhpDocumentParser';
-import Common from 'util/Common';
 
 export default class PluginClassDecorationProvider extends TextDocumentDecorationProvider {
   public getType(): TextEditorDecorationType {
@@ -74,55 +73,57 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
       hoverMessage,
     });
 
-    const promises = classPlugins.map(async plugin => {
+    const methodPlugins: Record<string, { plugin: DiPlugin; subjectMethod: PhpMethod }[]> = {};
+
+    for (const plugin of classPlugins) {
       const fileUri = await namespaceIndexData.findClassByNamespace(
         PhpNamespace.fromString(plugin.type)
       );
 
       if (!fileUri) {
-        return;
+        continue;
       }
 
       const pluginPhpFile = await PhpDocumentParser.parseUri(this.document, fileUri);
       const pluginInfo = new PluginInfo(pluginPhpFile);
       const pluginMethods = pluginInfo.getPluginMethods(pluginPhpFile.classes[0]);
 
-      return pluginMethods.map(method => {
+      for (const method of pluginMethods) {
         const subjectMethodName = Magento.pluginMethodToMethodName(method.name);
-
-        if (!subjectMethodName) {
-          return;
-        }
-
         const subjectMethod = classlikeInfo.getMethodByName(classLikeNode, subjectMethodName);
 
         if (!subjectMethod) {
-          return;
+          continue;
         }
 
-        if (typeof subjectMethod.ast.name === 'string' || !subjectMethod.ast.name.loc) {
-          return;
-        }
+        methodPlugins[subjectMethod.name] = methodPlugins[subjectMethod.name] || [];
+        methodPlugins[subjectMethod.name].push({
+          plugin,
+          subjectMethod,
+        });
+      }
+    }
 
-        const range = new Range(
-          Position.phpAstPositionToVsCodePosition(subjectMethod.ast.name.loc.start),
-          Position.phpAstPositionToVsCodePosition(subjectMethod.ast.name.loc.end)
-        );
+    for (const [, plugins] of Object.entries(methodPlugins)) {
+      const hoverMessage = await this.getInterceptorHoverMessage(
+        plugins.map(p => p.plugin),
+        namespaceIndexData
+      );
+      const subjectMethod = plugins[0].subjectMethod;
 
-        const message = MarkdownMessageBuilder.create('Interceptors');
-        const link = `[${plugin.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})`;
-        message.appendMarkdown(`- ${link} [(di.xml)](${Uri.file(plugin.diPath)})\n`);
+      if (typeof subjectMethod.ast.name === 'string' || !subjectMethod.ast.name.loc) {
+        continue;
+      }
+      const range = new Range(
+        Position.phpAstPositionToVsCodePosition(subjectMethod.ast.name.loc.start),
+        Position.phpAstPositionToVsCodePosition(subjectMethod.ast.name.loc.end)
+      );
 
-        return {
-          range,
-          hoverMessage: message.build(),
-        };
+      decorations.push({
+        range,
+        hoverMessage,
       });
-    });
-
-    const pluginMethodsDecorations = await Promise.all(promises);
-
-    decorations.push(...(pluginMethodsDecorations.flat().filter(Boolean) as DecorationOptions[]));
+    }
 
     return decorations;
   }
@@ -138,9 +139,8 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
         PhpNamespace.fromString(interceptor.type)
       );
 
-      message.appendMarkdown(
-        `- [${interceptor.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})\n`
-      );
+      const link = `[${interceptor.type}](${fileUri ? Uri.file(fileUri.fsPath) : '#'})`;
+      message.appendMarkdown(`- ${link} [(di.xml)](${Uri.file(interceptor.diPath)})\n`);
     }
 
     return message.build();

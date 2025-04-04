@@ -9,7 +9,7 @@ export default class Magento {
     return /^around|^before|^after/.test(method);
   }
 
-  public static pluginMethodToMethodName(method: string): string | undefined {
+  public static pluginMethodToMethodName(method: string): string {
     return lowerFirst(method.replace(/^around|^before|^after/, ''));
   }
 
