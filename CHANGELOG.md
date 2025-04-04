@@ -4,7 +4,7 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.4.0] - 2025-04-04
 - Added: Generator command for a ViewModel class
 - Added: Generator command for data patches
 - Added: Generator command for cron jobs
