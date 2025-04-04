@@ -26,5 +26,6 @@ export { default as GenerateWidgetXmlFileCommand } from './GenerateWidgetXmlFile
 export { default as GenerateExtensionAttributesXmlFileCommand } from './GenerateExtensionAttributesXmlFileCommand';
 export { default as GenerateSystemXmlFileCommand } from './GenerateSystemXmlFileCommand';
 export { default as GenerateConfigXmlFileCommand } from './GenerateConfigXmlFileCommand';
-export { default as JumpToModuleCommand } from './JumpToModuleCommand';
 export { default as GenerateDataPatchCommand } from './GenerateDataPatchCommand';
+export { default as GenerateCronJobCommand } from './GenerateCronJobCommand';
+export { default as JumpToModuleCommand } from './JumpToModuleCommand';

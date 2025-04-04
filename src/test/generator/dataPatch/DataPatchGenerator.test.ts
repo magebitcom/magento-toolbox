@@ -42,7 +42,7 @@ describe('DataPatchGenerator Tests', () => {
     const generatedFile = await generator.generate(workspaceUri);
 
     // Get the reference file content
-    const referenceContent = getReferenceFile('generator/dataPatch/patch.php');
+    const referenceContent = getReferenceFile('generator/dataPatch/TestDataPatch.php');
 
     // Compare the generated content with reference
     assert.strictEqual(generatedFile.content, referenceContent);
@@ -62,7 +62,7 @@ describe('DataPatchGenerator Tests', () => {
     const generatedFile = await generator.generate(workspaceUri);
 
     // Get the reference file content
-    const referenceContent = getReferenceFile('generator/dataPatch/patchRevertable.php');
+    const referenceContent = getReferenceFile('generator/dataPatch/TestDataPatchRevertable.php');
 
     // Compare the generated content with reference
     assert.strictEqual(generatedFile.content, referenceContent);
