@@ -27,3 +27,4 @@ export { default as GenerateExtensionAttributesXmlFileCommand } from './Generate
 export { default as GenerateSystemXmlFileCommand } from './GenerateSystemXmlFileCommand';
 export { default as GenerateConfigXmlFileCommand } from './GenerateConfigXmlFileCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';
+export { default as GenerateDataPatchCommand } from './GenerateDataPatchCommand';

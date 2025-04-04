@@ -196,6 +196,11 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateDataPatch",
+        "title": "Generate Data Patch",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -327,6 +332,10 @@
         },
         {
           "command": "magento-toolbox.generateConfigXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateDataPatch",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
