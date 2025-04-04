@@ -6,6 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 - Added: Generator command for a ViewModel class
+- Fixed: Method plugin hover messages are now grouped and include a link to di.xml
 
 ## [1.3.1] - 2025-03-23
 - Fixed: Generated plugin class arguments contain an incorrect namespace
