@@ -28,6 +28,8 @@ export enum TemplatePath {
   XmlBlankWidget = 'xml/blank-widget',
   XmlEventsObserver = 'xml/events/observer',
   XmlEventsEvent = 'xml/events/event',
+  XmlCronJob = 'xml/cron/job',
+  XmlCronGroup = 'xml/cron/group',
 }
 
 /**
@@ -103,6 +105,22 @@ export interface PreferenceParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for cron job templates
+ */
+export interface CronJobParams extends BaseTemplateParams {
+  jobName: string;
+  jobInstance: string;
+  cronSchedule: string;
+}
+
+/**
+ * Parameters for cron group templates
+ */
+export interface CronGroupParams extends BaseTemplateParams {
+  groupId: string;
+}
+
+/**
  * Template parameters mapped by template path
  */
 export interface TemplateParams {
@@ -117,6 +135,8 @@ export interface TemplateParams {
   [TemplatePath.XmlDiType]: DiTypeParams;
   [TemplatePath.XmlDiPlugin]: DiPluginParams;
   [TemplatePath.XmlDiPreference]: PreferenceParams;
+  [TemplatePath.XmlCronJob]: CronJobParams;
+  [TemplatePath.XmlCronGroup]: CronGroupParams;
   [key: string]: BaseTemplateParams;
 }
 
@@ -143,10 +163,18 @@ export interface DiTypeTemplatePartials extends BaseTemplatePartials {
 }
 
 /**
+ * Partials for cron group templates
+ */
+export interface CronGroupTemplatePartials extends BaseTemplatePartials {
+  groupContent: string;
+}
+
+/**
  * Template partials mapped by template path
  */
 export interface TemplatePartials {
   [TemplatePath.XmlEventsEvent]: EventTemplatePartials;
   [TemplatePath.XmlDiType]: DiTypeTemplatePartials;
+  [TemplatePath.XmlCronGroup]: CronGroupTemplatePartials;
   [key: string]: BaseTemplatePartials;
 }

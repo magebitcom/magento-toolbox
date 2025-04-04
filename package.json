@@ -201,6 +201,11 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateCronJob",
+        "title": "Generate Cron Job",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -336,6 +341,10 @@
         },
         {
           "command": "magento-toolbox.generateDataPatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCronJob",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
