@@ -13,6 +13,7 @@ import Magento from 'util/Magento';
 import { WorkspaceFolder } from 'vscode';
 import Logger from 'util/Logger';
 import { Command } from 'command/Command';
+import { XmlModuleDefinitionProvider } from 'definition/XmlModuleDefinitionProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -90,7 +91,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // definition providers
   context.subscriptions.push(
-    vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider())
+    vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider()),
+    vscode.languages.registerDefinitionProvider('xml', new XmlModuleDefinitionProvider())
   );
 
   // codelens providers

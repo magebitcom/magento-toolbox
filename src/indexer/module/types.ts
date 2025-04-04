@@ -3,5 +3,6 @@ export interface Module {
   version?: string;
   sequence: string[];
   path: string;
+  moduleXmlPath: string;
   location: 'vendor' | 'app';
 }
