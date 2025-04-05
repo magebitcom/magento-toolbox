@@ -4,6 +4,7 @@ import { get } from 'lodash-es';
 import { Module } from './types';
 import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
+import { IndexerKey } from 'types/indexer';
 
 export default class ModuleIndexer extends Indexer<Module> {
   public static readonly KEY = 'module';
@@ -22,7 +23,7 @@ export default class ModuleIndexer extends Indexer<Module> {
     });
   }
 
-  public getId(): string {
+  public getId(): IndexerKey {
     return ModuleIndexer.KEY;
   }
 

@@ -4,6 +4,7 @@ import { get } from 'lodash-es';
 import FileSystem from 'util/FileSystem';
 import { DiData, DiPlugin, DiPreference, DiType, DiVirtualType } from './types';
 import { Indexer } from 'indexer/Indexer';
+import { IndexerKey } from 'types/indexer';
 
 export default class DiIndexer extends Indexer<DiData> {
   public static readonly KEY = 'di';
@@ -29,7 +30,7 @@ export default class DiIndexer extends Indexer<DiData> {
     });
   }
 
-  public getId(): string {
+  public getId(): IndexerKey {
     return DiIndexer.KEY;
   }
 

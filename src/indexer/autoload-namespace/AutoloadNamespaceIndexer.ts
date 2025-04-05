@@ -2,11 +2,12 @@ import { RelativePattern, Uri } from 'vscode';
 import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
 import { Namespace } from './types';
+import { IndexerKey } from 'types/indexer';
 
 export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
   public static readonly KEY = 'autoloadNamespace';
 
-  public getId(): string {
+  public getId(): IndexerKey {
     return AutoloadNamespaceIndexer.KEY;
   }
 
