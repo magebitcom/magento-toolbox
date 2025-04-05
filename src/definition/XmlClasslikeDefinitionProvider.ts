@@ -1,3 +1,4 @@
+import Config from 'common/Config';
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import PhpDocumentParser from 'common/php/PhpDocumentParser';
 import PhpNamespace from 'common/PhpNamespace';
@@ -19,6 +20,12 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
     position: Position,
     token: CancellationToken
   ) {
+    const provideXmlDefinitions = Config.get<boolean>('provideXmlDefinitions');
+
+    if (!provideXmlDefinitions) {
+      return null;
+    }
+
     const range = document.getWordRangeAtPosition(position, /("[^"]+")|(>[^<]+<)/);
 
     if (!range) {
@@ -33,9 +40,14 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       return null;
     }
 
-    const potentialNamespace = word.replace(/["<>]/g, '');
+    // also handle constants
+    const potentialNamespace = word.replace(/["<>]/g, '').split(':').shift();
 
-    const classUri = await namespaceIndexData.findClassByNamespace(
+    if (!potentialNamespace) {
+      return null;
+    }
+
+    const classUri = await namespaceIndexData.findUriByNamespace(
       PhpNamespace.fromString(potentialNamespace)
     );
 

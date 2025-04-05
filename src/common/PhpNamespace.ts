@@ -17,8 +17,20 @@ export default class PhpNamespace {
     return new PhpNamespace(parts);
   }
 
+  public pop(): string {
+    return this.parts.pop() as string;
+  }
+
   public getParts(): string[] {
     return this.parts;
+  }
+
+  public getHead(): string {
+    return this.parts[0];
+  }
+
+  public getTail(): string {
+    return this.parts[this.parts.length - 1];
   }
 
   public toString(): string {

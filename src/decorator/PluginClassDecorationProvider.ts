@@ -76,7 +76,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     const methodPlugins: Record<string, { plugin: DiPlugin; subjectMethod: PhpMethod }[]> = {};
 
     for (const plugin of classPlugins) {
-      const fileUri = await namespaceIndexData.findClassByNamespace(
+      const fileUri = await namespaceIndexData.findUriByNamespace(
         PhpNamespace.fromString(plugin.type)
       );
 
@@ -135,7 +135,7 @@ export default class PluginClassDecorationProvider extends TextDocumentDecoratio
     const message = MarkdownMessageBuilder.create('Interceptors');
 
     for (const interceptor of classInterceptors) {
-      const fileUri = await namespaceIndexData.findClassByNamespace(
+      const fileUri = await namespaceIndexData.findUriByNamespace(
         PhpNamespace.fromString(interceptor.type)
       );
 

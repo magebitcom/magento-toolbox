@@ -12,8 +12,19 @@
     "type": "git",
     "url": "https://github.com/magebitcom/magento-toolbox.git"
   },
+  "homepage": "https://github.com/magebitcom/magento-toolbox",
+  "bugs": {
+    "url": "https://github.com/magebitcom/magento-toolbox/issues"
+  },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "magento",
+    "adobe commerce",
+    "code completion",
+    "code generation",
+    "intellisense"
   ],
   "activationEvents": [
     "workspaceContains:**/app/etc/env.php",
@@ -41,6 +52,21 @@
           "editPresentation": "multilineText",
           "default": "",
           "markdownDescription": "`%module%` will be replaced with the module name. \n\n **Do not add comment symbols like `<!--` or `-->`, they will be added automatically.**"
+        },
+        "magento-toolbox.provideXmlCompletions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable autocomplete for Magento 2 XML files."
+        },
+        "magento-toolbox.provideXmlDefinitions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable definitions for Magento 2 XML files."
+        },
+        "magento-toolbox.provideXmlHovers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover decorations for Magento 2 XML files."
         }
       }
     },
