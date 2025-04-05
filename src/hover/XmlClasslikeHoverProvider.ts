@@ -1,3 +1,4 @@
+import Config from 'common/Config';
 import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import PhpDocumentParser from 'common/php/PhpDocumentParser';
 import PhpNamespace from 'common/PhpNamespace';
@@ -7,6 +8,12 @@ import { Hover, HoverProvider, Position, Range, TextDocument } from 'vscode';
 
 export default class XmlClasslikeHoverProvider implements HoverProvider {
   public async provideHover(document: TextDocument, position: Position): Promise<Hover | null> {
+    const provideXmlHovers = Config.get<boolean>('provideXmlHovers');
+
+    if (!provideXmlHovers) {
+      return null;
+    }
+
     const range = document.getWordRangeAtPosition(position, /("[^"]+")|(>[^<]+<)/);
 
     if (!range) {
@@ -21,9 +28,13 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
       return null;
     }
 
-    const potentialNamespace = word.replace(/["<>]/g, '');
+    const potentialNamespace = word.replace(/["<>]/g, '').split(':').shift();
 
-    const classUri = await namespaceIndexData.findClassByNamespace(
+    if (!potentialNamespace) {
+      return null;
+    }
+
+    const classUri = await namespaceIndexData.findUriByNamespace(
       PhpNamespace.fromString(potentialNamespace)
     );
 

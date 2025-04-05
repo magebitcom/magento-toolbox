@@ -18,17 +18,21 @@ class XmlDocumentParser {
     this.parser = new PhpParser();
   }
 
-  public async parse(document: TextDocument): Promise<TokenData> {
+  public async parse(document: TextDocument, skipCache = false): Promise<TokenData> {
     const cacheKey = `xml-file`;
 
-    if (DocumentCache.has(document, cacheKey)) {
+    if (!skipCache && DocumentCache.has(document, cacheKey)) {
       return DocumentCache.get(document, cacheKey);
     }
 
     const { cst, tokenVector } = parse(document.getText());
     const ast = buildAst(cst as DocumentCstNode, tokenVector);
     const tokenData: TokenData = { cst: cst as DocumentCstNode, tokenVector, ast };
-    DocumentCache.set(document, cacheKey, tokenData);
+
+    if (!skipCache) {
+      DocumentCache.set(document, cacheKey, tokenData);
+    }
+
     return tokenData;
   }
 }

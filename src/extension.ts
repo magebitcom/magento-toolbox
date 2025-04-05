@@ -14,6 +14,7 @@ import { WorkspaceFolder } from 'vscode';
 import Logger from 'util/Logger';
 import { Command } from 'command/Command';
 import { XmlModuleDefinitionProvider } from 'definition/XmlModuleDefinitionProvider';
+import { XmlCompletionProvider } from 'completion/XmlCompletionProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -98,6 +99,15 @@ export async function activate(context: vscode.ExtensionContext) {
   // codelens providers
   context.subscriptions.push(
     vscode.languages.registerCodeLensProvider('php', new ObserverCodelensProvider())
+  );
+
+  // completion providers
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      { language: 'xml', scheme: 'file' },
+      new XmlCompletionProvider(),
+      ...'\\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    )
   );
 
   // hover providers

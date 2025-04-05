@@ -8,6 +8,7 @@ import {
 } from 'vscode';
 import { getSuggestions, SuggestionProviders } from '@xml-tools/content-assist';
 import XmlDocumentParser from 'common/xml/XmlDocumentParser';
+import Config from 'common/Config';
 
 export abstract class XmlDefinitionProvider implements DefinitionProvider {
   public abstract getFilePatterns(): string[];
@@ -36,6 +37,12 @@ export abstract class XmlDefinitionProvider implements DefinitionProvider {
   }
 
   private canProvideDefinition(document: TextDocument): boolean {
+    const provideXmlDefinitions = Config.get<boolean>('provideXmlDefinitions');
+
+    if (!provideXmlDefinitions) {
+      return false;
+    }
+
     return this.getFilePatterns().some(pattern =>
       minimatch(document.uri.fsPath, pattern, { matchBase: true })
     );

@@ -19,6 +19,10 @@ export class ModuleIndexData extends AbstractIndexData<Module> {
     );
   }
 
+  public getModulesByPrefix(prefix: string): Module[] {
+    return this.getValues().filter(module => module.name.startsWith(prefix));
+  }
+
   public getModuleByUri(uri: Uri, appOnly = true): Module | undefined {
     const module = this.getValues().find(module => {
       return uri.fsPath.startsWith(module.path) && (!appOnly || module.location === 'app');
