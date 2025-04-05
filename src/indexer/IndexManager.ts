@@ -13,6 +13,7 @@ import { ModuleIndexData } from './module/ModuleIndexData';
 import { AutoloadNamespaceIndexData } from './autoload-namespace/AutoloadNamespaceIndexData';
 import { EventsIndexData } from './events/EventsIndexData';
 import Logger from 'util/Logger';
+import { IndexerKey } from 'types/indexer';
 
 type IndexerInstance = DiIndexer | ModuleIndexer | AutoloadNamespaceIndexer | EventsIndexer;
 
@@ -121,7 +122,7 @@ class IndexManager {
   }
 
   public getIndexStorageData<T = any>(
-    id: string,
+    id: IndexerKey,
     workspaceFolder?: WorkspaceFolder
   ): Map<string, T> | undefined {
     const wf = workspaceFolder || Common.getActiveWorkspaceFolder();

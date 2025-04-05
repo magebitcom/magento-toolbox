@@ -3,6 +3,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
 import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
+import { IndexerKey } from 'types/indexer';
 
 export default class EventsIndexer extends Indexer<Event[]> {
   public static readonly KEY = 'events';
@@ -21,7 +22,7 @@ export default class EventsIndexer extends Indexer<Event[]> {
     });
   }
 
-  public getId(): string {
+  public getId(): IndexerKey {
     return EventsIndexer.KEY;
   }
 
