@@ -22,6 +22,10 @@ export default class EventsIndexer extends Indexer<Event[]> {
     });
   }
 
+  public getVersion(): number {
+    return 1;
+  }
+
   public getId(): IndexerKey {
     return EventsIndexer.KEY;
   }

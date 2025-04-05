@@ -7,6 +7,10 @@ import { IndexerKey } from 'types/indexer';
 export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
   public static readonly KEY = 'autoloadNamespace';
 
+  public getVersion(): number {
+    return 1;
+  }
+
   public getId(): IndexerKey {
     return AutoloadNamespaceIndexer.KEY;
   }

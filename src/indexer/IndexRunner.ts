@@ -14,7 +14,7 @@ class IndexRunner {
           title: '[Magento Toolbox]',
         },
         async progress => {
-          await IndexManager.indexWorkspace(workspaceFolder, progress);
+          await IndexManager.indexWorkspace(workspaceFolder, progress, force);
         }
       );
     }
