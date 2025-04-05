@@ -14,14 +14,22 @@ import { AutoloadNamespaceIndexData } from './autoload-namespace/AutoloadNamespa
 import { EventsIndexData } from './events/EventsIndexData';
 import Logger from 'util/Logger';
 import { IndexerKey } from 'types/indexer';
+import AclIndexer from './acl/AclIndexer';
+import { AclIndexData } from './acl/AclIndexData';
 
-type IndexerInstance = DiIndexer | ModuleIndexer | AutoloadNamespaceIndexer | EventsIndexer;
+type IndexerInstance =
+  | DiIndexer
+  | ModuleIndexer
+  | AutoloadNamespaceIndexer
+  | EventsIndexer
+  | AclIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
   [ModuleIndexer.KEY]: ModuleIndexData;
   [AutoloadNamespaceIndexer.KEY]: AutoloadNamespaceIndexData;
   [EventsIndexer.KEY]: EventsIndexData;
+  [AclIndexer.KEY]: AclIndexData;
 };
 
 class IndexManager {
@@ -34,6 +42,7 @@ class IndexManager {
       new ModuleIndexer(),
       new AutoloadNamespaceIndexer(),
       new EventsIndexer(),
+      new AclIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -148,23 +157,25 @@ class IndexManager {
       return undefined;
     }
 
-    if (id === DiIndexer.KEY) {
-      return new DiIndexData(data) as IndexerDataMap[T];
-    }
+    switch (id) {
+      case DiIndexer.KEY:
+        return new DiIndexData(data) as IndexerDataMap[T];
 
-    if (id === ModuleIndexer.KEY) {
-      return new ModuleIndexData(data) as IndexerDataMap[T];
-    }
+      case ModuleIndexer.KEY:
+        return new ModuleIndexData(data) as IndexerDataMap[T];
 
-    if (id === AutoloadNamespaceIndexer.KEY) {
-      return new AutoloadNamespaceIndexData(data) as IndexerDataMap[T];
-    }
+      case AutoloadNamespaceIndexer.KEY:
+        return new AutoloadNamespaceIndexData(data) as IndexerDataMap[T];
 
-    if (id === EventsIndexer.KEY) {
-      return new EventsIndexData(data) as IndexerDataMap[T];
-    }
+      case EventsIndexer.KEY:
+        return new EventsIndexData(data) as IndexerDataMap[T];
 
-    return undefined;
+      case AclIndexer.KEY:
+        return new AclIndexData(data) as IndexerDataMap[T];
+
+      default:
+        return undefined;
+    }
   }
 
   protected async indexFileInner(
