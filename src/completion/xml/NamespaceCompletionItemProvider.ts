@@ -12,8 +12,8 @@ interface AttributeValueMatch {
 
 interface ElementContentMatch {
   element?: string;
-  attributeName: string;
-  attributeValue: string;
+  attributeName?: string;
+  attributeValue?: string;
 }
 
 export class NamespaceCompletionItemProvider extends XmlCompletionItemProvider {
@@ -52,12 +52,33 @@ export class NamespaceCompletionItemProvider extends XmlCompletionItemProvider {
       element: 'extension_attributes',
       attributeName: 'for',
     },
+    {
+      element: 'consumer',
+      attributeName: 'handler',
+    },
+    {
+      element: 'queue',
+      attributeName: 'handler',
+    },
+    {
+      element: 'handler',
+      attributeName: 'type',
+    },
   ];
 
   private static readonly ELEMENT_CONTENT_MATCHERS: ElementContentMatch[] = [
     {
       attributeName: 'xsi:type',
       attributeValue: 'object',
+    },
+    {
+      element: 'backend_model',
+    },
+    {
+      element: 'frontend_model',
+    },
+    {
+      element: 'source_model',
     },
   ];
 
@@ -101,11 +122,15 @@ export class NamespaceCompletionItemProvider extends XmlCompletionItemProvider {
         return false;
       }
 
-      return element.attributes.some(
-        attribute =>
-          attribute.key === matchElement.attributeName &&
-          attribute.value === matchElement.attributeValue
-      );
+      if (matchElement.attributeName && matchElement.attributeValue) {
+        return element.attributes.some(
+          attribute =>
+            attribute.key === matchElement.attributeName &&
+            attribute.value === matchElement.attributeValue
+        );
+      }
+
+      return true;
     });
 
     if (!match) {
