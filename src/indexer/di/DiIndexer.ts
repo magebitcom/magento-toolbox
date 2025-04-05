@@ -30,6 +30,10 @@ export default class DiIndexer extends Indexer<DiData> {
     });
   }
 
+  public getVersion(): number {
+    return 1;
+  }
+
   public getId(): IndexerKey {
     return DiIndexer.KEY;
   }

@@ -7,6 +7,6 @@ export default class IndexWorkspaceCommand extends Command {
   }
 
   public async execute(...args: any[]): Promise<void> {
-    await IndexRunner.indexWorkspace();
+    await IndexRunner.indexWorkspace(true);
   }
 }

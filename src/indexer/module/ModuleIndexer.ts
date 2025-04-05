@@ -23,6 +23,10 @@ export default class ModuleIndexer extends Indexer<Module> {
     });
   }
 
+  public getVersion(): number {
+    return 1;
+  }
+
   public getId(): IndexerKey {
     return ModuleIndexer.KEY;
   }

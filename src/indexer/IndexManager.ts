@@ -56,7 +56,10 @@ class IndexManager {
     Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
-      if (!force && !this.shouldIndex(indexer)) {
+      this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+
+      if (!force && !this.shouldIndex(workspaceFolder, indexer)) {
+        Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
         continue;
       }
       progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
@@ -88,6 +91,7 @@ class IndexManager {
       );
 
       this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
+      this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       clear([indexer.getId()]);
 
@@ -183,8 +187,8 @@ class IndexManager {
     clear([indexer.getId()]);
   }
 
-  protected shouldIndex(index: IndexerInstance): boolean {
-    return true;
+  protected shouldIndex(workspaceFolder: WorkspaceFolder, index: IndexerInstance): boolean {
+    return !this.indexStorage.hasIndex(workspaceFolder, index.getId());
   }
 }
 
