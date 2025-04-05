@@ -4,6 +4,12 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+- Added: Class namespace autocomplete in XML files
+- Added: Module name autocomplete in module.xml files
+- Added: Added extension config fields for enabling/disabling completions, definitions and hovers
+- Changed: Adjusted namespace indexer logic
+
 ## [1.4.0] - 2025-04-04
 - Added: Generator command for a ViewModel class
 - Added: Generator command for data patches
