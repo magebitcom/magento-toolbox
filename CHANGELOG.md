@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added: Class namespace autocomplete in XML files
 - Added: Module name autocomplete in module.xml files
 - Added: Added extension config fields for enabling/disabling completions, definitions and hovers
+- Added: Index data persistance
 - Changed: Adjusted namespace indexer logic
 
 ## [1.4.0] - 2025-04-04
