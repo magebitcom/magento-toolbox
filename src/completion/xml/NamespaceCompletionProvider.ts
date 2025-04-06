@@ -55,10 +55,19 @@ export class NamespaceCompletionProvider extends XmlSuggestionProvider<Completio
       return [];
     }
 
+    const startsWithBackslash = value.startsWith('\\');
+
+    if (startsWithBackslash) {
+      value = value.replace(/^\\/, '');
+    }
+
     const completions = namespaceIndexData.findNamespacesByPrefix(value);
 
     return completions.map(namespace => {
-      const item = new CompletionItem(namespace.fqn, CompletionItemKind.Value);
+      const item = new CompletionItem(
+        startsWithBackslash ? `\\${namespace.fqn}` : namespace.fqn,
+        CompletionItemKind.Value
+      );
       item.range = range;
       return item;
     });
