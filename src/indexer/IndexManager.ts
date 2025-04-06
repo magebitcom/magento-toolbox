@@ -16,13 +16,16 @@ import Logger from 'util/Logger';
 import { IndexerKey } from 'types/indexer';
 import AclIndexer from './acl/AclIndexer';
 import { AclIndexData } from './acl/AclIndexData';
+import TemplateIndexer from './template/TemplateIndexer';
+import { TemplateIndexData } from './template/TemplateIndexData';
 
 type IndexerInstance =
   | DiIndexer
   | ModuleIndexer
   | AutoloadNamespaceIndexer
   | EventsIndexer
-  | AclIndexer;
+  | AclIndexer
+  | TemplateIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
@@ -30,6 +33,7 @@ type IndexerDataMap = {
   [AutoloadNamespaceIndexer.KEY]: AutoloadNamespaceIndexData;
   [EventsIndexer.KEY]: EventsIndexData;
   [AclIndexer.KEY]: AclIndexData;
+  [TemplateIndexer.KEY]: TemplateIndexData;
 };
 
 class IndexManager {
@@ -43,6 +47,7 @@ class IndexManager {
       new AutoloadNamespaceIndexer(),
       new EventsIndexer(),
       new AclIndexer(),
+      new TemplateIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -172,6 +177,9 @@ class IndexManager {
 
       case AclIndexer.KEY:
         return new AclIndexData(data) as IndexerDataMap[T];
+
+      case TemplateIndexer.KEY:
+        return new TemplateIndexData(data) as IndexerDataMap[T];
 
       default:
         return undefined;
