@@ -58,7 +58,9 @@ export class NamespaceCompletionProvider extends XmlSuggestionProvider<Completio
     const completions = namespaceIndexData.findNamespacesByPrefix(value);
 
     return completions.map(namespace => {
-      return new CompletionItem(namespace.fqn, CompletionItemKind.Value);
+      const item = new CompletionItem(namespace.fqn, CompletionItemKind.Value);
+      item.range = range;
+      return item;
     });
   }
 }
