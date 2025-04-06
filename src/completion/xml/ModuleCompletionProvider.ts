@@ -40,7 +40,9 @@ export class ModuleCompletionProvider extends XmlSuggestionProvider<CompletionIt
     const completions = moduleIndexData.getModulesByPrefix(value);
 
     return completions.map(module => {
-      return new CompletionItem(module.name, CompletionItemKind.Value);
+      const item = new CompletionItem(module.name, CompletionItemKind.Value);
+      item.range = range;
+      return item;
     });
   }
 }
