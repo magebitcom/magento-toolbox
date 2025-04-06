@@ -7,6 +7,7 @@ import { CancellationToken } from 'vscode';
 import { ModuleCompletionProvider } from './xml/ModuleCompletionProvider';
 import { NamespaceCompletionProvider } from './xml/NamespaceCompletionProvider';
 import { AclCompletionProvider } from './xml/AclCompletionProvider';
+import { TemplateCompletionProvider } from './xml/TemplateCompletionProvider';
 
 export class XmlCompletionProviderProcessor
   extends XmlSuggestionProviderProcessor<CompletionItem>
@@ -17,6 +18,7 @@ export class XmlCompletionProviderProcessor
       new ModuleCompletionProvider(),
       new NamespaceCompletionProvider(),
       new AclCompletionProvider(),
+      new TemplateCompletionProvider(),
     ]);
   }
 

@@ -8,13 +8,18 @@ import {
 import { XmlSuggestionProviderProcessor } from 'common/xml/XmlSuggestionProviderProcessor';
 import { AclDefinitionProvider } from './xml/AclDefinitionProvider';
 import { ModuleDefinitionProvider } from './xml/ModuleDefinitionProvider';
+import { TemplateDefinitionProvider } from './xml/TemplateDefinitionProvider';
 
 export class XmlDefinitionProviderProcessor
   extends XmlSuggestionProviderProcessor<LocationLink>
   implements DefinitionProvider
 {
   public constructor() {
-    super([new AclDefinitionProvider(), new ModuleDefinitionProvider()]);
+    super([
+      new AclDefinitionProvider(),
+      new ModuleDefinitionProvider(),
+      new TemplateDefinitionProvider(),
+    ]);
   }
 
   public async provideDefinition(

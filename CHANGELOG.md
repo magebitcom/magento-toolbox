@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added: Module hover information
 - Added: Added extension config fields for enabling/disabling completions, definitions and hovers
 - Added: acl.xml indexer, definitions, autocomplete and hovers
+- Added: template file indexer, definitions and autocomplete
 - Added: Index data persistance
 - Changed: Adjusted namespace indexer logic
 
