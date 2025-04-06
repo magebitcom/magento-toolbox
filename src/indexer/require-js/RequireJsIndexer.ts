@@ -3,7 +3,6 @@ import { Indexer } from 'indexer/Indexer';
 import { IndexerKey } from 'types/indexer';
 import FileSystem from 'util/FileSystem';
 import {
-  AssignmentProperty,
   Identifier,
   Literal,
   Node,
@@ -40,7 +39,7 @@ export default class RequireJsIndexer extends Indexer<RequireJsConfig> {
     const ast = parse(js, { ecmaVersion: 2020 });
 
     // Find config identifier
-    const configVariableDeclarator = await this.findConfigVariableDeclarator(ast);
+    const configVariableDeclarator = this.findConfigVariableDeclarator(ast);
 
     if (!configVariableDeclarator) {
       return undefined;
@@ -51,14 +50,14 @@ export default class RequireJsIndexer extends Indexer<RequireJsConfig> {
       paths: {},
     };
 
-    await this.processMaps(config, configVariableDeclarator);
-    await this.processPaths(config, configVariableDeclarator);
+    this.processMaps(config, configVariableDeclarator);
+    this.processPaths(config, configVariableDeclarator);
 
     return config;
   }
 
-  private async processMaps(config: RequireJsConfig, configVariableDeclarator: VariableDeclarator) {
-    const mapProperty = await this.findProperty(configVariableDeclarator, 'map');
+  private processMaps(config: RequireJsConfig, configVariableDeclarator: VariableDeclarator) {
+    const mapProperty = this.findProperty(configVariableDeclarator, 'map');
 
     if (!mapProperty) {
       return config;
@@ -75,11 +74,8 @@ export default class RequireJsIndexer extends Indexer<RequireJsConfig> {
     }
   }
 
-  private async processPaths(
-    config: RequireJsConfig,
-    configVariableDeclarator: VariableDeclarator
-  ) {
-    const pathsProperty = await this.findProperty(configVariableDeclarator, 'paths');
+  private processPaths(config: RequireJsConfig, configVariableDeclarator: VariableDeclarator) {
+    const pathsProperty = this.findProperty(configVariableDeclarator, 'paths');
 
     if (!pathsProperty) {
       return config;
@@ -118,38 +114,41 @@ export default class RequireJsIndexer extends Indexer<RequireJsConfig> {
     return mappings;
   }
 
-  private findConfigVariableDeclarator(ast: Node): Promise<VariableDeclarator | undefined> {
-    return new Promise((resolve, reject) => {
-      walk.simple(ast, {
-        VariableDeclaration(node: VariableDeclaration) {
-          node.declarations.forEach(declarator => {
-            if (declarator.id.type === 'Identifier' && declarator.id.name === 'config') {
-              resolve(declarator);
-            }
-          });
-        },
-      });
+  private findConfigVariableDeclarator(ast: Node): VariableDeclarator | undefined {
+    const found = walk.findNodeAfter(ast, 0, (type: string, node: Node) => {
+      if (type !== 'VariableDeclaration') {
+        return false;
+      }
 
-      resolve(undefined);
+      const variableDeclaration = node as VariableDeclaration;
+
+      for (const declarator of variableDeclaration.declarations) {
+        if (declarator.id.type === 'Identifier' && declarator.id.name === 'config') {
+          return true;
+        }
+      }
+
+      return false;
     });
+
+    return found?.node as VariableDeclarator;
   }
 
-  private findProperty(
-    variableDeclarator: VariableDeclarator,
-    key: string
-  ): Promise<Property | AssignmentProperty | undefined> {
-    return new Promise(resolve => {
-      const objectExpression = variableDeclarator.init as ObjectExpression;
+  private findProperty(variableDeclarator: VariableDeclarator, key: string): Property | undefined {
+    const found = walk.findNodeAfter(variableDeclarator, 0, (type: string, node: Node) => {
+      if (type !== 'Property') {
+        return false;
+      }
 
-      walk.simple(objectExpression, {
-        Property(node: Property | AssignmentProperty) {
-          if (node.key.type === 'Identifier' && node.key.name === key) {
-            resolve(node);
-          }
-        },
-      });
+      const property = node as Property;
 
-      resolve(undefined);
+      if (property.key.type === 'Identifier' && property.key.name === key) {
+        return true;
+      }
+
+      return false;
     });
+
+    return found?.node as Property;
   }
 }
