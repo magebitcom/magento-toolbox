@@ -64,30 +64,41 @@ export default class AclIndexer extends Indexer<Acl[]> {
     return acls;
   }
 
-  private getResources(element: Element, uri: Uri): Acl[] {
-    const parent = get(element, '@_id', undefined);
-    const resources = get(element, 'resource', []);
+  private getResources(element: Element, uri: Uri, parent?: string): Acl[] {
+    const resources = element.resource ?? [];
 
     const acls: Acl[] = [];
 
+    if (this.isUniqueAcl(element)) {
+      acls.push(this.getAclData(element, uri, parent));
+    }
+
     for (const resource of resources) {
       if (Array.isArray(resource.resource)) {
-        acls.push(...this.getResources(resource, uri));
+        acls.push(...this.getResources(resource, uri, element['@_id']));
       }
 
-      if (resource['@_id'] && resource['@_title']) {
-        acls.push({
-          id: resource['@_id'],
-          title: resource['@_title'],
-          description: resource['@_description'],
-          sortOrder: resource['@_sortOrder'] ? parseInt(resource['@_sortOrder'], 10) : undefined,
-          disabled: resource['@_disabled'] === 'true',
-          parent,
-          path: uri.fsPath,
-        });
+      if (this.isUniqueAcl(resource)) {
+        acls.push(this.getAclData(resource, uri, element['@_id']));
       }
     }
 
     return acls;
+  }
+
+  private isUniqueAcl(element: Element): boolean {
+    return !!element['@_id'] && !!element['@_title'];
+  }
+
+  private getAclData(element: Element, uri: Uri, parent?: string): Acl {
+    return {
+      id: element['@_id']!,
+      title: element['@_title']!,
+      description: element['@_description'],
+      sortOrder: element['@_sortOrder'] ? parseInt(element['@_sortOrder'], 10) : undefined,
+      disabled: element['@_disabled'] === 'true',
+      parent,
+      path: uri.fsPath,
+    };
   }
 }

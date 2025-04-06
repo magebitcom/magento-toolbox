@@ -13,8 +13,9 @@ import Magento from 'util/Magento';
 import { WorkspaceFolder } from 'vscode';
 import Logger from 'util/Logger';
 import { Command } from 'command/Command';
-import { XmlModuleDefinitionProvider } from 'definition/XmlModuleDefinitionProvider';
-import { XmlCompletionProvider } from 'completion/XmlCompletionProvider';
+import { XmlDefinitionProviderProcessor } from 'definition/XmlDefinitionProviderProcessor';
+import { XmlCompletionProviderProcessor } from 'completion/XmlCompletionProviderProcessor';
+import { XmlHoverProviderProcessor } from 'hover/XmlHoverProviderProcessor';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -93,7 +94,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // definition providers
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider()),
-    vscode.languages.registerDefinitionProvider('xml', new XmlModuleDefinitionProvider())
+    vscode.languages.registerDefinitionProvider('xml', new XmlDefinitionProviderProcessor())
   );
 
   // codelens providers
@@ -105,14 +106,15 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
       { language: 'xml', scheme: 'file' },
-      new XmlCompletionProvider(),
+      new XmlCompletionProviderProcessor(),
       ...'\\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     )
   );
 
   // hover providers
   context.subscriptions.push(
-    vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider())
+    vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider()),
+    vscode.languages.registerHoverProvider('xml', new XmlHoverProviderProcessor())
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);

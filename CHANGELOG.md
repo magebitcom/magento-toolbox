@@ -7,7 +7,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 - Added: Class namespace autocomplete in XML files
 - Added: Module name autocomplete in module.xml files
+- Added: Module hover information
 - Added: Added extension config fields for enabling/disabling completions, definitions and hovers
+- Added: acl.xml indexer, definitions, autocomplete and hovers
 - Added: Index data persistance
 - Changed: Adjusted namespace indexer logic
 
