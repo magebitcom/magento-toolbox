@@ -18,6 +18,8 @@ import AclIndexer from './acl/AclIndexer';
 import { AclIndexData } from './acl/AclIndexData';
 import TemplateIndexer from './template/TemplateIndexer';
 import { TemplateIndexData } from './template/TemplateIndexData';
+import RequireJsIndexer from './require-js/RequireJsIndexer';
+import { RequireJsIndexData } from './require-js/RequireJsIndexData';
 
 type IndexerInstance =
   | DiIndexer
@@ -25,7 +27,8 @@ type IndexerInstance =
   | AutoloadNamespaceIndexer
   | EventsIndexer
   | AclIndexer
-  | TemplateIndexer;
+  | TemplateIndexer
+  | RequireJsIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
@@ -34,6 +37,7 @@ type IndexerDataMap = {
   [EventsIndexer.KEY]: EventsIndexData;
   [AclIndexer.KEY]: AclIndexData;
   [TemplateIndexer.KEY]: TemplateIndexData;
+  [RequireJsIndexer.KEY]: RequireJsIndexData;
 };
 
 class IndexManager {
@@ -48,6 +52,7 @@ class IndexManager {
       new EventsIndexer(),
       new AclIndexer(),
       new TemplateIndexer(),
+      new RequireJsIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -180,6 +185,9 @@ class IndexManager {
 
       case TemplateIndexer.KEY:
         return new TemplateIndexData(data) as IndexerDataMap[T];
+
+      case RequireJsIndexer.KEY:
+        return new RequireJsIndexData(data) as IndexerDataMap[T];
 
       default:
         return undefined;
