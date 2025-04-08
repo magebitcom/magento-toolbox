@@ -1,6 +1,6 @@
 import { commands, TextEditor } from 'vscode';
 import PhpDocumentParser from './php/PhpDocumentParser';
-import CopyMagentoPathCommand from 'command/CopyMagentoPathCommand';
+import GetMagentoPath from './GetMagentoPath';
 
 export interface EditorContext {
   canGeneratePlugin: boolean;
@@ -47,9 +47,9 @@ class Context {
       canGeneratePlugin: false,
       canGeneratePreference: false,
       supportedMagentoPathExtensions: [
-        ...CopyMagentoPathCommand.TEMPLATE_EXTENSIONS,
-        ...CopyMagentoPathCommand.WEB_EXTENSIONS,
-        ...CopyMagentoPathCommand.IMAGE_EXTENSIONS,
+        ...GetMagentoPath.TEMPLATE_EXTENSIONS,
+        ...GetMagentoPath.WEB_EXTENSIONS,
+        ...GetMagentoPath.IMAGE_EXTENSIONS,
       ],
     };
   }

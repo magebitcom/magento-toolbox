@@ -9,6 +9,7 @@ import indentString from 'indent-string';
 import { PhpInterface } from 'parser/php/PhpInterface';
 import Magento from 'util/Magento';
 import HandlebarsTemplateRenderer from 'generator/HandlebarsTemplateRenderer';
+import { TemplatePath } from 'types/handlebars';
 
 export default class PluginDiGenerator extends FileGenerator {
   public constructor(
@@ -33,17 +34,26 @@ export default class PluginDiGenerator extends FileGenerator {
 
     const renderer = new HandlebarsTemplateRenderer();
 
-    const pluginXml = await renderer.render('xml/plugin', {
+    const pluginXml = await renderer.render(TemplatePath.XmlDiPlugin, {
       pluginName: this.data.name,
       pluginType: pluginType.toString(),
       sortOrder: this.data.sortOrder,
-      subjectNamespace,
     });
+
+    const diType = await renderer.render(
+      TemplatePath.XmlDiType,
+      {
+        subjectNamespace,
+      },
+      {
+        typeContent: pluginXml,
+      }
+    );
 
     const newDiXml =
       diXml.slice(0, insertPosition) +
       '\n' +
-      indentString(pluginXml, 4) +
+      indentString(diType, 4) +
       '\n' +
       diXml.slice(insertPosition);
 

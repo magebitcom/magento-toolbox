@@ -1,8 +1,9 @@
 import { Uri } from 'vscode';
 import FileSystem from 'util/FileSystem';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import FileHeader from 'common/xml/FileHeader';
 import HandlebarsTemplateRenderer from '../HandlebarsTemplateRenderer';
+import { TemplatePath } from 'types/handlebars';
 
 export default class FindOrCreateEventsXml {
   public static async execute(
@@ -31,7 +32,7 @@ export default class FindOrCreateEventsXml {
 
     const fileHeader = FileHeader.getHeader(`${vendor}_${module}`);
 
-    return await renderer.render('xml/blank-events', {
+    return await renderer.render(TemplatePath.XmlBlankEvents, {
       fileHeader,
     });
   }

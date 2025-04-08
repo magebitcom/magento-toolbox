@@ -1,7 +1,7 @@
 import { Option } from '@vscode-elements/elements/dist/includes/vscode-select/types';
 import { useField, useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef } from 'react';
-import { WizardField, WizardInput, WizardSelectOption } from 'webview/types';
+import { WizardField, WizardInput, WizardSelectOption } from 'types/webview';
 import { DynamicRowInput } from './DynamicRowInput';
 import { FieldErrorMessage } from './FieldErrorMessage';
 
@@ -84,6 +84,7 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
             <vscode-multi-select
               {...fieldProps}
               ref={el}
+              combobox
               value={field.initialValue ? [String(field.initialValue)] : undefined}
               options={field.options.map(mapOption)}
               selectedIndexes={selectedIndex ? [selectedIndex] : undefined}
@@ -95,6 +96,7 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
           <vscode-single-select
             {...fieldProps}
             ref={el}
+            combobox
             selectedIndex={selectedIndex}
             options={field.options.map(mapOption)}
           />

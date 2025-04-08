@@ -14,6 +14,9 @@ import { WorkspaceFolder } from 'vscode';
 import Logger from 'util/Logger';
 import { Command } from 'command/Command';
 import { XmlSnippetProvider } from 'completion/XmlSnippetProvider';
+import { XmlDefinitionProviderProcessor } from 'definition/XmlDefinitionProviderProcessor';
+import { XmlCompletionProviderProcessor } from 'completion/XmlCompletionProviderProcessor';
+import { XmlHoverProviderProcessor } from 'hover/XmlHoverProviderProcessor';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -91,7 +94,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // definition providers
   context.subscriptions.push(
-    vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider())
+    vscode.languages.registerDefinitionProvider('xml', new XmlClasslikeDefinitionProvider()),
+    vscode.languages.registerDefinitionProvider('xml', new XmlDefinitionProviderProcessor())
   );
 
   // codelens providers
@@ -99,17 +103,24 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCodeLensProvider('php', new ObserverCodelensProvider())
   );
 
-  // hover providers
+  // completion providers
   context.subscriptions.push(
-    vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider())
-  );
-
-  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      'xml',
+      new XmlCompletionProviderProcessor(),
+      ...'\\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    ),
     vscode.languages.registerCompletionItemProvider(
       'xml',
       new XmlSnippetProvider(),
       ...XmlSnippetProvider.TRIGGER_CHARACTERS
     )
+  );
+
+  // hover providers
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider()),
+    vscode.languages.registerHoverProvider('xml', new XmlHoverProviderProcessor())
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);

@@ -1,6 +1,7 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
 import FileHeader from 'common/xml/FileHeader';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateConfigXmlFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -21,7 +22,7 @@ export default class GenerateConfigXmlFileCommand extends SimpleTemplateGenerato
     return `app/code/${vendor}/${module}/etc/config.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-config';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankConfig;
   }
 }

@@ -1,1 +1,6 @@
-export type AutoloadNamespaceData = Record<string, string[]>;
+export interface Namespace {
+  fqn: string;
+  prefix: string;
+  baseDirectory: string;
+  path: string;
+}

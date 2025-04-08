@@ -3,6 +3,12 @@ import { resolve } from 'path';
 import FileSystem from 'util/FileSystem';
 import { Uri } from 'vscode';
 import Logger from 'util/Logger';
+import {
+  TemplatePath,
+  TemplateParams,
+  TemplatePartials,
+  BaseTemplatePartials,
+} from 'types/handlebars';
 
 export default class HandlebarsTemplateRenderer {
   protected handlebars: typeof Handlebars;
@@ -10,13 +16,26 @@ export default class HandlebarsTemplateRenderer {
   public constructor() {
     this.handlebars = create();
     this.registerHelpers();
-    this.registerPartials();
+    this.registerGlobalPartials();
   }
 
-  public async render(template: string, data?: Record<string, any>): Promise<string> {
+  public async render<T extends TemplatePath>(
+    template: T,
+    data?: TemplateParams[T],
+    partials?: TemplatePartials[T] | BaseTemplatePartials
+  ): Promise<string> {
     try {
       const templatePath = this.getTemplatePath(template);
       const templateContent = await FileSystem.readFile(Uri.file(templatePath));
+
+      if (partials) {
+        for (const [name, content] of Object.entries(partials)) {
+          if (typeof content === 'string') {
+            this.handlebars.registerPartial(name, content + '\n');
+          }
+        }
+      }
+
       const compiledTemplate = this.handlebars.compile(templateContent);
       const content = compiledTemplate(data);
       return content;
@@ -39,7 +58,7 @@ export default class HandlebarsTemplateRenderer {
     });
   }
 
-  protected registerPartials(): void {
+  protected registerGlobalPartials(): void {
     this.handlebars.registerPartial('fileHeader', '{{#if fileHeader}}\n{{{fileHeader}}}\n{{/if}}');
   }
 }

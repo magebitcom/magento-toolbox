@@ -4,7 +4,7 @@
   "description": "Magento 2 code generation, inspection and utility tools",
   "publisher": "magebit",
   "icon": "resources/logo.jpg",
-  "version": "1.2.0",
+  "version": "1.5.0",
   "engines": {
     "vscode": "^1.93.1"
   },
@@ -12,8 +12,19 @@
     "type": "git",
     "url": "https://github.com/magebitcom/magento-toolbox.git"
   },
+  "homepage": "https://github.com/magebitcom/magento-toolbox",
+  "bugs": {
+    "url": "https://github.com/magebitcom/magento-toolbox/issues"
+  },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "magento",
+    "adobe commerce",
+    "code completion",
+    "code generation",
+    "intellisense"
   ],
   "activationEvents": [
     "workspaceContains:**/app/etc/env.php",
@@ -41,6 +52,21 @@
           "editPresentation": "multilineText",
           "default": "",
           "markdownDescription": "`%module%` will be replaced with the module name. \n\n **Do not add comment symbols like `<!--` or `-->`, they will be added automatically.**"
+        },
+        "magento-toolbox.provideXmlCompletions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable autocomplete for Magento 2 XML files."
+        },
+        "magento-toolbox.provideXmlDefinitions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable definitions for Magento 2 XML files."
+        },
+        "magento-toolbox.provideXmlHovers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover decorations for Magento 2 XML files."
         }
       }
     },
@@ -63,6 +89,11 @@
       {
         "command": "magento-toolbox.generateBlock",
         "title": "Generate Block",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateViewModel",
+        "title": "Generate ViewModel",
         "category": "Magento Toolbox"
       },
       {
@@ -191,6 +222,16 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateDataPatch",
+        "title": "Generate Data Patch",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCronJob",
+        "title": "Generate Cron Job",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -242,6 +283,10 @@
         },
         {
           "command": "magento-toolbox.generateBlock",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateViewModel",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
@@ -318,6 +363,14 @@
         },
         {
           "command": "magento-toolbox.generateConfigXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateDataPatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCronJob",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

@@ -4,6 +4,7 @@ import { get } from 'lodash-es';
 import { Module } from './types';
 import { Indexer } from 'indexer/Indexer';
 import FileSystem from 'util/FileSystem';
+import { IndexerKey } from 'types/indexer';
 
 export default class ModuleIndexer extends Indexer<Module> {
   public static readonly KEY = 'module';
@@ -22,7 +23,11 @@ export default class ModuleIndexer extends Indexer<Module> {
     });
   }
 
-  public getId(): string {
+  public getVersion(): number {
+    return 1;
+  }
+
+  public getId(): IndexerKey {
     return ModuleIndexer.KEY;
   }
 
@@ -47,6 +52,7 @@ export default class ModuleIndexer extends Indexer<Module> {
       name: moduleName,
       version: setupVersion,
       sequence: sequence.map((module: any) => module['@_name']),
+      moduleXmlPath: uri.fsPath,
       path: Uri.joinPath(uri, '..', '..').fsPath,
       location: uri.fsPath.includes('vendor') ? 'vendor' : 'app',
     };

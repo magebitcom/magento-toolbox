@@ -1,4 +1,4 @@
-import { Uri, workspace } from 'vscode';
+import { FileType, RelativePattern, Uri, workspace } from 'vscode';
 import * as path from 'path';
 import ExtensionState from 'common/ExtensionState';
 
@@ -18,6 +18,16 @@ export default class FileSystem {
   public static async readFile(uri: Uri): Promise<string> {
     const content = await workspace.fs.readFile(uri);
     return content.toString();
+  }
+
+  public static async readDirectory(uri: Uri): Promise<string[]> {
+    const files = await workspace.fs.readDirectory(uri);
+    return files.map(([name]) => name);
+  }
+
+  public static async readDirectoryRecursive(uri: Uri): Promise<string[]> {
+    const files = await workspace.findFiles(new RelativePattern(uri, '**/*.php'));
+    return files.map(file => path.relative(uri.fsPath, file.fsPath));
   }
 
   public static async writeFile(uri: Uri, content: string): Promise<void> {

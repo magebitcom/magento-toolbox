@@ -6,8 +6,9 @@ import FileGeneratorManager from 'generator/FileGeneratorManager';
 import TemplateGenerator from 'generator/TemplateGenerator';
 import Common from 'util/Common';
 import SimpleTemplateWizard, { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
-import { MagentoScope } from 'types';
-import { WizardField, WizardValidationRule } from 'webview/types';
+import { MagentoScope } from 'types/global';
+import { WizardField, WizardValidationRule } from 'types/webview';
+import { TemplatePath } from 'types/handlebars';
 
 export abstract class SimpleTemplateGeneratorCommand extends Command {
   abstract getWizardTitle(): string;
@@ -18,7 +19,7 @@ export abstract class SimpleTemplateGeneratorCommand extends Command {
 
   abstract getFilePath(data: TemplateWizardData): string;
 
-  abstract getTemplateName(data: TemplateWizardData): string;
+  abstract getTemplateName(data: TemplateWizardData): TemplatePath;
 
   public getFileHeader(data: TemplateWizardData): string | undefined {
     return undefined;
@@ -32,7 +33,7 @@ export abstract class SimpleTemplateGeneratorCommand extends Command {
     return {};
   }
 
-  public getTemplateData(data: TemplateWizardData): Record<string, string> {
+  public getTemplateData(data: TemplateWizardData): Record<string, any> {
     return data;
   }
 
@@ -81,11 +82,14 @@ export abstract class SimpleTemplateGeneratorCommand extends Command {
     const contextModule = this.getContextModule(uri);
     const data = await this.getWizardData(contextModule);
 
+    const templateName = this.getTemplateName(data);
+    const templateData = {
+      ...this.getTemplateData(data),
+      fileHeader: this.getFileHeader(data) ?? '',
+    };
+
     const manager = new FileGeneratorManager([
-      new TemplateGenerator(this.getFilePath(data), this.getTemplateName(data), {
-        ...this.getTemplateData(data),
-        fileHeader: this.getFileHeader(data) ?? '',
-      }),
+      new TemplateGenerator(this.getFilePath(data), templateName, templateData as any),
     ]);
 
     const workspaceFolder = this.getWorkspaceFolder();

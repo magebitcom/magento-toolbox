@@ -13,18 +13,15 @@ export class PhpUseItem extends PhpNode<NodeKind.UseItem> {
   }
 
   public get fullName() {
-    if (this.ast.alias) {
-      return this.ast.alias.name;
-    }
     return this.ast.name;
   }
 
   public get name() {
-    if (this.ast.alias) {
-      return this.ast.alias.name;
-    }
-
     const parts = this.ast.name.split('\\');
     return last(parts)!;
+  }
+
+  public get alias() {
+    return this.ast.alias?.name;
   }
 }

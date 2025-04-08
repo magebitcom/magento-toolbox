@@ -1,6 +1,6 @@
 import PhpNamespace from 'common/PhpNamespace';
 import lowerFirst from 'lodash-es/lowerFirst';
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { Uri, WorkspaceFolder } from 'vscode';
 import FileSystem from './FileSystem';
 
@@ -9,7 +9,7 @@ export default class Magento {
     return /^around|^before|^after/.test(method);
   }
 
-  public static pluginMethodToMethodName(method: string): string | undefined {
+  public static pluginMethodToMethodName(method: string): string {
     return lowerFirst(method.replace(/^around|^before|^after/, ''));
   }
 

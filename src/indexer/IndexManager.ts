@@ -13,14 +13,27 @@ import { ModuleIndexData } from './module/ModuleIndexData';
 import { AutoloadNamespaceIndexData } from './autoload-namespace/AutoloadNamespaceIndexData';
 import { EventsIndexData } from './events/EventsIndexData';
 import Logger from 'util/Logger';
+import { IndexerKey } from 'types/indexer';
+import AclIndexer from './acl/AclIndexer';
+import { AclIndexData } from './acl/AclIndexData';
+import TemplateIndexer from './template/TemplateIndexer';
+import { TemplateIndexData } from './template/TemplateIndexData';
 
-type IndexerInstance = DiIndexer | ModuleIndexer | AutoloadNamespaceIndexer | EventsIndexer;
+type IndexerInstance =
+  | DiIndexer
+  | ModuleIndexer
+  | AutoloadNamespaceIndexer
+  | EventsIndexer
+  | AclIndexer
+  | TemplateIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
   [ModuleIndexer.KEY]: ModuleIndexData;
   [AutoloadNamespaceIndexer.KEY]: AutoloadNamespaceIndexData;
   [EventsIndexer.KEY]: EventsIndexData;
+  [AclIndexer.KEY]: AclIndexData;
+  [TemplateIndexer.KEY]: TemplateIndexData;
 };
 
 class IndexManager {
@@ -33,6 +46,8 @@ class IndexManager {
       new ModuleIndexer(),
       new AutoloadNamespaceIndexer(),
       new EventsIndexer(),
+      new AclIndexer(),
+      new TemplateIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -55,7 +70,10 @@ class IndexManager {
     Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
-      if (!force && !this.shouldIndex(indexer)) {
+      this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+
+      if (!force && !this.shouldIndex(workspaceFolder, indexer)) {
+        Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
         continue;
       }
       progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
@@ -87,6 +105,7 @@ class IndexManager {
       );
 
       this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
+      this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       clear([indexer.getId()]);
 
@@ -121,7 +140,7 @@ class IndexManager {
   }
 
   public getIndexStorageData<T = any>(
-    id: string,
+    id: IndexerKey,
     workspaceFolder?: WorkspaceFolder
   ): Map<string, T> | undefined {
     const wf = workspaceFolder || Common.getActiveWorkspaceFolder();
@@ -143,23 +162,28 @@ class IndexManager {
       return undefined;
     }
 
-    if (id === DiIndexer.KEY) {
-      return new DiIndexData(data) as IndexerDataMap[T];
-    }
+    switch (id) {
+      case DiIndexer.KEY:
+        return new DiIndexData(data) as IndexerDataMap[T];
 
-    if (id === ModuleIndexer.KEY) {
-      return new ModuleIndexData(data) as IndexerDataMap[T];
-    }
+      case ModuleIndexer.KEY:
+        return new ModuleIndexData(data) as IndexerDataMap[T];
 
-    if (id === AutoloadNamespaceIndexer.KEY) {
-      return new AutoloadNamespaceIndexData(data) as IndexerDataMap[T];
-    }
+      case AutoloadNamespaceIndexer.KEY:
+        return new AutoloadNamespaceIndexData(data) as IndexerDataMap[T];
 
-    if (id === EventsIndexer.KEY) {
-      return new EventsIndexData(data) as IndexerDataMap[T];
-    }
+      case EventsIndexer.KEY:
+        return new EventsIndexData(data) as IndexerDataMap[T];
 
-    return undefined;
+      case AclIndexer.KEY:
+        return new AclIndexData(data) as IndexerDataMap[T];
+
+      case TemplateIndexer.KEY:
+        return new TemplateIndexData(data) as IndexerDataMap[T];
+
+      default:
+        return undefined;
+    }
   }
 
   protected async indexFileInner(
@@ -182,8 +206,8 @@ class IndexManager {
     clear([indexer.getId()]);
   }
 
-  protected shouldIndex(index: IndexerInstance): boolean {
-    return true;
+  protected shouldIndex(workspaceFolder: WorkspaceFolder, index: IndexerInstance): boolean {
+    return !this.indexStorage.hasIndex(workspaceFolder, index.getId());
   }
 }
 

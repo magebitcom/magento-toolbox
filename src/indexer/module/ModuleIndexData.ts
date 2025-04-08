@@ -1,4 +1,4 @@
-import { WizardSelectOption } from 'webview/types';
+import { WizardSelectOption } from 'types/webview';
 import { Module } from './types';
 import { Uri } from 'vscode';
 import { AbstractIndexData } from 'indexer/AbstractIndexData';
@@ -17,6 +17,10 @@ export class ModuleIndexData extends AbstractIndexData<Module> {
     return this.getValues().find(module =>
       caseSensitive ? module.name === name : module.name.toLowerCase() === name.toLowerCase()
     );
+  }
+
+  public getModulesByPrefix(prefix: string): Module[] {
+    return this.getValues().filter(module => module.name.startsWith(prefix));
   }
 
   public getModuleByUri(uri: Uri, appOnly = true): Module | undefined {

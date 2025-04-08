@@ -1,6 +1,7 @@
-import { MagentoScope } from 'types';
+import { MagentoScope } from 'types/global';
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateDiXmlFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -33,7 +34,7 @@ export default class GenerateDiXmlFileCommand extends SimpleTemplateGeneratorCom
     return `app/code/${vendor}/${module}/etc/di.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-di';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankDi;
   }
 }

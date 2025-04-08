@@ -5,6 +5,7 @@ export { default as CopyMagentoPathCommand } from './CopyMagentoPathCommand';
 export { default as GenerateXmlCatalogCommand } from './GenerateXmlCatalogCommand';
 export { default as GenerateObserverCommand } from './GenerateObserverCommand';
 export { default as GenerateBlockCommand } from './GenerateBlockCommand';
+export { default as GenerateViewModelCommand } from './GenerateViewModelCommand';
 export { default as GenerateEventsXmlCommand } from './GenerateEventsXmlCommand';
 export { default as GenerateGraphqlSchemaFileCommand } from './GenerateGraphqlSchemaFile';
 export { default as GenerateRoutesXmlFileCommand } from './GenerateRoutesXmlFileCommand';
@@ -25,4 +26,6 @@ export { default as GenerateWidgetXmlFileCommand } from './GenerateWidgetXmlFile
 export { default as GenerateExtensionAttributesXmlFileCommand } from './GenerateExtensionAttributesXmlFileCommand';
 export { default as GenerateSystemXmlFileCommand } from './GenerateSystemXmlFileCommand';
 export { default as GenerateConfigXmlFileCommand } from './GenerateConfigXmlFileCommand';
+export { default as GenerateDataPatchCommand } from './GenerateDataPatchCommand';
+export { default as GenerateCronJobCommand } from './GenerateCronJobCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';

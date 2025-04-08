@@ -2,7 +2,7 @@ import { Formik, FormikProps, FormikValues } from 'formik';
 import { useCallback } from 'react';
 import { WebviewApi } from 'vscode-webview';
 import Validator from 'validatorjs';
-import { Wizard, WizardInput } from 'webview/types';
+import { Wizard, WizardInput } from 'types/webview';
 import { FieldRenderer } from './FieldRenderer';
 
 interface Props {

@@ -6,7 +6,33 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- Added: Event name autocomplete
+
+## [1.5.0] - 2025-04-06
+- Added: Class namespace autocomplete in XML files
+- Added: Module name autocomplete in module.xml files
+- Added: Module hover information
+- Added: Added extension config fields for enabling/disabling completions, definitions and hovers
+- Added: acl.xml indexer, definitions, autocomplete and hovers
+- Added: template file indexer, definitions and autocomplete
+- Added: Index data persistance
+- Changed: Adjusted namespace indexer logic
+
+## [1.4.0] - 2025-04-04
+- Added: Generator command for a ViewModel class
+- Added: Generator command for data patches
+- Added: Generator command for cron jobs
+- Added: Jump-to-definition for magento modules (in module.xml and routes.xml)
+- Fixed: Method plugin hover messages are now grouped and include a link to di.xml
+
+## [1.3.1] - 2025-03-23
+- Fixed: Generated plugin class arguments contain an incorrect namespace
+
+## [1.3.0] - 2025-03-17
+
 - Added: Jump to module command
+- Changed: All dropdown inputs now support searching
+- Changed: Migrated ejs templates to handlebars
 
 ## [1.2.0] - 2025-03-13
 

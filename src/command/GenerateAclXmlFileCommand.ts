@@ -1,5 +1,6 @@
 import { SimpleTemplateGeneratorCommand } from './SimpleTemplateGeneratorCommand';
 import { TemplateWizardData } from 'wizard/SimpleTemplateWizard';
+import { TemplatePath } from 'types/handlebars';
 
 export default class GenerateAclXmlFileCommand extends SimpleTemplateGeneratorCommand {
   constructor() {
@@ -16,7 +17,7 @@ export default class GenerateAclXmlFileCommand extends SimpleTemplateGeneratorCo
     return `app/code/${vendor}/${module}/etc/acl.xml`;
   }
 
-  getTemplateName(data: TemplateWizardData): string {
-    return 'xml/blank-acl';
+  getTemplateName(data: TemplateWizardData): TemplatePath {
+    return TemplatePath.XmlBlankAcl;
   }
 }

@@ -2,6 +2,7 @@ import { Memoize } from 'typescript-memoize';
 import EventsIndexer from './EventsIndexer';
 import { Event } from './types';
 import { AbstractIndexData } from 'indexer/AbstractIndexData';
+import { uniqBy } from 'lodash-es';
 
 export class EventsIndexData extends AbstractIndexData<Event[]> {
   @Memoize({ tags: [EventsIndexer.KEY] })
@@ -15,6 +16,11 @@ export class EventsIndexData extends AbstractIndexData<Event[]> {
 
   public getEventByName(eventName: string): Event | undefined {
     return this.getEvents().find(event => event.name === eventName);
+  }
+
+  public getEventsByPrefix(prefix: string): Event[] {
+    const events = this.getEvents().filter(event => event.name.startsWith(prefix));
+    return uniqBy(events, 'name');
   }
 
   public findEventsByObserverInstance(observerInstance: string): Event[] {
