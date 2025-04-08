@@ -25,7 +25,7 @@ export class TemplateCompletionProvider extends XmlSuggestionProvider<Completion
   }
 
   public getConfigKey(): string | undefined {
-    return 'provideXmlDefinitions';
+    return 'provideXmlCompletions';
   }
 
   public getSuggestionItems(

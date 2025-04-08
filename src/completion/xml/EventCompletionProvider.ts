@@ -16,7 +16,7 @@ export class EventCompletionProvider extends XmlSuggestionProvider<CompletionIte
   }
 
   public getConfigKey(): string | undefined {
-    return 'provideXmlDefinitions';
+    return 'provideXmlCompletions';
   }
 
   public getSuggestionItems(
