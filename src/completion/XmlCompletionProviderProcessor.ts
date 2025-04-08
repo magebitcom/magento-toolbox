@@ -8,6 +8,7 @@ import { ModuleCompletionProvider } from './xml/ModuleCompletionProvider';
 import { NamespaceCompletionProvider } from './xml/NamespaceCompletionProvider';
 import { AclCompletionProvider } from './xml/AclCompletionProvider';
 import { TemplateCompletionProvider } from './xml/TemplateCompletionProvider';
+import { EventCompletionProvider } from './xml/EventCompletionProvider';
 
 export class XmlCompletionProviderProcessor
   extends XmlSuggestionProviderProcessor<CompletionItem>
@@ -19,6 +20,7 @@ export class XmlCompletionProviderProcessor
       new NamespaceCompletionProvider(),
       new AclCompletionProvider(),
       new TemplateCompletionProvider(),
+      new EventCompletionProvider(),
     ]);
   }
 
