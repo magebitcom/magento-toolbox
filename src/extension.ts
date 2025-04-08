@@ -108,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCompletionItemProvider(
       'xml',
       new XmlCompletionProviderProcessor(),
-      ...'\\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      ...XmlCompletionProviderProcessor.TRIGGER_CHARACTERS
     ),
     vscode.languages.registerCompletionItemProvider(
       'xml',

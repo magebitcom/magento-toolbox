@@ -1,30 +1,37 @@
 {
-  "Insert a preference element": {
+  "preference": {
     "prefix": "preference",
     "body": [
       "<preference for=\"${1:ClassName}\" type=\"${2:ClassName}\" />"
     ],
     "description": "Insert a preference element to the current file"
   },
-  "Insert a type element": {
+  "type": {
     "prefix": "type",
     "body": [
-      "<type name=\"${1:ClassName}\">\n</type>"
+      "<type name=\"${1:ClassName}\">\n    ${2}\n</type>"
     ],
     "description": "Insert a type element to the current file"
   },
-  "Insert a arguments element": {
+  "arguments": {
     "prefix": "arguments",
     "body": [
-      "<arguments>\n</arguments>"
+      "<arguments>\n    ${1}\n</arguments>"
     ],
     "description": "Insert an arguments element to the current file"
   },
-  "Insert a argument element": {
+  "argument": {
     "prefix": "argument",
     "body": [
       "<argument name=\"${1:Name}\" xsi:type=\"${2:Type}\">${3:Value}</argument>"
     ],
     "description": "Insert an argument element to the current file"
+  },
+  "virtualType": {
+    "prefix": "virtualType",
+    "body": [
+      "<virtualType name=\"${1:ClassName}\" type=\"${2:ClassName}\">\n    ${3}\n</virtualType>"
+    ],
+    "description": "Insert a virtualType element to the current file"
   }
 }

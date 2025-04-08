@@ -24,15 +24,15 @@ export abstract class XmlSuggestionProvider<T> {
     attribute?: XMLAttribute
   ): T[];
 
-  public getConfigKey(): string | undefined {
+  protected getConfigKey(): string | undefined {
     return undefined;
   }
 
-  public getAttributeValueConditions(): CombinedCondition[] {
+  protected getAttributeValueConditions(): CombinedCondition[] {
     return [];
   }
 
-  public getElementContentMatches(): CombinedCondition[] {
+  protected getElementContentMatches(): CombinedCondition[] {
     return [];
   }
 
@@ -48,22 +48,18 @@ export abstract class XmlSuggestionProvider<T> {
     return this.processSuggestions(document, position, tokenData);
   }
 
-  public getSuggestionProviders(document: TextDocument): SuggestionProviders<T> {
+  protected getSuggestionProviders(document: TextDocument): SuggestionProviders<T> {
     return {
       attributeValue: [options => this.getAttributeValueSuggestionProviders(document, options)],
       elementContent: [options => this.getElementContentSuggestionProviders(document, options)],
     };
   }
 
-  public getAttributeValueSuggestionProviders(
+  protected getAttributeValueSuggestionProviders(
     document: TextDocument,
     { element, attribute }: AttributeValueCompletionOptions<undefined>
   ): T[] {
-    const match = this.getAttributeValueConditions().find(matchElement => {
-      return this.matchesConditions(matchElement, element, attribute);
-    });
-
-    if (!match) {
+    if (!this.hasMatchingCondition(this.getAttributeValueConditions(), element, attribute)) {
       return [];
     }
 
@@ -81,15 +77,11 @@ export abstract class XmlSuggestionProvider<T> {
     return this.getSuggestionItems(value, range, document, element, attribute);
   }
 
-  public getElementContentSuggestionProviders(
+  protected getElementContentSuggestionProviders(
     document: TextDocument,
     { element }: ElementContentCompletionOptions<undefined>
   ): T[] {
-    const match = this.getElementContentMatches().find(matchElement => {
-      return this.matchesConditions(matchElement, element);
-    });
-
-    if (!match) {
+    if (!this.hasMatchingCondition(this.getElementContentMatches(), element)) {
       return [];
     }
 
@@ -106,6 +98,16 @@ export abstract class XmlSuggestionProvider<T> {
       : new Range(0, 0, 0, 0);
 
     return this.getSuggestionItems(elementValue, range, document, element);
+  }
+
+  protected hasMatchingCondition(
+    conditions: CombinedCondition[],
+    element: XMLElement,
+    attribute?: XMLAttribute
+  ): boolean {
+    return conditions.some(condition => {
+      return this.matchesConditions(condition, element, attribute);
+    });
   }
 
   protected matchesConditions(
@@ -139,8 +141,10 @@ export abstract class XmlSuggestionProvider<T> {
       }
     }
 
-    return this.getFilePatterns().some(pattern =>
-      minimatch(document.uri.fsPath, pattern, { matchBase: true })
-    );
+    return this.isMatchingFile(document, this.getFilePatterns());
+  }
+
+  protected isMatchingFile(document: TextDocument, patterns: string[]): boolean {
+    return patterns.some(pattern => minimatch(document.uri.fsPath, pattern, { matchBase: true }));
   }
 }

@@ -18,7 +18,7 @@ export class XmlSnippetProvider implements vscode.CompletionItemProvider {
   private readonly snippetProviders: SnippetProvider[] = [
     {
       pattern: '**/di.xml',
-      snippets: require('./snippets/di-xml.json'),
+      snippets: require('./xml/snippet/di-xml.json'),
     },
   ];
 
@@ -28,8 +28,6 @@ export class XmlSnippetProvider implements vscode.CompletionItemProvider {
     token: vscode.CancellationToken,
     context: vscode.CompletionContext
   ): vscode.ProviderResult<vscode.CompletionItem[]> {
-    const wordRange = document.getWordRangeAtPosition(position);
-    const word = document.getText(wordRange);
     const snippets = this.getSnippets(document);
 
     if (!snippets) {
@@ -41,15 +39,17 @@ export class XmlSnippetProvider implements vscode.CompletionItemProvider {
     for (const name in snippets) {
       const snippet = snippets[name];
 
-      // if (snippet.prefix.indexOf(word) !== 0) {
-      //   continue;
-      // }
+      const completionItem = new vscode.CompletionItem(
+        {
+          label: name,
+          detail: ' magento-toolbox',
+        },
+        vscode.CompletionItemKind.Snippet
+      );
 
-      const completionItem = new vscode.CompletionItem(name, vscode.CompletionItemKind.Snippet);
-      completionItem.insertText = new vscode.SnippetString(snippet.body.join('\n'));
-
+      const snippetString = new vscode.SnippetString(snippet.body.join('\n'));
+      completionItem.insertText = snippetString;
       completionItem.documentation = new vscode.MarkdownString(snippet.description);
-
       completionItem.additionalTextEdits = [
         vscode.TextEdit.delete(
           new vscode.Range(position.line, position.character - 1, position.line, position.character)

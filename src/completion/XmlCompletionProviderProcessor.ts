@@ -14,6 +14,9 @@ export class XmlCompletionProviderProcessor
   extends XmlSuggestionProviderProcessor<CompletionItem>
   implements CompletionItemProvider
 {
+  public static readonly TRIGGER_CHARACTERS =
+    '\\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
   public constructor() {
     super([
       new ModuleCompletionProvider(),
