@@ -4,6 +4,10 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+- Added: Event name autocomplete
+
 ## [1.5.0] - 2025-04-06
 - Added: Class namespace autocomplete in XML files
 - Added: Module name autocomplete in module.xml files
