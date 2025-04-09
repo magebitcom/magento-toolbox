@@ -4,9 +4,12 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.6.0] - 2025-04-09
 
 - Added: Event name autocomplete
+- Added: Hovering CRON job schedules will show a human readable version
+- Added: Cron job indexer and instance class decorations
+- Changed: Implemented batching for the indexer to reduce load
 
 ## [1.5.0] - 2025-04-06
 - Added: Class namespace autocomplete in XML files

@@ -1,17 +1,19 @@
 import * as vscode from 'vscode';
 import IndexManager from './IndexManager';
+import ExtensionState from 'common/ExtensionState';
+import Common from 'util/Common';
 
 class IndexRunner {
   public async indexWorkspace(force: boolean = false): Promise<void> {
-    if (!vscode.workspace.workspaceFolders) {
+    if (ExtensionState.magentoWorkspaces.length === 0) {
       return;
     }
 
-    for (const workspaceFolder of vscode.workspace.workspaceFolders) {
+    for (const workspaceFolder of ExtensionState.magentoWorkspaces) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Window,
-          title: '[Magento Toolbox]',
+          title: `Magento Toolbox v${Common.getVersion()}`,
         },
         async progress => {
           await IndexManager.indexWorkspace(workspaceFolder, progress, force);

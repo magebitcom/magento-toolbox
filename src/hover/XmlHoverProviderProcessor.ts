@@ -2,10 +2,11 @@ import { CancellationToken, Hover, Position, TextDocument } from 'vscode';
 import { XmlSuggestionProviderProcessor } from 'common/xml/XmlSuggestionProviderProcessor';
 import { AclHoverProvider } from 'hover/xml/AclHoverProvider';
 import { ModuleHoverProvider } from 'hover/xml/ModuleHoverProvider';
+import { CronHoverProvider } from 'hover/xml/CronHoverProvider';
 
 export class XmlHoverProviderProcessor extends XmlSuggestionProviderProcessor<Hover> {
   public constructor() {
-    super([new AclHoverProvider(), new ModuleHoverProvider()]);
+    super([new AclHoverProvider(), new ModuleHoverProvider(), new CronHoverProvider()]);
   }
 
   public async provideHover(

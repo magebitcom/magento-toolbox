@@ -18,6 +18,8 @@ import AclIndexer from './acl/AclIndexer';
 import { AclIndexData } from './acl/AclIndexData';
 import TemplateIndexer from './template/TemplateIndexer';
 import { TemplateIndexData } from './template/TemplateIndexData';
+import CronIndexer from './cron/CronIndexer';
+import { CronIndexData } from './cron/CronIndexData';
 
 type IndexerInstance =
   | DiIndexer
@@ -25,7 +27,8 @@ type IndexerInstance =
   | AutoloadNamespaceIndexer
   | EventsIndexer
   | AclIndexer
-  | TemplateIndexer;
+  | TemplateIndexer
+  | CronIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
@@ -34,9 +37,12 @@ type IndexerDataMap = {
   [EventsIndexer.KEY]: EventsIndexData;
   [AclIndexer.KEY]: AclIndexData;
   [TemplateIndexer.KEY]: TemplateIndexData;
+  [CronIndexer.KEY]: CronIndexData;
 };
 
 class IndexManager {
+  private static readonly INDEX_BATCH_SIZE = 50;
+
   protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
 
@@ -48,6 +54,7 @@ class IndexManager {
       new EventsIndexer(),
       new AclIndexer(),
       new TemplateIndexer(),
+      new CronIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -86,23 +93,27 @@ class IndexManager {
       let doneCount = 0;
       const totalCount = files.length;
 
-      await Promise.all(
-        files.map(async file => {
-          const data = await indexer.indexFile(file);
+      for (let i = 0; i < files.length; i += IndexManager.INDEX_BATCH_SIZE) {
+        const batch = files.slice(i, i + IndexManager.INDEX_BATCH_SIZE);
 
-          if (data !== undefined) {
-            indexData.set(file.fsPath, data);
-          }
+        await Promise.all(
+          batch.map(async file => {
+            const data = await indexer.indexFile(file);
 
-          doneCount++;
-          const pct = Math.round((doneCount / totalCount) * 100);
+            if (data !== undefined) {
+              indexData.set(file.fsPath, data);
+            }
 
-          progress.report({
-            message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
-            increment: pct,
-          });
-        })
-      );
+            doneCount++;
+            const pct = Math.round((doneCount / totalCount) * 100);
+
+            progress.report({
+              message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
+              increment: pct,
+            });
+          })
+        );
+      }
 
       this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
       this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
@@ -180,6 +191,9 @@ class IndexManager {
 
       case TemplateIndexer.KEY:
         return new TemplateIndexData(data) as IndexerDataMap[T];
+
+      case CronIndexer.KEY:
+        return new CronIndexData(data) as IndexerDataMap[T];
 
       default:
         return undefined;
