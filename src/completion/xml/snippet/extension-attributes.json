@@ -1,0 +1,32 @@
+{
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Api/etc/extension_attributes.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a config element"
+  },
+  "extension_attributes": {
+    "parent": "config",
+    "prefix": "extension_attributes",
+    "body": [
+      "<extension_attributes for=\"${1}\">",
+      "    ${2}",
+      "</extension_attributes>"
+    ],
+    "description": "Insert an extension_attributes element"
+  },
+  "attribute": {
+    "parent": "extension_attributes",
+    "prefix": "attribute",
+    "body": [
+      "<attribute name=\"${1}\" type=\"${2}\" />"
+    ],
+    "description": "Insert an attribute element"
+  }
+} 

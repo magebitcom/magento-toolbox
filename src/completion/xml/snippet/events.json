@@ -5,7 +5,7 @@
     "body": [
       "<event name=\"${1}\">\n    ${2}\n</event>"
     ],
-    "description": "Insert a event element to the current file"
+    "description": "Insert a event element"
   },
   "observer": {
     "parent": "event",
@@ -13,6 +13,18 @@
     "body": [
       "<observer name=\"${1}\" instance=\"${2}\" />"
     ],
-    "description": "Insert a observer element to the current file"
+    "description": "Insert a observer element"
+  },
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Event/etc/events.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a config element"
   }
 }

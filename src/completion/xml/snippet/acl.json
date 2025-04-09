@@ -1,0 +1,46 @@
+{
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:framework:Acl/etc/acl.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a config element"
+  },
+  "acl": {
+    "parent": "config",
+    "prefix": "acl",
+    "body": [
+      "<acl>",
+      "    <resources>",
+      "        ${1}",
+      "    </resources>",
+      "</acl>"
+    ],
+    "description": "Insert an acl element"
+  },
+  "resource (only ID)": {
+    "parent": ["resources", "resource"],
+    "prefix": "resource",
+    "body": [
+      "<resource id=\"${1}\">",
+      "    ${2}",
+      "</resource>"
+    ],
+    "description": "Insert a resource element"
+  },
+  "resource (with ID and title)": {
+    "parent": ["resources", "resource"],
+    "prefix": "resource",
+    "body": [
+      "<resource id=\"${1}\" title=\"${2}\" translate=\"title\">",
+      "    ${3}",
+      "</resource>"
+    ],
+    "description": "Insert a resource element"
+  }
+} 

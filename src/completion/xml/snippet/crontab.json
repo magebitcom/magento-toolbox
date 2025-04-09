@@ -18,5 +18,17 @@
       "</job>"
     ],
     "description": "Insert a cron job element"
+  },
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:module:Magento_Cron:etc/crontab.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a sample config element"
   }
 } 

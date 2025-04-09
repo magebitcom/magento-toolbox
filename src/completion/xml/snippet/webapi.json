@@ -10,6 +10,34 @@
       "    </resources>",
       "</route>"
     ],
-    "description": "Insert a route element to the current file"
+    "description": "Insert a route element"
+  },
+  "resource": {
+    "parent": "resources",
+    "prefix": "resource",
+    "body": [
+      "<resource ref=\"${1}\" />"
+    ],
+    "description": "Insert a resource element"
+  },
+  "service": {
+    "parent": "route",
+    "prefix": "service",
+    "body": [
+      "<service class=\"${1}\" method=\"${2}\" />"
+    ],
+    "description": "Insert a service element"
+  },
+  "routes": {
+    "parent": null,
+    "prefix": "routes",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<routes xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:module:Magento_Webapi:etc/webapi.xsd\">",
+      "    ${1}",
+      "</routes>"
+    ],
+    "description": "Insert a routes element"
   }
 }

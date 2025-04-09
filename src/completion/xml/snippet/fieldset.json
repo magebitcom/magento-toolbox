@@ -1,0 +1,44 @@
+{
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:framework:DataObject/etc/fieldset.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a config element"
+  },
+  "scope": {
+    "parent": "config",
+    "prefix": "scope",
+    "body": [
+      "<scope id=\"${1:global}\">",
+      "    ${2}",
+      "</scope>"
+    ],
+    "description": "Insert a scope element"
+  },
+  "fieldset": {
+    "parent": "scope",
+    "prefix": "fieldset",
+    "body": [
+      "<fieldset name=\"${1}\">",
+      "    ${2}",
+      "</fieldset>"
+    ],
+    "description": "Insert a fieldset element"
+  },
+  "field": {
+    "parent": "fieldset",
+    "prefix": "field",
+    "body": [
+      "<field name=\"${1}\">",
+      "    <aspect name=\"${2:to_order_item}\" />",
+      "</field>"
+    ],
+    "description": "Insert a field element"
+  }
+} 

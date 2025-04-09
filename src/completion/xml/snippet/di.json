@@ -5,7 +5,7 @@
     "body": [
       "<preference for=\"${1}\" type=\"${2}\" />"
     ],
-    "description": "Insert a preference element to the current file"
+    "description": "Insert a preference element"
   },
   "type": {
     "parent": "config",
@@ -15,7 +15,7 @@
       "    ${2}",
       "</type>"
     ],
-    "description": "Insert a type element to the current file"
+    "description": "Insert a type element"
   },
   "arguments": {
     "parent": "type",
@@ -25,7 +25,7 @@
       "    ${1}",
       "</arguments>"
     ],
-    "description": "Insert an arguments element to the current file"
+    "description": "Insert an arguments element"
   },
   "argument": {
     "parent": "arguments",
@@ -33,7 +33,7 @@
     "body": [
       "<argument name=\"${1}\" xsi:type=\"${2}\">${3}</argument>"
     ],
-    "description": "Insert an argument element to the current file"
+    "description": "Insert an argument element"
   },
   "plugin": {
     "parent": "type",
@@ -41,7 +41,17 @@
     "body": [
       "<plugin name=\"${1}\" type=\"${2}\" />"
     ],
-    "description": "Insert a plugin element to the current file"
+    "description": "Insert a plugin element"
+  },
+  "type with plugin": {
+    "parent": "config",
+    "prefix": "type",
+    "body": [
+      "<type name=\"${1}\">",
+      "    <plugin name=\"${2}\" type=\"${3}\" />",
+      "</type>"
+    ],
+    "description": "Insert a type element with a plugin element"
   },
   "virtualType": {
     "parent": "config",
@@ -51,6 +61,18 @@
       "    ${3}",
       "</virtualType>"
     ],
-    "description": "Insert a virtualType element to the current file"
+    "description": "Insert a virtualType element"
+  },
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:framework:ObjectManager/etc/config.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a config element"
   }
 }

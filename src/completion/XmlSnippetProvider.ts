@@ -6,7 +6,7 @@ interface Snippet {
   prefix: string;
   body: string[];
   description: string;
-  parent?: string;
+  parent?: string | string[] | null;
 }
 
 interface SnippetProvider {
@@ -18,6 +18,18 @@ export class XmlSnippetProvider implements vscode.CompletionItemProvider {
   public static readonly TRIGGER_CHARACTERS = ['<'];
 
   private readonly snippetProviders: SnippetProvider[] = [
+    {
+      pattern: '**/acl.xml',
+      snippets: require('./xml/snippet/acl.json'),
+    },
+    {
+      pattern: '**/extension-attributes.xml',
+      snippets: require('./xml/snippet/extension-attributes.json'),
+    },
+    {
+      pattern: '**/fieldset.xml',
+      snippets: require('./xml/snippet/fieldset.json'),
+    },
     {
       pattern: '**/di.xml',
       snippets: require('./xml/snippet/di.json'),
@@ -55,8 +67,18 @@ export class XmlSnippetProvider implements vscode.CompletionItemProvider {
     for (const name in snippets) {
       const snippet = snippets[name];
 
-      if (snippet.parent && snippet.parent !== directParentName) {
+      if (snippet.parent === null && directParentName) {
         continue;
+      }
+
+      if (snippet.parent) {
+        if (Array.isArray(snippet.parent)) {
+          if (!snippet.parent.includes(directParentName || '')) {
+            continue;
+          }
+        } else if (snippet.parent !== directParentName) {
+          continue;
+        }
       }
 
       const completionItem = new vscode.CompletionItem(
