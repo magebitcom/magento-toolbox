@@ -18,6 +18,8 @@ import AclIndexer from './acl/AclIndexer';
 import { AclIndexData } from './acl/AclIndexData';
 import TemplateIndexer from './template/TemplateIndexer';
 import { TemplateIndexData } from './template/TemplateIndexData';
+import CronIndexer from './cron/CronIndexer';
+import { CronIndexData } from './cron/CronIndexData';
 
 type IndexerInstance =
   | DiIndexer
@@ -25,7 +27,8 @@ type IndexerInstance =
   | AutoloadNamespaceIndexer
   | EventsIndexer
   | AclIndexer
-  | TemplateIndexer;
+  | TemplateIndexer
+  | CronIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
@@ -34,6 +37,7 @@ type IndexerDataMap = {
   [EventsIndexer.KEY]: EventsIndexData;
   [AclIndexer.KEY]: AclIndexData;
   [TemplateIndexer.KEY]: TemplateIndexData;
+  [CronIndexer.KEY]: CronIndexData;
 };
 
 class IndexManager {
@@ -50,6 +54,7 @@ class IndexManager {
       new EventsIndexer(),
       new AclIndexer(),
       new TemplateIndexer(),
+      new CronIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -186,6 +191,9 @@ class IndexManager {
 
       case TemplateIndexer.KEY:
         return new TemplateIndexData(data) as IndexerDataMap[T];
+
+      case CronIndexer.KEY:
+        return new CronIndexData(data) as IndexerDataMap[T];
 
       default:
         return undefined;
