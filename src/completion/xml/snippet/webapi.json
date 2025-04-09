@@ -1,0 +1,15 @@
+{
+  "route": {
+    "parent": "routes",
+    "prefix": "route",
+    "body": [
+      "<route url=\"${1:/V1/endpoint}\" method=\"${2:GET}\">",
+      "    <service class=\"${3}\" method=\"${4}\" />",
+      "    <resources>",
+      "        <resource ref=\"${5:anonymous}\" />",
+      "    </resources>",
+      "</route>"
+    ],
+    "description": "Insert a route element to the current file"
+  }
+}

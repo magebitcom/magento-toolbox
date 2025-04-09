@@ -1,36 +1,55 @@
 {
   "preference": {
+    "parent": "config",
     "prefix": "preference",
     "body": [
-      "<preference for=\"${1:ClassName}\" type=\"${2:ClassName}\" />"
+      "<preference for=\"${1}\" type=\"${2}\" />"
     ],
     "description": "Insert a preference element to the current file"
   },
   "type": {
+    "parent": "config",
     "prefix": "type",
     "body": [
-      "<type name=\"${1:ClassName}\">\n    ${2}\n</type>"
+      "<type name=\"${1}\">",
+      "    ${2}",
+      "</type>"
     ],
     "description": "Insert a type element to the current file"
   },
   "arguments": {
+    "parent": "type",
     "prefix": "arguments",
     "body": [
-      "<arguments>\n    ${1}\n</arguments>"
+      "<arguments>",
+      "    ${1}",
+      "</arguments>"
     ],
     "description": "Insert an arguments element to the current file"
   },
   "argument": {
+    "parent": "arguments",
     "prefix": "argument",
     "body": [
-      "<argument name=\"${1:Name}\" xsi:type=\"${2:Type}\">${3:Value}</argument>"
+      "<argument name=\"${1}\" xsi:type=\"${2}\">${3}</argument>"
     ],
     "description": "Insert an argument element to the current file"
   },
+  "plugin": {
+    "parent": "type",
+    "prefix": "plugin",
+    "body": [
+      "<plugin name=\"${1}\" type=\"${2}\" />"
+    ],
+    "description": "Insert a plugin element to the current file"
+  },
   "virtualType": {
+    "parent": "config",
     "prefix": "virtualType",
     "body": [
-      "<virtualType name=\"${1:ClassName}\" type=\"${2:ClassName}\">\n    ${3}\n</virtualType>"
+      "<virtualType name=\"${1}\" type=\"${2}\">",
+      "    ${3}",
+      "</virtualType>"
     ],
     "description": "Insert a virtualType element to the current file"
   }

@@ -1,0 +1,18 @@
+{
+  "event": {
+    "parent": "config",
+    "prefix": "event",
+    "body": [
+      "<event name=\"${1}\">\n    ${2}\n</event>"
+    ],
+    "description": "Insert a event element to the current file"
+  },
+  "observer": {
+    "parent": "event",
+    "prefix": "observer",
+    "body": [
+      "<observer name=\"${1}\" instance=\"${2}\" />"
+    ],
+    "description": "Insert a observer element to the current file"
+  }
+}
