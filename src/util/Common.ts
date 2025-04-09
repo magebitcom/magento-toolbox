@@ -19,4 +19,8 @@ export default class Common {
 
     return undefined;
   }
+
+  public static getVersion(): string {
+    return ExtensionState.context.extension.packageJSON.version;
+  }
 }
