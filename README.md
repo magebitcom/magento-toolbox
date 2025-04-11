@@ -17,7 +17,7 @@ Check out our [Wiki page](https://github.com/magebitcom/magento-toolbox/wiki) fo
 Open up the extensions tab and search for `Magento Toolbox`
 
 ### Via command
-Open up the VS Code Quick open window (`Ctrl-Shift-P`) and run this command:
+Open up the VS Code Quick open window (`Ctrl-P`) and run this command:
 ```
 ext install magebit.magebit-magento-toolbox
 ```
