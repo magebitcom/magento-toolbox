@@ -46,6 +46,10 @@ export class XmlSnippetProvider implements vscode.CompletionItemProvider {
       pattern: '**/webapi.xml',
       snippets: require('./xml/snippet/webapi.json'),
     },
+    {
+      pattern: '**/system.xml',
+      snippets: require('./xml/snippet/system.json'),
+    },
   ];
 
   public provideCompletionItems(

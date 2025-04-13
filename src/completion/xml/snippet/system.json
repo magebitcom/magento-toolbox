@@ -1,0 +1,69 @@
+{
+  "config": {
+    "parent": null,
+    "prefix": "config",
+    "body": [
+      "<?xml version=\"1.0\"?>",
+      "<config xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "        xsi:noNamespaceSchemaLocation=\"urn:magento:module:Magento_Config:etc/system_file.xsd\">",
+      "    ${1}",
+      "</config>"
+    ],
+    "description": "Insert a config element"
+  },
+  "system": {
+    "parent": "config",
+    "prefix": "system",
+    "body": [
+      "<system>",
+      "    ${1}",
+      "</system>"
+    ],
+    "description": "Insert a system element"
+  },
+  "tab": {
+    "parent": "system",
+    "prefix": "tab",
+    "body": [
+      "<tab id=\"${1}\" translate=\"label\" sortOrder=\"${2}\">",
+      "    <label>${3}</label>",
+      "</tab>"
+    ],
+    "description": "Insert a tab element"
+  },
+  "section": {
+    "parent": "tab",
+    "prefix": "section",
+    "body": [
+      "<section id=\"${1}\" translate=\"label\" sortOrder=\"${2}\">",
+      "    <label>${3}</label>",
+      "    <tab>${4}</tab>",
+      "    <resource>${5}</resource>",
+      "    ${6}",
+      "</section>"
+    ],
+    "description": "Insert a section element"
+  },
+  "group": {
+    "parent": "system",
+    "prefix": "group",
+    "body": [
+      "<group id=\"${1}\" translate=\"label\" sortOrder=\"${2:10}\" showInDefault=\"${3:1}\" showInWebsite=\"${4:1}\" showInStore=\"${5:1}\">",
+      "    <label>${6}</label>",
+      "    ${7}",
+      "</group>"
+    ],
+    "description": "Insert a group element"
+  },
+  "field": {
+    "parent": "group",
+    "prefix": "field",
+    "body": [
+      "<field id=\"${1}\" translate=\"label\" type=\"${2:text}\" sortOrder=\"${3:10}\" showInDefault=\"${4:1}\" showInWebsite=\"${5:1}\" showInStore=\"${6:1}\" canRestore=\"${7:1}\">",
+      "    <label>${8}</label>",
+      "    ${9}",
+      "</field>"
+    ],
+    "description": "Insert a field element"
+  }
+}
