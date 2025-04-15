@@ -4,6 +4,9 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+- Fixed: Issue [#92](https://github.com/magebitcom/magento-toolbox/issues/92) (Definitions and hovers dont work on element content values that are on a new line)
+
 ## [1.6.0] - 2025-04-09
 
 - Added: Event name autocomplete
