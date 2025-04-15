@@ -14,7 +14,10 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
       return null;
     }
 
-    const range = document.getWordRangeAtPosition(position, /("[^"]+")|(>[^<]+<)/);
+    const range = document.getWordRangeAtPosition(
+      position,
+      /((?:\\{1,2}\w+|\w+\\{1,2})(?:\w+\\{0,2})+)/
+    );
 
     if (!range) {
       return null;
@@ -28,7 +31,7 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
       return null;
     }
 
-    const potentialNamespace = word.replace(/["<>]/g, '').split(':').shift();
+    const potentialNamespace = word.split(':').shift()?.trim();
 
     if (!potentialNamespace) {
       return null;
@@ -45,11 +48,6 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
     const phpFile = await PhpDocumentParser.parseUri(document, classUri);
     const classLikeInfo = new ClasslikeInfo(phpFile);
 
-    const rangeWithoutTags = new Range(
-      range.start.with({ character: range.start.character + 1 }),
-      range.end.with({ character: range.end.character - 1 })
-    );
-
-    return new Hover(classLikeInfo.getHover(), rangeWithoutTags);
+    return new Hover(classLikeInfo.getHover(), range);
   }
 }

@@ -68,6 +68,7 @@ export abstract class XmlSuggestionProvider<T> {
     }
 
     const value = attribute?.value || '';
+    const trimmedValue = value.trim();
 
     const range = attribute
       ? new Range(
@@ -78,7 +79,7 @@ export abstract class XmlSuggestionProvider<T> {
         )
       : new Range(0, 0, 0, 0);
 
-    return this.getSuggestionItems(value, range, document, element, attribute);
+    return this.getSuggestionItems(trimmedValue, range, document, element, attribute);
   }
 
   public getElementContentSuggestionProviders(
@@ -95,6 +96,7 @@ export abstract class XmlSuggestionProvider<T> {
 
     const textContents = element.textContents.length > 0 ? element.textContents[0] : null;
     const elementValue = textContents?.text ?? '';
+    const trimmedElementValue = elementValue.trim();
 
     const range = textContents
       ? new Range(
@@ -105,7 +107,7 @@ export abstract class XmlSuggestionProvider<T> {
         )
       : new Range(0, 0, 0, 0);
 
-    return this.getSuggestionItems(elementValue, range, document, element);
+    return this.getSuggestionItems(trimmedElementValue, range, document, element);
   }
 
   protected matchesConditions(

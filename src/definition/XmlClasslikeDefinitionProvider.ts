@@ -26,7 +26,10 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       return null;
     }
 
-    const range = document.getWordRangeAtPosition(position, /("[^"]+")|(>[^<]+<)/);
+    const range = document.getWordRangeAtPosition(
+      position,
+      /((?:\\{1,2}\w+|\w+\\{1,2})(?:\w+\\{0,2})+)/
+    );
 
     if (!range) {
       return null;
@@ -41,7 +44,7 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
     }
 
     // also handle constants
-    const potentialNamespace = word.replace(/["<>]/g, '').split(':').shift();
+    const potentialNamespace = word.split(':').shift()?.trim();
 
     if (!potentialNamespace) {
       return null;
@@ -57,16 +60,11 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
 
     const targetPosition = await this.getClasslikeNameRange(document, classUri);
 
-    const originSelectionRange = new Range(
-      range.start.with({ character: range.start.character + 1 }),
-      range.end.with({ character: range.end.character - 1 })
-    );
-
     return [
       {
         targetUri: classUri,
         targetRange: targetPosition,
-        originSelectionRange,
+        originSelectionRange: range,
       } as LocationLink,
     ];
   }
