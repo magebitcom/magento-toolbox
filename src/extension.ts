@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
   Object.values(commands).forEach(command => {
     const instance = new command() as Command;
 
-    Logger.log('Registering command', instance.getCommand());
+    Logger.log('EXT', 'Registering command', instance.getCommand());
 
     const disposable = vscode.commands.registerCommand(instance.getCommand(), async (...args) => {
       try {

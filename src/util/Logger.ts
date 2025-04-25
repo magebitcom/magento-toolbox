@@ -3,17 +3,17 @@ import { window } from 'vscode';
 export class Logger {
   private channel = window.createOutputChannel('Magento Toolbox');
 
-  public log(...message: (string | number)[]) {
-    this.channel.appendLine(message.join(' '));
-    console.log('[Magento Toolbox]', ...message);
+  public log(category: string, ...message: (string | number)[]) {
+    const text = [`[${category}]`, ...message].join(' ');
+    this.channel.appendLine(text);
   }
 
-  public logWithTime(...message: (string | number)[]) {
-    this.log(new Date().toISOString(), ...message);
+  public logWithTime(category: string, ...message: (string | number)[]) {
+    this.log(category, new Date().toISOString(), ...message);
   }
 
-  public error(...message: (string | number)[]) {
-    this.logWithTime('ERROR', ...message);
+  public error(category: string, ...message: (string | number)[]) {
+    this.log(category, 'ERROR', ...message);
   }
 }
 

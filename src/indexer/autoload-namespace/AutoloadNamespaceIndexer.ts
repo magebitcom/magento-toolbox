@@ -75,7 +75,10 @@ export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
     relativeBaseDirectory: string
   ): Promise<Namespace[]> {
     const baseDirectoryUri = Uri.joinPath(baseDirectory, relativeBaseDirectory.replace(/\\$/, ''));
-    const files = await FileSystem.readDirectoryRecursive(baseDirectoryUri);
+    const files = await FileSystem.readDirectoryRecursive(
+      baseDirectoryUri,
+      new RelativePattern(baseDirectoryUri, '**/*.php')
+    );
 
     return files
       .filter(file => file.endsWith('.php'))

@@ -25,8 +25,11 @@ export default class FileSystem {
     return files.map(([name]) => name);
   }
 
-  public static async readDirectoryRecursive(uri: Uri): Promise<string[]> {
-    const files = await workspace.findFiles(new RelativePattern(uri, '**/*.php'));
+  public static async readDirectoryRecursive(
+    uri: Uri,
+    pattern: RelativePattern
+  ): Promise<string[]> {
+    const files = await workspace.findFiles(pattern);
     return files.map(file => path.relative(uri.fsPath, file.fsPath));
   }
 

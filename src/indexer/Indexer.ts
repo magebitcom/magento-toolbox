@@ -7,7 +7,7 @@ export abstract class Indexer<D = any> {
   public abstract getPattern(uri: Uri): GlobPattern;
 
   public getExcludePattern(uri: Uri): GlobPattern | null {
-    return new RelativePattern(uri, '{**/node_modules/**,**/dev/**,**/pub/**}');
+    return null;
   }
 
   public abstract indexFile(uri: Uri): Promise<D | undefined>;

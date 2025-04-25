@@ -42,6 +42,7 @@ type IndexerDataMap = {
 };
 
 class IndexManager {
+  private static readonly INDEXING_BATCH_SIZE = 50;
   private static readonly REPORTING_BATCH_SIZE = 500;
 
   protected indexers: IndexerInstance[] = [];
@@ -75,19 +76,19 @@ class IndexManager {
   ): Promise<void> {
     const workspaceUri = workspaceFolder.uri;
 
-    Logger.logWithTime('Indexing workspace', workspaceFolder.name);
-
     for (const indexer of this.indexers) {
       if (!force) {
-        Logger.logWithTime('Loading index from storage', workspaceFolder.name, indexer.getId());
+        Logger.log('INDEXER', 'Loading index from storage', workspaceFolder.name, indexer.getId());
         this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
         if (!this.shouldIndex(workspaceFolder, indexer)) {
-          Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
+          Logger.log('INDEXER', 'Loaded index from storage', workspaceFolder.name, indexer.getId());
           continue;
         }
       }
-      Logger.logWithTime('Indexing', indexer.getName());
+
+      const startIndexing = Date.now();
+      Logger.log('INDEXER', 'Indexing', indexer.getName());
 
       progress.report({
         message: `Indexing - ${indexer.getName()} [...]`,
@@ -95,62 +96,69 @@ class IndexManager {
 
       const indexData = new Map();
 
-      Logger.logWithTime('Discovering files to index');
+      const startDiscover = Date.now();
+      Logger.log('INDEXER', 'Discovering files to index');
 
       const files = await workspace.findFiles(
         indexer.getPattern(workspaceUri),
         indexer.getExcludePattern(workspaceUri)
       );
 
+      const discoverDuration = Date.now() - startDiscover;
+      Logger.log('INDEXER', 'Found', files.length, 'files to index in', discoverDuration, 'ms');
+
       let doneCount = 0;
       const totalCount = files.length;
-      Logger.logWithTime('Found', totalCount, 'files to index');
 
-      const batchSize = Config.get<number>('magento-toolbox.indexingBatchSize', 25);
+      const startIndex = Date.now();
 
-      for (let i = 0; i < files.length; i += batchSize) {
-        const batch = files.slice(i, i + batchSize);
+      for (let i = 0; i < files.length; i += IndexManager.INDEXING_BATCH_SIZE) {
+        const batch = files.slice(i, i + IndexManager.INDEXING_BATCH_SIZE);
 
-        await Promise.all(
-          batch.map(async file => {
-            try {
-              const data = await indexer.indexFile(file);
+        const promises = batch.map(async file => {
+          try {
+            const data = await indexer.indexFile(file);
 
-              if (data !== undefined) {
-                indexData.set(file.fsPath, data);
-              }
-
-              doneCount++;
-
-              if (doneCount % IndexManager.REPORTING_BATCH_SIZE === 0) {
-                Logger.logWithTime('Indexed', doneCount, 'files of', totalCount);
-
-                progress.report({
-                  message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
-                });
-              }
-            } catch (error) {
-              Logger.error('Error indexing file', file.fsPath, String(error));
+            if (data !== undefined) {
+              indexData.set(file.fsPath, data);
             }
-          })
-        );
+          } catch (error) {
+            Logger.error('Error indexing file', file.fsPath, String(error));
+          }
+        });
+
+        await Promise.all(promises);
+
+        doneCount += batch.length;
+
+        if (doneCount % IndexManager.REPORTING_BATCH_SIZE === 0) {
+          Logger.log('Indexed', doneCount, 'files of', totalCount);
+
+          progress.report({
+            message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
+          });
+        }
       }
+
+      const indexDuration = Date.now() - startIndex;
+      Logger.log('INDEXER', `Indexed ${doneCount} files of ${totalCount} in ${indexDuration}ms`);
 
       this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
       this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       clear([indexer.getId()]);
 
-      Logger.logWithTime('Indexing', indexer.getName(), 'done');
+      const indexingDuration = Date.now() - startIndexing;
+      Logger.log('INDEXER', 'Indexing', indexer.getName(), 'done in', indexingDuration, 'ms');
 
       progress.report({ message: `Indexing - ${indexer.getName()} [done]` });
     }
 
-    Logger.logWithTime('Finished indexing workspace', workspaceFolder.name);
+    Logger.log('INDEXER', 'Finished indexing workspace', workspaceFolder.name);
   }
 
   public async indexFile(workspaceFolder: WorkspaceFolder, file: Uri): Promise<void> {
-    Logger.logWithTime('Indexing file', file.fsPath);
+    Logger.log('INDEXER', 'Indexing file', file.fsPath);
 
     await Promise.all(
       this.indexers.map(async indexer => {
@@ -158,17 +166,17 @@ class IndexManager {
       })
     );
 
-    Logger.logWithTime('Finished indexing file', file.fsPath);
+    Logger.log('INDEXER', 'Finished indexing file', file.fsPath);
   }
 
   public async indexFiles(workspaceFolder: WorkspaceFolder, files: Uri[]): Promise<void> {
-    Logger.logWithTime(`Indexing ${files.length} files`);
+    Logger.log('INDEXER', `Indexing ${files.length} files`);
 
     for (const indexer of this.indexers) {
       await Promise.all(files.map(file => this.indexFileInner(workspaceFolder, file, indexer)));
     }
 
-    Logger.logWithTime(`Finished indexing ${files.length} files`);
+    Logger.log('INDEXER', `Finished indexing ${files.length} files`);
   }
 
   public getIndexStorageData<T = any>(

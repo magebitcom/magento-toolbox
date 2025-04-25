@@ -67,11 +67,6 @@
           "type": "boolean",
           "default": true,
           "description": "Enable hover decorations for Magento 2 XML files."
-        },
-        "magento-toolbox.indexingBatchSize": {
-          "type": "number",
-          "default": 25,
-          "description": "Number of files to index in a single batch."
         }
       }
     },

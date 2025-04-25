@@ -40,7 +40,7 @@ export default class HandlebarsTemplateRenderer {
       const content = compiledTemplate(data);
       return content;
     } catch (error) {
-      Logger.log('Failed to generate template', String(error));
+      Logger.log('RENDER', 'Failed to generate template', String(error));
       throw error;
     }
   }
