@@ -20,7 +20,7 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
     position: Position,
     token: CancellationToken
   ) {
-    const provideXmlDefinitions = Config.get<boolean>('provideXmlDefinitions');
+    const provideXmlDefinitions = Config.get<boolean>('provideXmlDefinitions', true);
 
     if (!provideXmlDefinitions) {
       return null;

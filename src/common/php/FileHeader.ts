@@ -2,7 +2,7 @@ import Config from 'common/Config';
 
 export default class FileHeader {
   public static getHeader(module: string): string | undefined {
-    const header = Config.get<string>('phpFileHeaderComment');
+    const header = Config.get<string>('phpFileHeaderComment', '');
 
     if (!header) {
       return undefined;

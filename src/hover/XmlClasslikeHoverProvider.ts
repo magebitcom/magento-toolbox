@@ -8,7 +8,7 @@ import { Hover, HoverProvider, Position, Range, TextDocument } from 'vscode';
 
 export default class XmlClasslikeHoverProvider implements HoverProvider {
   public async provideHover(document: TextDocument, position: Position): Promise<Hover | null> {
-    const provideXmlHovers = Config.get<boolean>('provideXmlHovers');
+    const provideXmlHovers = Config.get<boolean>('provideXmlHovers', true);
 
     if (!provideXmlHovers) {
       return null;

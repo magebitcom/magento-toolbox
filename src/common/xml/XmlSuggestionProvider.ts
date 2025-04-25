@@ -134,7 +134,7 @@ export abstract class XmlSuggestionProvider<T> {
 
   public canProvideSuggestions(document: TextDocument): boolean {
     if (this.getConfigKey()) {
-      const provideXmlSuggestions = Config.get<boolean>(this.getConfigKey()!);
+      const provideXmlSuggestions = Config.get<boolean>(this.getConfigKey()!, true);
 
       if (!provideXmlSuggestions) {
         return false;

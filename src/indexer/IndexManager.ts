@@ -20,6 +20,7 @@ import TemplateIndexer from './template/TemplateIndexer';
 import { TemplateIndexData } from './template/TemplateIndexData';
 import CronIndexer from './cron/CronIndexer';
 import { CronIndexData } from './cron/CronIndexData';
+import Config from 'common/Config';
 
 type IndexerInstance =
   | DiIndexer
@@ -41,7 +42,7 @@ type IndexerDataMap = {
 };
 
 class IndexManager {
-  private static readonly INDEX_BATCH_SIZE = 50;
+  private static readonly REPORTING_BATCH_SIZE = 500;
 
   protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
@@ -77,40 +78,60 @@ class IndexManager {
     Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
-      this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+      if (!force) {
+        Logger.logWithTime('Loading index from storage', workspaceFolder.name, indexer.getId());
+        this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
-      if (!force && !this.shouldIndex(workspaceFolder, indexer)) {
-        Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
-        continue;
+        if (!this.shouldIndex(workspaceFolder, indexer)) {
+          Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
+          continue;
+        }
       }
-      progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
-
-      const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
-
       Logger.logWithTime('Indexing', indexer.getName());
-      const files = await workspace.findFiles(indexer.getPattern(workspaceUri), 'dev/**');
+
+      progress.report({
+        message: `Indexing - ${indexer.getName()} [...]`,
+      });
+
+      const indexData = new Map();
+
+      Logger.logWithTime('Discovering files to index');
+
+      const files = await workspace.findFiles(
+        indexer.getPattern(workspaceUri),
+        indexer.getExcludePattern(workspaceUri)
+      );
 
       let doneCount = 0;
       const totalCount = files.length;
+      Logger.logWithTime('Found', totalCount, 'files to index');
 
-      for (let i = 0; i < files.length; i += IndexManager.INDEX_BATCH_SIZE) {
-        const batch = files.slice(i, i + IndexManager.INDEX_BATCH_SIZE);
+      const batchSize = Config.get<number>('magento-toolbox.indexingBatchSize', 25);
+
+      for (let i = 0; i < files.length; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
 
         await Promise.all(
           batch.map(async file => {
-            const data = await indexer.indexFile(file);
+            try {
+              const data = await indexer.indexFile(file);
 
-            if (data !== undefined) {
-              indexData.set(file.fsPath, data);
+              if (data !== undefined) {
+                indexData.set(file.fsPath, data);
+              }
+
+              doneCount++;
+
+              if (doneCount % IndexManager.REPORTING_BATCH_SIZE === 0) {
+                Logger.logWithTime('Indexed', doneCount, 'files of', totalCount);
+
+                progress.report({
+                  message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
+                });
+              }
+            } catch (error) {
+              Logger.error('Error indexing file', file.fsPath, String(error));
             }
-
-            doneCount++;
-            const pct = Math.round((doneCount / totalCount) * 100);
-
-            progress.report({
-              message: `Indexing - ${indexer.getName()} [${doneCount}/${totalCount}]`,
-              increment: pct,
-            });
           })
         );
       }
@@ -122,7 +143,7 @@ class IndexManager {
 
       Logger.logWithTime('Indexing', indexer.getName(), 'done');
 
-      progress.report({ increment: 100 });
+      progress.report({ message: `Indexing - ${indexer.getName()} [done]` });
     }
 
     Logger.logWithTime('Finished indexing workspace', workspaceFolder.name);
