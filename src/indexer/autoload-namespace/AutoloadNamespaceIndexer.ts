@@ -1,8 +1,9 @@
-import { RelativePattern, Uri } from 'vscode';
 import { Indexer } from 'indexer/Indexer';
-import FileSystem from 'util/FileSystem';
 import { Namespace } from './types';
 import { IndexerKey } from 'types/indexer';
+import * as fs from 'fs';
+import path from 'path';
+import { fdir } from 'fdir';
 
 export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
   public static readonly KEY = 'autoloadNamespace';
@@ -19,19 +20,19 @@ export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
     return 'namespaces';
   }
 
-  public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/composer.json');
+  public getPattern(): string {
+    return '**/composer.json';
   }
 
-  public async indexFile(uri: Uri): Promise<Namespace[] | undefined> {
-    const content = await FileSystem.readFile(uri);
+  public async indexFile(filePath: string): Promise<Namespace[] | undefined> {
+    const content = await fs.promises.readFile(filePath, 'utf8');
     const composer = JSON.parse(content);
 
     if (!composer.autoload) {
       return;
     }
 
-    const baseDir = Uri.joinPath(uri, '..');
+    const baseDir = path.join(filePath, '..');
     const data: Namespace[] = [];
 
     // Handle PSR-4 autoloading
@@ -53,7 +54,7 @@ export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
 
   private async indexNamespaces(
     autoLoadData: Record<string, string[]>,
-    baseDir: Uri
+    baseDir: string
   ): Promise<Namespace[]> {
     const promises: Promise<Namespace[]>[] = [];
 
@@ -71,17 +72,17 @@ export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
 
   private async expandNamespaces(
     baseNamespace: string,
-    baseDirectory: Uri,
+    baseDirectory: string,
     relativeBaseDirectory: string
   ): Promise<Namespace[]> {
-    const baseDirectoryUri = Uri.joinPath(baseDirectory, relativeBaseDirectory.replace(/\\$/, ''));
-    const files = await FileSystem.readDirectoryRecursive(
-      baseDirectoryUri,
-      new RelativePattern(baseDirectoryUri, '**/*.php')
-    );
+    const baseDirectoryPath = path.join(baseDirectory, relativeBaseDirectory.replace(/\\$/, ''));
+    const files = await new fdir()
+      .withRelativePaths()
+      .filter((filePath: string) => filePath.endsWith('.php'))
+      .crawl(baseDirectoryPath)
+      .withPromise();
 
     return files
-      .filter(file => file.endsWith('.php'))
       .filter(file => {
         const parts = file.split('/');
         const filename = parts[parts.length - 1];
@@ -97,8 +98,8 @@ export default class AutoloadNamespaceIndexer extends Indexer<Namespace[]> {
         return {
           fqn,
           prefix: baseNamespace,
-          baseDirectory: baseDirectoryUri.fsPath,
-          path: Uri.joinPath(baseDirectoryUri, file).fsPath,
+          baseDirectory,
+          path: file,
         };
       });
   }

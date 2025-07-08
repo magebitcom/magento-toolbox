@@ -1,10 +1,9 @@
-import { RelativePattern, Uri } from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
-import FileSystem from 'util/FileSystem';
 import { DiData, DiPlugin, DiPreference, DiType, DiVirtualType } from './types';
 import { Indexer } from 'indexer/Indexer';
 import { IndexerKey } from 'types/indexer';
+import * as fs from 'fs';
 
 export default class DiIndexer extends Indexer<DiData> {
   public static readonly KEY = 'di';
@@ -42,12 +41,12 @@ export default class DiIndexer extends Indexer<DiData> {
     return 'di.xml';
   }
 
-  public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/etc/di.xml');
+  public getPattern(): string {
+    return '**/etc/di.xml';
   }
 
-  public async indexFile(uri: Uri): Promise<DiData> {
-    const xml = await FileSystem.readFile(uri);
+  public async indexFile(path: string): Promise<DiData> {
+    const xml = await fs.promises.readFile(path, 'utf8');
     const parsed = this.xmlParser.parse(xml);
     const config = get(parsed, 'config', {});
     const data: DiData = {
@@ -67,7 +66,7 @@ export default class DiIndexer extends Indexer<DiData> {
         name: typeName,
         plugins: [],
         shared: type['@_shared'] === 'false' ? false : undefined,
-        diPath: uri.fsPath,
+        diPath: path,
       };
 
       // Handle plugins
@@ -82,7 +81,7 @@ export default class DiIndexer extends Indexer<DiData> {
             disabled: plugin['@_disabled'] === 'true',
             before: plugin['@_before'],
             after: plugin['@_after'],
-            diPath: uri.fsPath,
+            diPath: path,
           };
           typeData.plugins.push(pluginData);
         }
@@ -103,7 +102,7 @@ export default class DiIndexer extends Indexer<DiData> {
       const preference: DiPreference = {
         for: pref['@_for'],
         type: pref['@_type'],
-        diPath: uri.fsPath,
+        diPath: path,
       };
       data.preferences.push(preference);
     }
@@ -115,7 +114,7 @@ export default class DiIndexer extends Indexer<DiData> {
         name: vType['@_name'],
         type: vType['@_type'],
         shared: vType['@_shared'] === 'false' ? false : undefined,
-        diPath: uri.fsPath,
+        diPath: path,
       };
 
       // Handle arguments

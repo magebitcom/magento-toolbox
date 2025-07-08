@@ -4,6 +4,7 @@ import { AbstractIndexData } from 'indexer/AbstractIndexData';
 import { Memoize } from 'typescript-memoize';
 import AutoloadNamespaceIndexer from './AutoloadNamespaceIndexer';
 import { Namespace } from './types';
+import path from 'path';
 
 export class AutoloadNamespaceIndexData extends AbstractIndexData<Namespace[]> {
   private static readonly SPECIAL_CLASSNAMES = ['Proxy', 'Factory'];
@@ -32,7 +33,7 @@ export class AutoloadNamespaceIndexData extends AbstractIndexData<Namespace[]> {
       return undefined;
     }
 
-    return Uri.file(namespace.path);
+    return Uri.file(path.join(namespace.baseDirectory, namespace.path));
   }
 
   public findNamespacesByPrefix(prefix: string): Namespace[] {

@@ -1,9 +1,8 @@
-import { RelativePattern, Uri } from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
 import { Indexer } from 'indexer/Indexer';
-import FileSystem from 'util/FileSystem';
 import { IndexerKey } from 'types/indexer';
+import * as fs from 'fs';
 
 export default class EventsIndexer extends Indexer<Event[]> {
   public static readonly KEY = 'events';
@@ -34,12 +33,12 @@ export default class EventsIndexer extends Indexer<Event[]> {
     return 'events.xml';
   }
 
-  public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/etc/events.xml');
+  public getPattern(): string {
+    return '**/etc/events.xml';
   }
 
-  public async indexFile(uri: Uri): Promise<Event[]> {
-    const xml = await FileSystem.readFile(uri);
+  public async indexFile(path: string): Promise<Event[]> {
+    const xml = await fs.promises.readFile(path, 'utf8');
 
     const parsed = this.xmlParser.parse(xml);
 
@@ -47,7 +46,7 @@ export default class EventsIndexer extends Indexer<Event[]> {
 
     return events.map((event: any) => ({
       name: event['@_name'],
-      diPath: uri.fsPath,
+      diPath: path,
       observers:
         event.observer?.map((observer: any) => ({
           name: observer['@_name'],

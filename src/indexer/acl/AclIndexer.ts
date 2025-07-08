@@ -1,10 +1,9 @@
-import { RelativePattern, Uri } from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
-import { get, map } from 'lodash-es';
+import { get } from 'lodash-es';
 import { Indexer } from 'indexer/Indexer';
-import FileSystem from 'util/FileSystem';
 import { IndexerKey } from 'types/indexer';
 import { Acl } from './types';
+import * as fs from 'fs';
 
 interface Element {
   '@_id'?: string;
@@ -44,12 +43,12 @@ export default class AclIndexer extends Indexer<Acl[]> {
     return 'acl.xml';
   }
 
-  public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/etc/acl.xml');
+  public getPattern(): string {
+    return '**/etc/acl.xml';
   }
 
-  public async indexFile(uri: Uri): Promise<Acl[]> {
-    const xml = await FileSystem.readFile(uri);
+  public async indexFile(path: string): Promise<Acl[]> {
+    const xml = await fs.promises.readFile(path, 'utf8');
 
     const parsed = this.xmlParser.parse(xml);
 
@@ -58,28 +57,28 @@ export default class AclIndexer extends Indexer<Acl[]> {
     const acls = [];
 
     for (const event of events) {
-      acls.push(...this.getResources(event, uri));
+      acls.push(...this.getResources(event, path));
     }
 
     return acls;
   }
 
-  private getResources(element: Element, uri: Uri, parent?: string): Acl[] {
+  private getResources(element: Element, path: string, parent?: string): Acl[] {
     const resources = element.resource ?? [];
 
     const acls: Acl[] = [];
 
     if (this.isUniqueAcl(element)) {
-      acls.push(this.getAclData(element, uri, parent));
+      acls.push(this.getAclData(element, path, parent));
     }
 
     for (const resource of resources) {
       if (Array.isArray(resource.resource)) {
-        acls.push(...this.getResources(resource, uri, element['@_id']));
+        acls.push(...this.getResources(resource, path, element['@_id']));
       }
 
       if (this.isUniqueAcl(resource)) {
-        acls.push(this.getAclData(resource, uri, element['@_id']));
+        acls.push(this.getAclData(resource, path, element['@_id']));
       }
     }
 
@@ -90,7 +89,7 @@ export default class AclIndexer extends Indexer<Acl[]> {
     return !!element['@_id'] && !!element['@_title'];
   }
 
-  private getAclData(element: Element, uri: Uri, parent?: string): Acl {
+  private getAclData(element: Element, path: string, parent?: string): Acl {
     return {
       id: element['@_id']!,
       title: element['@_title']!,
@@ -98,7 +97,7 @@ export default class AclIndexer extends Indexer<Acl[]> {
       sortOrder: element['@_sortOrder'] ? parseInt(element['@_sortOrder'], 10) : undefined,
       disabled: element['@_disabled'] === 'true',
       parent,
-      path: uri.fsPath,
+      path,
     };
   }
 }

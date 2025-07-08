@@ -1,0 +1,39 @@
+[INDEXER] Indexing di.xml
+[INDEXER] Discovering files to index
+[INDEXER] Found 271 files to index in 255 ms
+[INDEXER] Indexed 271 files of 271 in 935ms
+[INDEXER] Indexing di.xml done in 1198 ms
+[INDEXER] Indexing module.xml
+[INDEXER] Discovering files to index
+[INDEXER] Found 435 files to index in 1228 ms
+[INDEXER] Indexed 435 files of 435 in 1789ms
+[INDEXER] Indexing module.xml done in 3018 ms
+[INDEXER] Indexing namespaces
+[INDEXER] Discovering files to index
+[INDEXER] Found 716 files to index in 1149 ms
+[Indexed] 500 files of 716
+[INDEXER] Indexed 716 files of 716 in 11581ms
+[INDEXER] Indexing namespaces done in 12755 ms
+[INDEXER] Indexing events.xml
+[INDEXER] Discovering files to index
+[INDEXER] Found 45 files to index in 1140 ms
+[INDEXER] Indexed 45 files of 45 in 121ms
+[INDEXER] Indexing events.xml done in 1262 ms
+[INDEXER] Indexing acl.xml
+[INDEXER] Discovering files to index
+[INDEXER] Found 81 files to index in 2298 ms
+[INDEXER] Indexed 81 files of 81 in 697ms
+[INDEXER] Indexing acl.xml done in 2996 ms
+[INDEXER] Indexing templates
+[INDEXER] Discovering files to index
+[INDEXER] Found 1020 files to index in 1258 ms
+[Indexed] 500 files of 1020
+[Indexed] 1000 files of 1020
+[INDEXER] Indexed 1020 files of 1020 in 443ms
+[INDEXER] Indexing templates done in 1704 ms
+[INDEXER] Indexing crontab.xml
+[INDEXER] Discovering files to index
+[INDEXER] Found 29 files to index in 1261 ms
+[INDEXER] Indexed 29 files of 29 in 60ms
+[INDEXER] Indexing crontab.xml done in 1323 ms
+[INDEXER] Finished indexing workspace magento-demo

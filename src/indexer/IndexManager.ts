@@ -1,4 +1,4 @@
-import { Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
+import { Progress, RelativePattern, Uri, workspace, WorkspaceFolder } from 'vscode';
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
@@ -20,7 +20,7 @@ import TemplateIndexer from './template/TemplateIndexer';
 import { TemplateIndexData } from './template/TemplateIndexData';
 import CronIndexer from './cron/CronIndexer';
 import { CronIndexData } from './cron/CronIndexData';
-import Config from 'common/Config';
+import { IndexWorkerManager } from './IndexWorkerManager';
 
 type IndexerInstance =
   | DiIndexer
@@ -42,11 +42,12 @@ type IndexerDataMap = {
 };
 
 class IndexManager {
-  private static readonly INDEXING_BATCH_SIZE = 50;
+  private static readonly INDEXING_BATCH_SIZE = 200;
   private static readonly REPORTING_BATCH_SIZE = 500;
 
   protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
+  protected workerManager: IndexWorkerManager;
 
   public constructor() {
     this.indexers = [
@@ -59,6 +60,7 @@ class IndexManager {
       new CronIndexer(),
     ];
     this.indexStorage = new IndexStorage();
+    this.workerManager = new IndexWorkerManager();
   }
 
   public getIndexers(): IndexerInstance[] {
@@ -99,11 +101,13 @@ class IndexManager {
       const startDiscover = Date.now();
       Logger.log('INDEXER', 'Discovering files to index');
 
-      const files = await workspace.findFiles(
-        indexer.getPattern(workspaceUri),
-        indexer.getExcludePattern(workspaceUri)
+      const indexPattern = new RelativePattern(workspaceUri, indexer.getPattern());
+      const indexExcludePattern = new RelativePattern(
+        workspaceUri,
+        indexer.getExcludePattern() ?? ''
       );
 
+      const files = await workspace.findFiles(indexPattern, indexExcludePattern);
       const discoverDuration = Date.now() - startDiscover;
       Logger.log('INDEXER', 'Found', files.length, 'files to index in', discoverDuration, 'ms');
 
@@ -114,20 +118,11 @@ class IndexManager {
 
       for (let i = 0; i < files.length; i += IndexManager.INDEXING_BATCH_SIZE) {
         const batch = files.slice(i, i + IndexManager.INDEXING_BATCH_SIZE);
+        const batchResult = await this.workerManager.processBatch(indexer, batch, workspaceUri);
 
-        const promises = batch.map(async file => {
-          try {
-            const data = await indexer.indexFile(file);
-
-            if (data !== undefined) {
-              indexData.set(file.fsPath, data);
-            }
-          } catch (error) {
-            Logger.error('Error indexing file', file.fsPath, String(error));
-          }
+        batchResult.forEach((data, filePath) => {
+          indexData.set(filePath, data);
         });
-
-        await Promise.all(promises);
 
         doneCount += batch.length;
 
@@ -235,11 +230,10 @@ class IndexManager {
     indexer: Indexer
   ): Promise<void> {
     const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
-    const pattern = indexer.getPattern(workspaceFolder.uri);
-    const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
+    const pattern = indexer.getPattern();
 
-    if (minimatch(file.fsPath, patternString, { matchBase: true })) {
-      const data = await indexer.indexFile(file);
+    if (minimatch(file.fsPath, pattern, { matchBase: true })) {
+      const data = await indexer.indexFile(file.fsPath);
 
       if (data !== undefined) {
         indexData.set(file.fsPath, data);

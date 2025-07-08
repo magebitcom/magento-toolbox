@@ -77,6 +77,24 @@ async function main() {
     plugins: [esbuildProblemMatcherPlugin, copyAssetsPlugin],
   });
 
+  // Worker build context
+  const workerCtx = await esbuild.context({
+    entryPoints: ['src/indexer/IndexWorker.ts'],
+    bundle: true,
+    format: 'cjs',
+    minify: production,
+    sourcemap: !production,
+    sourcesContent: false,
+    platform: 'node',
+    outdir: 'dist/indexer',
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+    },
+    external: ['vscode'],
+    logLevel: 'silent',
+    plugins: [esbuildProblemMatcherPlugin],
+  });
+
   // Webview build context
   const webviewCtx = await esbuild.context({
     entryPoints: ['src/webview/index.tsx'],
@@ -98,10 +116,10 @@ async function main() {
   });
 
   if (watch) {
-    await Promise.all([extensionCtx.watch(), webviewCtx.watch()]);
+    await Promise.all([extensionCtx.watch(), workerCtx.watch(), webviewCtx.watch()]);
   } else {
-    await Promise.all([extensionCtx.rebuild(), webviewCtx.rebuild()]);
-    await Promise.all([extensionCtx.dispose(), webviewCtx.dispose()]);
+    await Promise.all([extensionCtx.rebuild(), workerCtx.rebuild(), webviewCtx.rebuild()]);
+    await Promise.all([extensionCtx.dispose(), workerCtx.dispose(), webviewCtx.dispose()]);
   }
 }
 

@@ -1,10 +1,9 @@
-import { RelativePattern, Uri } from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
-import FileSystem from 'util/FileSystem';
 import { Job } from './types';
 import { Indexer } from 'indexer/Indexer';
 import { IndexerKey } from 'types/indexer';
+import * as fs from 'fs';
 
 export default class CronIndexer extends Indexer<Job[]> {
   public static readonly KEY = 'cron';
@@ -35,12 +34,12 @@ export default class CronIndexer extends Indexer<Job[]> {
     return 'crontab.xml';
   }
 
-  public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/etc/crontab.xml');
+  public getPattern(): string {
+    return '**/etc/crontab.xml';
   }
 
-  public async indexFile(uri: Uri): Promise<Job[]> {
-    const xml = await FileSystem.readFile(uri);
+  public async indexFile(path: string): Promise<Job[]> {
+    const xml = await fs.promises.readFile(path, 'utf8');
     const parsed = this.xmlParser.parse(xml);
     const config = get(parsed, 'config', {});
 
@@ -59,7 +58,7 @@ export default class CronIndexer extends Indexer<Job[]> {
           method: job['@_method'],
           schedule: job['schedule'],
           config_path: job['config_path'],
-          path: uri.fsPath,
+          path,
           group: group['@_id'],
         });
       }

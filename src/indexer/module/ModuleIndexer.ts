@@ -1,10 +1,10 @@
-import { RelativePattern, Uri } from 'vscode';
 import { XMLParser } from 'fast-xml-parser';
 import { get } from 'lodash-es';
 import { Module } from './types';
 import { Indexer } from 'indexer/Indexer';
-import FileSystem from 'util/FileSystem';
 import { IndexerKey } from 'types/indexer';
+import * as fs from 'fs';
+import path from 'path';
 
 export default class ModuleIndexer extends Indexer<Module> {
   public static readonly KEY = 'module';
@@ -35,12 +35,12 @@ export default class ModuleIndexer extends Indexer<Module> {
     return 'module.xml';
   }
 
-  public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/etc/module.xml');
+  public getPattern(): string {
+    return '**/etc/module.xml';
   }
 
-  public async indexFile(uri: Uri): Promise<Module> {
-    const xml = await FileSystem.readFile(uri);
+  public async indexFile(filePath: string): Promise<Module> {
+    const xml = await fs.promises.readFile(filePath, 'utf8');
 
     const parsed = this.xmlParser.parse(xml);
 
@@ -52,9 +52,9 @@ export default class ModuleIndexer extends Indexer<Module> {
       name: moduleName,
       version: setupVersion,
       sequence: sequence.map((module: any) => module['@_name']),
-      moduleXmlPath: uri.fsPath,
-      path: Uri.joinPath(uri, '..', '..').fsPath,
-      location: uri.fsPath.includes('vendor') ? 'vendor' : 'app',
+      moduleXmlPath: filePath,
+      path: path.join(filePath, '..', '..'),
+      location: filePath.includes('vendor') ? 'vendor' : 'app',
     };
   }
 }

@@ -431,6 +431,7 @@
     "@xml-tools/validation": "^1.0.16",
     "cronstrue": "^2.59.0",
     "fast-xml-parser": "^4.5.1",
+    "fdir": "^6.4.6",
     "formik": "^2.4.6",
     "glob": "^11.0.1",
     "handlebars": "^4.7.8",
@@ -444,6 +445,7 @@
     "slugify": "^1.6.6",
     "typescript-json-serializer": "^6.0.1",
     "typescript-memoize": "^1.1.1",
-    "validatorjs": "^3.22.1"
+    "validatorjs": "^3.22.1",
+    "vscode-uri": "^3.1.0"
   }
 }
