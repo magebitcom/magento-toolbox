@@ -1,8 +1,9 @@
-import { WorkspaceFolder } from 'vscode';
+import { WorkspaceFolder, Uri, workspace } from 'vscode';
 import { IndexerKey, IndexerStorage, IndexedFilePath, SavedIndex } from 'types/indexer';
 import { IndexDataSerializer } from './IndexDataSerializer';
-import Context from 'common/Context';
 import ExtensionState from 'common/ExtensionState';
+import * as path from 'path';
+import Logger from 'util/Logger';
 
 export default class IndexStorage {
   private _indexStorage: IndexerStorage = {};
@@ -31,7 +32,7 @@ export default class IndexStorage {
     return !!this._indexStorage[workspaceFolder.uri.fsPath]?.[key];
   }
 
-  public saveIndex(workspaceFolder: WorkspaceFolder, key: IndexerKey, version: number) {
+  public async saveIndex(workspaceFolder: WorkspaceFolder, key: IndexerKey, version: number) {
     const indexData = this._indexStorage[workspaceFolder.uri.fsPath][key];
 
     const savedIndex: SavedIndex = {
@@ -40,31 +41,88 @@ export default class IndexStorage {
     };
     const serialized = this.serializer.serialize(savedIndex);
 
-    ExtensionState.context.globalState.update(
-      `index-storage-${workspaceFolder.uri.fsPath}-${key}`,
-      serialized
-    );
+    const storageUri = this.getStorageUri();
+    const indexFileUri = this.getIndexFileUri(storageUri, workspaceFolder, key);
+
+    // Ensure the storage directory exists
+    await this.ensureStorageDirectoryExists(storageUri);
+
+    // Write the index data to disk
+    await workspace.fs.writeFile(indexFileUri, Buffer.from(serialized, 'utf8'));
   }
 
-  public loadIndex(workspaceFolder: WorkspaceFolder, key: IndexerKey, version: number) {
-    const serialized = ExtensionState.context.globalState.get<string>(
-      `index-storage-${workspaceFolder.uri.fsPath}-${key}`
-    );
+  public async loadIndex(workspaceFolder: WorkspaceFolder, key: IndexerKey, version: number) {
+    let serialized: string | undefined;
+
+    try {
+      const storageUri = this.getStorageUri();
+      const indexFileUri = this.getIndexFileUri(storageUri, workspaceFolder, key);
+
+      const fileData = await workspace.fs.readFile(indexFileUri);
+      serialized = fileData.toString();
+    } catch (error) {
+      Logger.logWithTime('Failed to load index', workspaceFolder.name, key, String(error));
+    }
 
     if (!serialized) {
       return undefined;
     }
 
-    const savedIndex = this.serializer.deserialize(serialized);
+    try {
+      const savedIndex = this.serializer.deserialize(serialized);
 
-    if (savedIndex.version !== version) {
+      if (savedIndex.version !== version) {
+        return undefined;
+      }
+
+      if (!this._indexStorage[workspaceFolder.uri.fsPath]) {
+        this._indexStorage[workspaceFolder.uri.fsPath] = {};
+      }
+
+      this._indexStorage[workspaceFolder.uri.fsPath][key] = savedIndex.data;
+    } catch (error) {
+      console.error(
+        `Failed to deserialize index ${key} for workspace ${workspaceFolder.name}:`,
+        error
+      );
       return undefined;
     }
+  }
 
-    if (!this._indexStorage[workspaceFolder.uri.fsPath]) {
-      this._indexStorage[workspaceFolder.uri.fsPath] = {};
+  private getStorageUri(): Uri {
+    const storageUri = ExtensionState.context.storageUri;
+    if (!storageUri) {
+      throw new Error('Extension storage URI is not available');
     }
+    return storageUri;
+  }
 
-    this._indexStorage[workspaceFolder.uri.fsPath][key] = savedIndex.data;
+  private getIndexFileUri(storageUri: Uri, workspaceFolder: WorkspaceFolder, key: IndexerKey): Uri {
+    const workspaceName = path.basename(workspaceFolder.uri.fsPath);
+    const workspaceHash = this.createHash(workspaceFolder.uri.fsPath);
+    const filename = `index-${workspaceName}-${workspaceHash}-${key}.json`;
+    return Uri.joinPath(storageUri, 'indexes', filename);
+  }
+
+  private async ensureStorageDirectoryExists(storageUri: Uri): Promise<void> {
+    const indexesDir = Uri.joinPath(storageUri, 'indexes');
+    try {
+      await workspace.fs.createDirectory(indexesDir);
+    } catch (error) {
+      // Directory might already exist, which is fine
+      if (error && typeof error === 'object' && 'code' in error && error.code !== 'FileExists') {
+        throw error;
+      }
+    }
+  }
+
+  private createHash(input: string): string {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(36);
   }
 }
