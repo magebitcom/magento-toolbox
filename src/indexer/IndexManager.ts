@@ -77,7 +77,7 @@ class IndexManager {
     Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
-      this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+      await this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       if (!force && !this.shouldIndex(workspaceFolder, indexer)) {
         Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
@@ -116,7 +116,7 @@ class IndexManager {
       }
 
       this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
-      this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+      await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       clear([indexer.getId()]);
 
