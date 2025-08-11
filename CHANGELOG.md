@@ -4,7 +4,8 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.6.1] - 2025-08-11
+
 - Fixed: Issue [#92](https://github.com/magebitcom/magento-toolbox/issues/92) (Definitions and hovers dont work on element content values that are on a new line)
 - Changed: Indexer now stores index files on disk instead of using Extension Context state
 
