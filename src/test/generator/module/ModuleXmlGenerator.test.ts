@@ -6,6 +6,7 @@ import ModuleXmlGenerator from 'generator/module/ModuleXmlGenerator';
 import { describe, it, before, afterEach } from 'mocha';
 import { setup } from 'test/setup';
 import { getReferenceFile, getTestWorkspaceUri } from 'test/util';
+import FileHeader from 'common/xml/FileHeader';
 import sinon from 'sinon';
 
 describe('ModuleXmlGenerator Tests', () => {
@@ -78,6 +79,30 @@ describe('ModuleXmlGenerator Tests', () => {
 
     // Get the reference file content
     const referenceContent = getReferenceFile('generator/module/module-with-sequence.xml');
+
+    // Compare the generated content with reference
+    assert.strictEqual(generatedFile.content, referenceContent);
+  });
+
+  it('should generate module.xml with comment', async () => {
+    sinon.stub(FileHeader, 'getHeader').returns('<!--\nFoo_Bar\n-->');
+
+    // Create test data with sequence
+    const dataWithSequence: ModuleWizardData = {
+      ...moduleWizardData,
+    };
+
+    // Create the generator with sequence data
+    const generator = new ModuleXmlGenerator(dataWithSequence);
+
+    // Use a test workspace URI
+    const workspaceUri = getTestWorkspaceUri();
+
+    // Generate the file
+    const generatedFile = await generator.generate(workspaceUri);
+
+    // Get the reference file content
+    const referenceContent = getReferenceFile('generator/module/module-with-comment.xml');
 
     // Compare the generated content with reference
     assert.strictEqual(generatedFile.content, referenceContent);
