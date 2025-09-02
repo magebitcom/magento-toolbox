@@ -4,6 +4,8 @@ import { Uri } from 'vscode';
 import { ModuleWizardComposerData, ModuleWizardData } from 'wizard/ModuleWizard';
 import FileGenerator from '../FileGenerator';
 import Magento from 'util/Magento';
+import HandlebarsTemplateRenderer from 'generator/HandlebarsTemplateRenderer';
+import { TemplatePath } from 'types/handlebars';
 
 export default class ModuleXmlGenerator extends FileGenerator {
   public constructor(protected data: ModuleWizardData | ModuleWizardComposerData) {
@@ -11,7 +13,7 @@ export default class ModuleXmlGenerator extends FileGenerator {
   }
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
-    const xmlContent = this.getXmlContent();
+    const xmlContent = await this.getXmlContent();
 
     const moduleFile = Magento.getModuleDirectory(
       this.data.vendor,
@@ -23,33 +25,15 @@ export default class ModuleXmlGenerator extends FileGenerator {
     return new GeneratedFile(moduleFile, xmlContent);
   }
 
-  protected getXmlContent(): string {
+  protected async getXmlContent(): Promise<string> {
+    const renderer = new HandlebarsTemplateRenderer();
     const moduleName = Magento.getModuleName(this.data.vendor, this.data.module);
-    const xml: any = {
-      '?xml': {
-        '@_version': '1.0',
-      },
-      config: {
-        '@_xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-        '@_xsi:noNamespaceSchemaLocation': 'urn:magento:framework:Module/etc/module.xsd',
-        module: {
-          '@_name': moduleName,
-        },
-      },
-    };
 
-    if (this.data.sequence.length > 0) {
-      xml.config.module.sequence = this.data.sequence.map(module => ({
-        module: {
-          '@_name': module,
-        },
-      }));
-    }
-
-    const xmlGenerator = new XmlGenerator(xml);
-    return xmlGenerator.toString({
-      unpairedTags: ['module'],
-      suppressUnpairedNode: false,
+    const moduleConfigXml = await renderer.render(TemplatePath.XmlModuleConfig, {
+      moduleName,
+      sequence: this.data.sequence,
     });
+
+    return moduleConfigXml;
   }
 }
