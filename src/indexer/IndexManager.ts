@@ -77,13 +77,20 @@ class IndexManager {
     Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
+      progress.report({
+        message: `Indexing - ${indexer.getName()} [loading index]`,
+        increment: 0,
+      });
       await this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       if (!force && !this.shouldIndex(workspaceFolder, indexer)) {
         Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
         continue;
       }
-      progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
+      progress.report({
+        message: `Indexing - ${indexer.getName()} [discovering files]`,
+        increment: 0,
+      });
 
       const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
 
