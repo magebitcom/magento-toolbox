@@ -45,7 +45,7 @@ class IndexManager {
 
   protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
-  protected fileWatchers: Record<IndexerKey, FileSystemWatcher> = {};
+  protected fileWatchers: Record<string, Record<IndexerKey, FileSystemWatcher>> = {};
 
   public constructor() {
     this.indexers = [
@@ -58,10 +58,6 @@ class IndexManager {
       new CronIndexer(),
     ];
     this.indexStorage = new IndexStorage();
-
-    if (Common.getActiveWorkspaceFolder()) {
-      this.watchFiles(Common.getActiveWorkspaceFolder()!);
-    }
   }
 
   public getIndexers(): IndexerInstance[] {
@@ -232,23 +228,57 @@ class IndexManager {
     clear([indexer.getId()]);
   }
 
+  protected async removeFileFromIndex(
+    workspaceFolder: WorkspaceFolder,
+    file: Uri,
+    indexer: Indexer
+  ) {
+    const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
+    indexData.delete(file.fsPath);
+    this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
+    await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+  }
+
   protected shouldIndex(workspaceFolder: WorkspaceFolder, index: IndexerInstance): boolean {
     return !this.indexStorage.hasIndex(workspaceFolder, index.getId());
   }
 
-  protected watchFiles(workspaceFolder: WorkspaceFolder) {
+  public watchFiles(workspaceFolder: WorkspaceFolder) {
+    Logger.logWithTime('Watching files for workspace', workspaceFolder.uri.fsPath);
+
+    if (!this.fileWatchers[workspaceFolder.uri.fsPath]) {
+      this.fileWatchers[workspaceFolder.uri.fsPath] = {};
+    }
+
     for (const indexer of this.indexers) {
       const pattern = indexer.getPattern(workspaceFolder.uri);
       const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
 
-      if (this.fileWatchers[indexer.getId()]) {
-        this.fileWatchers[indexer.getId()].dispose();
+      let watcher: FileSystemWatcher | undefined =
+        this.fileWatchers[workspaceFolder.uri.fsPath][indexer.getId()];
+
+      if (watcher) {
+        watcher.dispose();
       }
 
-      this.fileWatchers[indexer.getId()] = workspace.createFileSystemWatcher(patternString);
+      watcher = workspace.createFileSystemWatcher(patternString, false, false, false);
 
-      this.fileWatchers[indexer.getId()].onDidChange(file => {
+      watcher.onDidChange(file => {
         this.indexFileInner(workspaceFolder, file, indexer);
+
+        Logger.logWithTime('File changed', file.fsPath);
+      });
+
+      watcher.onDidCreate(file => {
+        this.indexFileInner(workspaceFolder, file, indexer);
+
+        Logger.logWithTime('File created', file.fsPath);
+      });
+
+      watcher.onDidDelete(file => {
+        this.removeFileFromIndex(workspaceFolder, file, indexer);
+
+        Logger.logWithTime('File deleted', file.fsPath);
       });
     }
   }
