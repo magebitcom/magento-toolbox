@@ -17,4 +17,8 @@ export class ThemeIndexData extends AbstractIndexData<Theme> {
       return normalized.startsWith(base);
     });
   }
+
+  public getThemeById(id: string): Theme | undefined {
+    return this.getThemes().find(theme => theme.id.toLowerCase() === id.toLowerCase());
+  }
 }

@@ -116,6 +116,10 @@ class IndexManager {
 
         await Promise.all(
           batch.map(async file => {
+            if (!indexer.canIndex(file)) {
+              return;
+            }
+
             const data = await indexer.indexFile(file);
 
             if (data !== undefined) {
