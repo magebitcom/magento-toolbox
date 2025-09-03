@@ -17,6 +17,7 @@ class IndexRunner {
         },
         async progress => {
           await IndexManager.indexWorkspace(workspaceFolder, progress, force);
+          IndexManager.watchFiles(workspaceFolder);
         }
       );
     }
