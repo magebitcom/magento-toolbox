@@ -1,4 +1,4 @@
-import { Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
+import { FileSystemWatcher, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
@@ -45,6 +45,7 @@ class IndexManager {
 
   protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
+  protected fileWatchers: Record<IndexerKey, FileSystemWatcher> = {};
 
   public constructor() {
     this.indexers = [
@@ -57,6 +58,10 @@ class IndexManager {
       new CronIndexer(),
     ];
     this.indexStorage = new IndexStorage();
+
+    if (Common.getActiveWorkspaceFolder()) {
+      this.watchFiles(Common.getActiveWorkspaceFolder()!);
+    }
   }
 
   public getIndexers(): IndexerInstance[] {
@@ -229,6 +234,23 @@ class IndexManager {
 
   protected shouldIndex(workspaceFolder: WorkspaceFolder, index: IndexerInstance): boolean {
     return !this.indexStorage.hasIndex(workspaceFolder, index.getId());
+  }
+
+  protected watchFiles(workspaceFolder: WorkspaceFolder) {
+    for (const indexer of this.indexers) {
+      const pattern = indexer.getPattern(workspaceFolder.uri);
+      const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
+
+      if (this.fileWatchers[indexer.getId()]) {
+        this.fileWatchers[indexer.getId()].dispose();
+      }
+
+      this.fileWatchers[indexer.getId()] = workspace.createFileSystemWatcher(patternString);
+
+      this.fileWatchers[indexer.getId()].onDidChange(file => {
+        this.indexFileInner(workspaceFolder, file, indexer);
+      });
+    }
   }
 }
 
