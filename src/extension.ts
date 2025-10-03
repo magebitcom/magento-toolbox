@@ -81,12 +81,6 @@ export async function activate(context: vscode.ExtensionContext) {
       DocumentCache.clear(event);
     }),
     vscode.workspace.onDidSaveTextDocument(textDocument => {
-      const workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
-
-      if (workspaceFolder) {
-        IndexRunner.indexFile(workspaceFolder, textDocument.uri);
-      }
-
       DocumentCache.clear(textDocument);
     })
   );

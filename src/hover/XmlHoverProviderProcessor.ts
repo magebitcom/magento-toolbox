@@ -3,10 +3,16 @@ import { XmlSuggestionProviderProcessor } from 'common/xml/XmlSuggestionProvider
 import { AclHoverProvider } from 'hover/xml/AclHoverProvider';
 import { ModuleHoverProvider } from 'hover/xml/ModuleHoverProvider';
 import { CronHoverProvider } from 'hover/xml/CronHoverProvider';
+import { ThemeHoverProvider } from 'hover/xml/ThemeHoverProvider';
 
 export class XmlHoverProviderProcessor extends XmlSuggestionProviderProcessor<Hover> {
   public constructor() {
-    super([new AclHoverProvider(), new ModuleHoverProvider(), new CronHoverProvider()]);
+    super([
+      new AclHoverProvider(),
+      new ModuleHoverProvider(),
+      new CronHoverProvider(),
+      new ThemeHoverProvider(),
+    ]);
   }
 
   public async provideHover(

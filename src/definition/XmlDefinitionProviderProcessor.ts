@@ -9,6 +9,7 @@ import { XmlSuggestionProviderProcessor } from 'common/xml/XmlSuggestionProvider
 import { AclDefinitionProvider } from './xml/AclDefinitionProvider';
 import { ModuleDefinitionProvider } from './xml/ModuleDefinitionProvider';
 import { TemplateDefinitionProvider } from './xml/TemplateDefinitionProvider';
+import { ThemeDefinitionProvider } from './xml/ThemeDefinitionProvider';
 
 export class XmlDefinitionProviderProcessor
   extends XmlSuggestionProviderProcessor<LocationLink>
@@ -19,6 +20,7 @@ export class XmlDefinitionProviderProcessor
       new AclDefinitionProvider(),
       new ModuleDefinitionProvider(),
       new TemplateDefinitionProvider(),
+      new ThemeDefinitionProvider(),
     ]);
   }
 

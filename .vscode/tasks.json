@@ -5,22 +5,14 @@
   "tasks": [
     {
       "label": "watch",
-      "dependsOn": ["npm: watch:esbuild"],
-      "presentation": {
-        "reveal": "never"
-      },
+      "type": "npm",
+      "script": "watch:esbuild",
       "group": {
         "kind": "build",
         "isDefault": true
-      }
-    },
-    {
-      "type": "npm",
-      "script": "watch:esbuild",
-      "group": "build",
+      },
       "problemMatcher": "$esbuild-watch",
       "isBackground": true,
-      "label": "npm: watch:esbuild",
       "presentation": {
         "group": "watch",
         "reveal": "never"

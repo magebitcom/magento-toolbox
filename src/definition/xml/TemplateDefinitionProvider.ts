@@ -8,7 +8,7 @@ import { ElementAttributeMatches } from 'common/xml/suggestion/condition/Element
 
 export class TemplateDefinitionProvider extends XmlSuggestionProvider<LocationLink> {
   public getFilePatterns(): string[] {
-    return ['**/view/**/layout/*.xml', '**/etc/**/di.xml'];
+    return ['**/layout/*.xml', '**/etc/**/di.xml'];
   }
 
   public getAttributeValueConditions(): CombinedCondition[] {
