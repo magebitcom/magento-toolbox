@@ -26,7 +26,11 @@ export default class GenerateXmlCatalogCommand extends Command {
       return;
     }
 
+    console.log('workspaceFolder', workspaceFolder.uri.fsPath);
+
     const catalogLocation = Uri.joinPath(workspaceFolder.uri, '.vscode/magento-catalog.xml');
+
+    console.log('catalogLocation', catalogLocation.fsPath);
 
     if (!(await FileSystem.fileExists(catalogLocation))) {
       const success = await this.generateCatalog();
@@ -80,7 +84,9 @@ export default class GenerateXmlCatalogCommand extends Command {
     }
 
     const xmlGenerator = new XmlGenerator(xmlCatalog);
-    const formattedCatalog = xmlGenerator.toString();
+    const formattedCatalog = xmlGenerator.toString({
+      oneListGroup: false,
+    });
 
     await FileSystem.writeFile(catalogLocation, formattedCatalog);
   }
