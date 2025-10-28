@@ -1,10 +1,16 @@
 <?xml version="1.0"?>
+{{> fileHeader}}
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Foo_Bar">
+{{#if sequence}}
+    <module name="{{ moduleName }}">
         <sequence>
-            <module name="Magento_Catalog"/>
-            <module name="Magento_Customer"/>
+        {{#each sequence}}
+            <module name="{{ this }}"/>
+        {{/each}}
         </sequence>
     </module>
+{{else}}
+    <module name="{{ moduleName }}"/>
+{{/if}}
 </config>

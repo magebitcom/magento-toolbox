@@ -1,4 +1,4 @@
-import { Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
+import { FileSystemWatcher, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
@@ -20,6 +20,10 @@ import TemplateIndexer from './template/TemplateIndexer';
 import { TemplateIndexData } from './template/TemplateIndexData';
 import CronIndexer from './cron/CronIndexer';
 import { CronIndexData } from './cron/CronIndexData';
+import LayoutIndexer from './layout/LayoutIndexer';
+import { LayoutIndexData } from './layout/LayoutIndexData';
+import ThemeIndexer from './theme/ThemeIndexer';
+import { ThemeIndexData } from './theme/ThemeIndexData';
 
 type IndexerInstance =
   | DiIndexer
@@ -28,7 +32,9 @@ type IndexerInstance =
   | EventsIndexer
   | AclIndexer
   | TemplateIndexer
-  | CronIndexer;
+  | CronIndexer
+  | LayoutIndexer
+  | ThemeIndexer;
 
 type IndexerDataMap = {
   [DiIndexer.KEY]: DiIndexData;
@@ -38,6 +44,8 @@ type IndexerDataMap = {
   [AclIndexer.KEY]: AclIndexData;
   [TemplateIndexer.KEY]: TemplateIndexData;
   [CronIndexer.KEY]: CronIndexData;
+  [ThemeIndexer.KEY]: ThemeIndexData;
+  [LayoutIndexer.KEY]: LayoutIndexData;
 };
 
 class IndexManager {
@@ -45,6 +53,7 @@ class IndexManager {
 
   protected indexers: IndexerInstance[] = [];
   protected indexStorage: IndexStorage;
+  protected fileWatchers: Record<string, Record<IndexerKey, FileSystemWatcher>> = {};
 
   public constructor() {
     this.indexers = [
@@ -55,6 +64,8 @@ class IndexManager {
       new AclIndexer(),
       new TemplateIndexer(),
       new CronIndexer(),
+      new ThemeIndexer(),
+      new LayoutIndexer(),
     ];
     this.indexStorage = new IndexStorage();
   }
@@ -77,13 +88,20 @@ class IndexManager {
     Logger.logWithTime('Indexing workspace', workspaceFolder.name);
 
     for (const indexer of this.indexers) {
+      progress.report({
+        message: `Indexing - ${indexer.getName()} [loading index]`,
+        increment: 0,
+      });
       await this.indexStorage.loadIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
       if (!force && !this.shouldIndex(workspaceFolder, indexer)) {
         Logger.logWithTime('Loaded index from storage', workspaceFolder.name, indexer.getId());
         continue;
       }
-      progress.report({ message: `Indexing - ${indexer.getName()}`, increment: 0 });
+      progress.report({
+        message: `Indexing - ${indexer.getName()} [discovering files]`,
+        increment: 0,
+      });
 
       const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
 
@@ -98,6 +116,10 @@ class IndexManager {
 
         await Promise.all(
           batch.map(async file => {
+            if (!indexer.canIndex(file)) {
+              return;
+            }
+
             const data = await indexer.indexFile(file);
 
             if (data !== undefined) {
@@ -195,6 +217,12 @@ class IndexManager {
       case CronIndexer.KEY:
         return new CronIndexData(data) as IndexerDataMap[T];
 
+      case ThemeIndexer.KEY:
+        return new ThemeIndexData(data) as IndexerDataMap[T];
+
+      case LayoutIndexer.KEY:
+        return new LayoutIndexData(data) as IndexerDataMap[T];
+
       default:
         return undefined;
     }
@@ -220,8 +248,59 @@ class IndexManager {
     clear([indexer.getId()]);
   }
 
+  protected async removeFileFromIndex(
+    workspaceFolder: WorkspaceFolder,
+    file: Uri,
+    indexer: Indexer
+  ) {
+    const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
+    indexData.delete(file.fsPath);
+    this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
+    await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+  }
+
   protected shouldIndex(workspaceFolder: WorkspaceFolder, index: IndexerInstance): boolean {
     return !this.indexStorage.hasIndex(workspaceFolder, index.getId());
+  }
+
+  public watchFiles(workspaceFolder: WorkspaceFolder) {
+    Logger.logWithTime('Watching files for workspace', workspaceFolder.uri.fsPath);
+
+    if (!this.fileWatchers[workspaceFolder.uri.fsPath]) {
+      this.fileWatchers[workspaceFolder.uri.fsPath] = {};
+    }
+
+    for (const indexer of this.indexers) {
+      const pattern = indexer.getPattern(workspaceFolder.uri);
+      const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
+
+      let watcher: FileSystemWatcher | undefined =
+        this.fileWatchers[workspaceFolder.uri.fsPath][indexer.getId()];
+
+      if (watcher) {
+        watcher.dispose();
+      }
+
+      watcher = workspace.createFileSystemWatcher(patternString, false, false, false);
+
+      watcher.onDidChange(file => {
+        this.indexFileInner(workspaceFolder, file, indexer);
+
+        Logger.logWithTime('File changed', file.fsPath);
+      });
+
+      watcher.onDidCreate(file => {
+        this.indexFileInner(workspaceFolder, file, indexer);
+
+        Logger.logWithTime('File created', file.fsPath);
+      });
+
+      watcher.onDidDelete(file => {
+        this.removeFileFromIndex(workspaceFolder, file, indexer);
+
+        Logger.logWithTime('File deleted', file.fsPath);
+      });
+    }
   }
 }
 

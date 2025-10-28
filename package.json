@@ -67,6 +67,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enable hover decorations for Magento 2 XML files."
+        },
+        "magento-toolbox.provideThemeDefinitions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable definitions for Magento 2 theme files."
         }
       }
     },
