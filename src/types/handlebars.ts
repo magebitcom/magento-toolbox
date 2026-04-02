@@ -28,6 +28,7 @@ export enum TemplatePath {
   XmlBlankWidget = 'xml/blank-widget',
   XmlEventsObserver = 'xml/events/observer',
   XmlEventsEvent = 'xml/events/event',
+  XmlModuleConfig = 'xml/module-config',
   XmlCronJob = 'xml/cron/job',
   XmlCronGroup = 'xml/cron/group',
 }
@@ -121,6 +122,14 @@ export interface CronGroupParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for module config templates
+ */
+export interface ModuleConfigParams extends BaseTemplateParams {
+  moduleName: string;
+  sequence: string[];
+}
+
+/**
  * Template parameters mapped by template path
  */
 export interface TemplateParams {
@@ -137,6 +146,7 @@ export interface TemplateParams {
   [TemplatePath.XmlDiPreference]: PreferenceParams;
   [TemplatePath.XmlCronJob]: CronJobParams;
   [TemplatePath.XmlCronGroup]: CronGroupParams;
+  [TemplatePath.XmlModuleConfig]: ModuleConfigParams;
   [key: string]: BaseTemplateParams;
 }
 
