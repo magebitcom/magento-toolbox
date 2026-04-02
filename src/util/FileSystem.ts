@@ -34,6 +34,13 @@ export default class FileSystem {
     await workspace.fs.writeFile(uri, Buffer.from(content));
   }
 
+  public static async deleteFile(
+    uri: Uri,
+    options: { recursive: boolean } = { recursive: false }
+  ): Promise<void> {
+    await workspace.fs.delete(uri, options);
+  }
+
   public static getExtensionPath(dir: string): string {
     ExtensionState.context.extensionPath;
     return path.join(ExtensionState.context.extensionPath, 'dist', dir);
