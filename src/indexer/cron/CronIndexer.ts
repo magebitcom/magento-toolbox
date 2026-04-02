@@ -18,7 +18,7 @@ export default class CronIndexer extends Indexer<Job[]> {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
       isArray: (_name, jpath) => {
-        return ['config.group', 'config.group.job'].includes(jpath);
+        return ['config.group', 'config.group.job'].includes(jpath as string);
       },
     });
   }

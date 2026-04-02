@@ -25,7 +25,7 @@ export default class DiIndexer extends Indexer<DiData> {
           'config.type.plugin',
           'config.type.arguments',
           'config.virtualType.arguments',
-        ].includes(jpath);
+        ].includes(jpath as string);
       },
     });
   }

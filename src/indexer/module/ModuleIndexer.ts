@@ -18,7 +18,7 @@ export default class ModuleIndexer extends Indexer<Module> {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
       isArray: (name, jpath) => {
-        return jpath === 'config.module.sequence.module';
+        return (jpath as string) === 'config.module.sequence.module';
       },
     });
   }
