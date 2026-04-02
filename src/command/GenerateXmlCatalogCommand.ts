@@ -51,7 +51,7 @@ export default class GenerateXmlCatalogCommand extends Command {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
       isArray: (name, jpath) => {
-        return jpath === 'project.component.resource';
+        return (jpath as string) === 'project.component.resource';
       },
     });
     const catalogXml = xmlParser.parse(catalogXmlString);

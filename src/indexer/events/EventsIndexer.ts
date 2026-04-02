@@ -17,7 +17,7 @@ export default class EventsIndexer extends Indexer<Event[]> {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
       isArray: (name, jpath) => {
-        return ['config.event', 'config.event.observer'].includes(jpath);
+        return ['config.event', 'config.event.observer'].includes(jpath as string);
       },
     });
   }
