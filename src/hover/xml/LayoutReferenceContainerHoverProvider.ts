@@ -5,11 +5,13 @@ import { ElementNameMatches } from 'common/xml/suggestion/condition/ElementNameM
 import { AttributeNameMatches } from 'common/xml/suggestion/condition/AttributeNameMatches';
 import LayoutIndexer from 'indexer/layout/LayoutIndexer';
 import PageLayoutIndexer from 'indexer/page-layout/PageLayoutIndexer';
-import { Container } from 'indexer/layout/types';
+import { Block, Container } from 'indexer/layout/types';
 import Magento from 'util/Magento';
 import HoverBuilder from 'hover/HoverBuilder';
 
-type ContainerHoverTarget = { path: string; theme: string; container: Container };
+type BlockTarget = { kind: 'block'; path: string; theme: string; block: Block };
+type ContainerTarget = { kind: 'container'; path: string; theme: string; container: Container };
+type Target = BlockTarget | ContainerTarget;
 
 export class LayoutReferenceContainerHoverProvider extends XmlSuggestionProvider<Hover> {
   public getFilePatterns(): string[] {
@@ -29,22 +31,50 @@ export class LayoutReferenceContainerHoverProvider extends XmlSuggestionProvider
     const pageLayoutIndexData = IndexManager.getIndexData(PageLayoutIndexer.KEY);
     const area = Magento.getLayoutArea(document.uri.fsPath);
 
-    const targets: ContainerHoverTarget[] = [];
+    const targets: Target[] = [];
 
     if (layoutIndexData) {
       for (const { layout, element } of layoutIndexData.getContainersByName(value, area)) {
-        targets.push({ path: layout.path, theme: layout.theme, container: element });
+        targets.push({
+          kind: 'container',
+          path: layout.path,
+          theme: layout.theme,
+          container: element,
+        });
       }
     }
 
     if (pageLayoutIndexData) {
       for (const { pageLayout, element } of pageLayoutIndexData.getContainersByName(value, area)) {
-        targets.push({ path: pageLayout.path, theme: '-', container: element });
+        targets.push({
+          kind: 'container',
+          path: pageLayout.path,
+          theme: '-',
+          container: element,
+        });
       }
     }
 
-    return targets.map(target =>
-      HoverBuilder.create()
+    if (targets.length === 0) {
+      if (layoutIndexData) {
+        for (const { layout, element } of layoutIndexData.getBlocksByName(value, area)) {
+          targets.push({ kind: 'block', path: layout.path, theme: layout.theme, block: element });
+        }
+      }
+
+      if (pageLayoutIndexData) {
+        for (const { pageLayout, element } of pageLayoutIndexData.getBlocksByName(value, area)) {
+          targets.push({ kind: 'block', path: pageLayout.path, theme: '-', block: element });
+        }
+      }
+    }
+
+    return targets.map(target => this.render(target, range));
+  }
+
+  private render(target: Target, range: Range): Hover {
+    if (target.kind === 'container') {
+      return HoverBuilder.create()
         .title('Container', target.container.name)
         .property('Theme', target.theme)
         .property('Label', target.container.label)
@@ -52,7 +82,19 @@ export class LayoutReferenceContainerHoverProvider extends XmlSuggestionProvider
         .property('After', target.container.after)
         .property('Before', target.container.before)
         .link('layout.xml', Uri.file(target.path))
-        .build(range)
-    );
+        .build(range);
+    }
+
+    return HoverBuilder.create()
+      .title('Block', target.block.name)
+      .property('Theme', target.theme)
+      .property('Class', target.block.class)
+      .property('Cacheable', target.block.cacheable)
+      .property('As', target.block.as)
+      .property('TTL', target.block.ttl)
+      .property('Group', target.block.group)
+      .property('ACL', target.block.acl)
+      .link('layout.xml', Uri.file(target.path))
+      .build(range);
   }
 }
