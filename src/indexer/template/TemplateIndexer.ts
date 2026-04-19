@@ -20,7 +20,7 @@ export default class TemplateIndexer extends Indexer<Template[]> {
   }
 
   public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/view/**/templates/**/*.phtml');
+    return new RelativePattern(uri, '**/templates/**/*.phtml');
   }
 
   public async indexFile(uri: Uri): Promise<Template[]> {

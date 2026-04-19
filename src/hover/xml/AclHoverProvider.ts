@@ -1,10 +1,11 @@
-import { Hover, MarkdownString, Uri, Range, TextDocument } from 'vscode';
+import { Hover, Uri, Range, TextDocument } from 'vscode';
 import AclIndexer from 'indexer/acl/AclIndexer';
 import IndexManager from 'indexer/IndexManager';
 import { CombinedCondition, XmlSuggestionProvider } from 'common/xml/XmlSuggestionProvider';
 import { AttributeNameMatches } from 'common/xml/suggestion/condition/AttributeNameMatches';
 import { ElementNameMatches } from 'common/xml/suggestion/condition/ElementNameMatches';
 import { XMLElement, XMLAttribute } from '@xml-tools/ast';
+import HoverBuilder from 'hover/HoverBuilder';
 
 export class AclHoverProvider extends XmlSuggestionProvider<Hover> {
   public getAttributeValueConditions(): CombinedCondition[] {
@@ -45,28 +46,16 @@ export class AclHoverProvider extends XmlSuggestionProvider<Hover> {
       return [];
     }
 
-    const markdown = new MarkdownString();
-    markdown.appendMarkdown(`**ACL**: ${acl.title}\n\n`);
-    markdown.appendMarkdown(`- ID: \`${acl.id}\`\n\n`);
-
-    if (acl.description) {
-      markdown.appendMarkdown(`${acl.description}\n\n`);
-    }
-
-    if (acl.disabled) {
-      markdown.appendMarkdown(`- **Disabled**\n\n`);
-    }
-
-    if (acl.sortOrder) {
-      markdown.appendMarkdown(`- Sort Order: ${acl.sortOrder}\n\n`);
-    }
-
-    if (acl.parent) {
-      markdown.appendMarkdown(`- Parent ID: \`${acl.parent}\`\n\n`);
-    }
-
-    markdown.appendMarkdown(`[acl.xml](${Uri.file(acl.path)})`);
-
-    return [new Hover(markdown, range)];
+    return [
+      HoverBuilder.create()
+        .title('ACL', acl.title)
+        .property('ID', acl.id)
+        .text(acl.description)
+        .flag('Disabled', acl.disabled)
+        .property('Sort Order', acl.sortOrder, false)
+        .property('Parent ID', acl.parent)
+        .link('acl.xml', Uri.file(acl.path))
+        .build(range),
+    ];
   }
 }

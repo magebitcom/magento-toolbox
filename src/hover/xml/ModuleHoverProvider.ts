@@ -1,5 +1,4 @@
-import { Hover, MarkdownString, Uri, Range, workspace, TextDocument } from 'vscode';
-import AclIndexer from 'indexer/acl/AclIndexer';
+import { Hover, Uri, Range, workspace, TextDocument } from 'vscode';
 import IndexManager from 'indexer/IndexManager';
 import { CombinedCondition, XmlSuggestionProvider } from 'common/xml/XmlSuggestionProvider';
 import { AttributeNameMatches } from 'common/xml/suggestion/condition/AttributeNameMatches';
@@ -8,6 +7,7 @@ import { XMLElement, XMLAttribute } from '@xml-tools/ast';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
 import { ParentElementNameMatches } from 'common/xml/suggestion/condition/ParentElementNameMatches';
 import path from 'path';
+import HoverBuilder from 'hover/HoverBuilder';
 
 export class ModuleHoverProvider extends XmlSuggestionProvider<Hover> {
   public getAttributeValueConditions(): CombinedCondition[] {
@@ -52,13 +52,6 @@ export class ModuleHoverProvider extends XmlSuggestionProvider<Hover> {
       return [];
     }
 
-    const markdown = new MarkdownString();
-    markdown.appendMarkdown(`**Module**: ${module.name}\n\n`);
-
-    if (module.version) {
-      markdown.appendMarkdown(`- Version: \`${module.version}\`\n\n`);
-    }
-
     const workspaceFolder = workspace.getWorkspaceFolder(document.uri);
 
     if (!workspaceFolder) {
@@ -67,14 +60,14 @@ export class ModuleHoverProvider extends XmlSuggestionProvider<Hover> {
 
     const relativePath = path.relative(workspaceFolder.uri.fsPath, module.moduleXmlPath);
 
-    markdown.appendMarkdown(`- Path: \`${relativePath}\`\n\n`);
-
-    if (module.sequence) {
-      markdown.appendMarkdown(`- Sequence: \n\n    - ${module.sequence.join('\n    - ')}\n\n`);
-    }
-
-    markdown.appendMarkdown(`[module.xml](${Uri.file(module.moduleXmlPath)})`);
-
-    return [new Hover(markdown, range)];
+    return [
+      HoverBuilder.create()
+        .title('Module', module.name)
+        .property('Version', module.version)
+        .property('Path', relativePath)
+        .list('Sequence', module.sequence ?? [])
+        .link('module.xml', Uri.file(module.moduleXmlPath))
+        .build(range),
+    ];
   }
 }

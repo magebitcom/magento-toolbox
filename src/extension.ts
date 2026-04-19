@@ -16,6 +16,8 @@ import { Command } from 'command/Command';
 import { XmlDefinitionProviderProcessor } from 'definition/XmlDefinitionProviderProcessor';
 import { XmlCompletionProviderProcessor } from 'completion/XmlCompletionProviderProcessor';
 import { XmlHoverProviderProcessor } from 'hover/XmlHoverProviderProcessor';
+import XmlReferenceProvider from 'references/XmlReferenceProvider';
+import XmlRenameProvider from 'references/XmlRenameProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -109,6 +111,12 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerHoverProvider('xml', new XmlClasslikeHoverProvider()),
     vscode.languages.registerHoverProvider('xml', new XmlHoverProviderProcessor())
+  );
+
+  // reference + rename providers
+  context.subscriptions.push(
+    vscode.languages.registerReferenceProvider('xml', new XmlReferenceProvider()),
+    vscode.languages.registerRenameProvider('xml', new XmlRenameProvider())
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);

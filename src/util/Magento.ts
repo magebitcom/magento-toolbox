@@ -63,4 +63,18 @@ export default class Magento {
 
     return MagentoScope.Global;
   }
+
+  public static getLayoutArea(filePath: string): MagentoScope {
+    const p = filePath.replace(/\\/g, '/');
+
+    if (p.includes('/view/frontend/') || p.includes('/app/design/frontend/')) {
+      return MagentoScope.Frontend;
+    }
+
+    if (p.includes('/view/adminhtml/') || p.includes('/app/design/adminhtml/')) {
+      return MagentoScope.Adminhtml;
+    }
+
+    return MagentoScope.Base;
+  }
 }

@@ -1,15 +1,19 @@
-import { Uri, Range, Hover, MarkdownString } from 'vscode';
+import { Uri, Range, Hover, TextDocument } from 'vscode';
 import IndexManager from 'indexer/IndexManager';
 import { XmlSuggestionProvider, CombinedCondition } from 'common/xml/XmlSuggestionProvider';
 import { ElementNameMatches } from 'common/xml/suggestion/condition/ElementNameMatches';
 import { AttributeNameMatches } from 'common/xml/suggestion/condition/AttributeNameMatches';
 import LayoutIndexer from 'indexer/layout/LayoutIndexer';
-import { WithLayout } from 'indexer/layout/types';
+import PageLayoutIndexer from 'indexer/page-layout/PageLayoutIndexer';
 import { Block } from 'indexer/layout/types';
+import Magento from 'util/Magento';
+import HoverBuilder from 'hover/HoverBuilder';
+
+type BlockHoverTarget = { path: string; theme: string; block: Block };
 
 export class LayoutReferenceBlockHoverProvider extends XmlSuggestionProvider<Hover> {
   public getFilePatterns(): string[] {
-    return ['**/layout/*.xml'];
+    return ['**/layout/*.xml', '**/page_layout/*.xml'];
   }
 
   public getAttributeValueConditions(): CombinedCondition[] {
@@ -20,51 +24,37 @@ export class LayoutReferenceBlockHoverProvider extends XmlSuggestionProvider<Hov
     return 'provideLayoutDefinitions';
   }
 
-  public getSuggestionItems(value: string, range: Range): Hover[] {
+  public getSuggestionItems(value: string, range: Range, document: TextDocument): Hover[] {
     const layoutIndexData = IndexManager.getIndexData(LayoutIndexer.KEY);
+    const pageLayoutIndexData = IndexManager.getIndexData(PageLayoutIndexer.KEY);
+    const area = Magento.getLayoutArea(document.uri.fsPath);
 
-    if (!layoutIndexData) {
-      return [];
+    const targets: BlockHoverTarget[] = [];
+
+    if (layoutIndexData) {
+      for (const { layout, element } of layoutIndexData.getBlocksByName(value, area)) {
+        targets.push({ path: layout.path, theme: layout.theme, block: element });
+      }
     }
 
-    const blocks = layoutIndexData.getBlocksByName(value);
-
-    if (!blocks) {
-      return [];
+    if (pageLayoutIndexData) {
+      for (const { pageLayout, element } of pageLayoutIndexData.getBlocksByName(value, area)) {
+        targets.push({ path: pageLayout.path, theme: '-', block: element });
+      }
     }
 
-    return blocks.map((block: WithLayout<Block>) => {
-      const markdown = new MarkdownString();
-      markdown.appendMarkdown(`**Block**: ${block.element.name}\n\n`);
-      markdown.appendMarkdown(`- Theme: \`${block.layout.theme}\`\n\n`);
-
-      if (block.element.class) {
-        markdown.appendMarkdown(`- Class: \`${block.element.class}\`\n\n`);
-      }
-
-      if (block.element.cacheable) {
-        markdown.appendMarkdown(`- Cacheable: \`${block.element.cacheable}\`\n\n`);
-      }
-
-      if (block.element.as) {
-        markdown.appendMarkdown(`- As: \`${block.element.as}\`\n\n`);
-      }
-
-      if (block.element.ttl) {
-        markdown.appendMarkdown(`- TTL: \`${block.element.ttl}\`\n\n`);
-      }
-
-      if (block.element.group) {
-        markdown.appendMarkdown(`- Group: \`${block.element.group}\`\n\n`);
-      }
-
-      if (block.element.acl) {
-        markdown.appendMarkdown(`- ACL: \`${block.element.acl}\`\n\n`);
-      }
-
-      markdown.appendMarkdown(`[layout.xml](${Uri.file(block.layout.path)})`);
-
-      return new Hover(markdown, range);
-    });
+    return targets.map(target =>
+      HoverBuilder.create()
+        .title('Block', target.block.name)
+        .property('Theme', target.theme)
+        .property('Class', target.block.class)
+        .property('Cacheable', target.block.cacheable)
+        .property('As', target.block.as)
+        .property('TTL', target.block.ttl)
+        .property('Group', target.block.group)
+        .property('ACL', target.block.acl)
+        .link('layout.xml', Uri.file(target.path))
+        .build(range)
+    );
   }
 }

@@ -6,6 +6,9 @@ import { CronHoverProvider } from 'hover/xml/CronHoverProvider';
 import { ThemeHoverProvider } from 'hover/xml/ThemeHoverProvider';
 import { LayoutReferenceBlockHoverProvider } from 'hover/xml/LayoutReferenceBlockHoverProvider';
 import { LayoutReferenceContainerHoverProvider } from 'hover/xml/LayoutReferenceContainerHoverProvider';
+import { LayoutUpdateHandleHoverProvider } from 'hover/xml/LayoutUpdateHandleHoverProvider';
+import { LayoutMoveElementHoverProvider } from 'hover/xml/LayoutMoveElementHoverProvider';
+import { LayoutMoveDestinationHoverProvider } from 'hover/xml/LayoutMoveDestinationHoverProvider';
 
 export class XmlHoverProviderProcessor extends XmlSuggestionProviderProcessor<Hover> {
   public constructor() {
@@ -16,6 +19,9 @@ export class XmlHoverProviderProcessor extends XmlSuggestionProviderProcessor<Ho
       new ThemeHoverProvider(),
       new LayoutReferenceBlockHoverProvider(),
       new LayoutReferenceContainerHoverProvider(),
+      new LayoutUpdateHandleHoverProvider(),
+      new LayoutMoveElementHoverProvider(),
+      new LayoutMoveDestinationHoverProvider(),
     ]);
   }
 

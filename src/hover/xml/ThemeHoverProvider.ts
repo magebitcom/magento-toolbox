@@ -1,10 +1,11 @@
-import { Hover, MarkdownString, Uri, Range, workspace, TextDocument } from 'vscode';
+import { Hover, Uri, Range, workspace, TextDocument } from 'vscode';
 import IndexManager from 'indexer/IndexManager';
 import { CombinedCondition, XmlSuggestionProvider } from 'common/xml/XmlSuggestionProvider';
 import { ElementNameMatches } from 'common/xml/suggestion/condition/ElementNameMatches';
 import { XMLElement, XMLAttribute } from '@xml-tools/ast';
 import ThemeIndexer from 'indexer/theme/ThemeIndexer';
 import path from 'path';
+import HoverBuilder from 'hover/HoverBuilder';
 
 export class ThemeHoverProvider extends XmlSuggestionProvider<Hover> {
   public getElementContentMatches(): CombinedCondition[] {
@@ -44,20 +45,16 @@ export class ThemeHoverProvider extends XmlSuggestionProvider<Hover> {
       return [];
     }
 
-    const markdown = new MarkdownString();
-    markdown.appendMarkdown(`**Theme**: ${theme.title}\n\n`);
-    markdown.appendMarkdown(`- ID: \`${theme.id}\`\n\n`);
-
     const relativePath = path.relative(workspaceFolder.uri.fsPath, theme.path);
 
-    markdown.appendMarkdown(`- Path: \`${relativePath}\`\n\n`);
-
-    if (theme.parent) {
-      markdown.appendMarkdown(`- Parent: \n\n    - ${theme.parent}\n\n`);
-    }
-
-    markdown.appendMarkdown(`[theme.xml](${Uri.file(theme.path)})`);
-
-    return [new Hover(markdown, range)];
+    return [
+      HoverBuilder.create()
+        .title('Theme', theme.title)
+        .property('ID', theme.id)
+        .property('Path', relativePath)
+        .property('Parent', theme.parent)
+        .link('theme.xml', Uri.file(theme.path))
+        .build(range),
+    ];
   }
 }

@@ -4,6 +4,7 @@ import { IndexerKey } from 'types/indexer';
 import { PageLayout } from './types';
 import { XMLParser } from 'fast-xml-parser';
 import FileSystem from 'util/FileSystem';
+import Magento from 'util/Magento';
 
 export default class PageLayoutIndexer extends Indexer<PageLayout> {
   public static readonly KEY = 'page-layout';
@@ -142,6 +143,11 @@ export default class PageLayoutIndexer extends Indexer<PageLayout> {
         name: getAttr(node, 'name') as string,
         after: getAttr(node, 'after'),
         before: getAttr(node, 'before'),
+        label: getAttr(node, 'label'),
+        htmlTag: getAttr(node, 'htmlTag'),
+        htmlClass: getAttr(node, 'htmlClass'),
+        htmlId: getAttr(node, 'htmlId'),
+        as: getAttr(node, 'as'),
         block: mapBlocks(node.block),
         referenceBlock: mapReferenceBlocks(node.referenceBlock),
         uiComponent: mapUiComponents(node.uiComponent),
@@ -181,6 +187,7 @@ export default class PageLayoutIndexer extends Indexer<PageLayout> {
 
     const pageLayout: PageLayout = {
       path: uri.fsPath,
+      area: Magento.getLayoutArea(uri.fsPath),
       block: mapBlocks(layoutNode.block),
       referenceBlock: mapReferenceBlocks(layoutNode.referenceBlock),
       uiComponent: mapUiComponents(layoutNode.uiComponent),

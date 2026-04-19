@@ -1,7 +1,8 @@
-import { Hover, MarkdownString, Range } from 'vscode';
+import { Hover, Range } from 'vscode';
 import { CombinedCondition, XmlSuggestionProvider } from 'common/xml/XmlSuggestionProvider';
 import { ElementNameMatches } from 'common/xml/suggestion/condition/ElementNameMatches';
 import cronstrue from 'cronstrue';
+import HoverBuilder from 'hover/HoverBuilder';
 
 export class CronHoverProvider extends XmlSuggestionProvider<Hover> {
   public getElementContentMatches(): CombinedCondition[] {
@@ -23,9 +24,6 @@ export class CronHoverProvider extends XmlSuggestionProvider<Hover> {
       return [];
     }
 
-    const markdown = new MarkdownString();
-    markdown.appendMarkdown(`**Cron**: ${readable}`);
-
-    return [new Hover(markdown, range)];
+    return [HoverBuilder.create().title('Cron', readable).build(range)];
   }
 }

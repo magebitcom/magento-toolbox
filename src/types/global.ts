@@ -12,6 +12,7 @@ export enum License {
 
 export enum MagentoScope {
   Global = 'global',
+  Base = 'base',
   Frontend = 'frontend',
   Adminhtml = 'adminhtml',
   WebapiRest = 'webapi_rest',

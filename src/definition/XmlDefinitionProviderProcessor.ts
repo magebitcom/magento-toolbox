@@ -12,6 +12,9 @@ import { TemplateDefinitionProvider } from './xml/TemplateDefinitionProvider';
 import { ThemeDefinitionProvider } from './xml/ThemeDefinitionProvider';
 import { LayoutReferenceBlockDefinitionProvider } from './xml/LayoutReferenceBlockDefinitionProvider';
 import { LayoutReferenceContainerDefinitionProvider } from './xml/LayoutReferenceContainerDefinitionProvider';
+import { LayoutUpdateHandleDefinitionProvider } from './xml/LayoutUpdateHandleDefinitionProvider';
+import { LayoutMoveElementDefinitionProvider } from './xml/LayoutMoveElementDefinitionProvider';
+import { LayoutMoveDestinationDefinitionProvider } from './xml/LayoutMoveDestinationDefinitionProvider';
 
 export class XmlDefinitionProviderProcessor
   extends XmlSuggestionProviderProcessor<LocationLink>
@@ -25,6 +28,9 @@ export class XmlDefinitionProviderProcessor
       new ThemeDefinitionProvider(),
       new LayoutReferenceBlockDefinitionProvider(),
       new LayoutReferenceContainerDefinitionProvider(),
+      new LayoutUpdateHandleDefinitionProvider(),
+      new LayoutMoveElementDefinitionProvider(),
+      new LayoutMoveDestinationDefinitionProvider(),
     ]);
   }
 
