@@ -19,7 +19,7 @@ export default class GenerateObserverCommand extends AbstractWizardCommand<Obser
     args: unknown[]
   ): Promise<ObserverWizardData> {
     const eventName = typeof args[0] === 'string' ? args[0] : undefined;
-    return new ObserverWizard().show(eventName, contextModule);
+    return this.attachPreview(new ObserverWizard()).show(eventName, contextModule);
   }
 
   protected buildGenerators(data: ObserverWizardData): FileGenerator[] {

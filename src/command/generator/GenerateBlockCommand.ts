@@ -10,7 +10,7 @@ export default class GenerateBlockCommand extends AbstractWizardCommand<BlockWiz
   }
 
   protected showWizard(contextModule: string | undefined): Promise<BlockWizardData> {
-    return new BlockWizard().show(contextModule);
+    return this.attachPreview(new BlockWizard()).show(contextModule);
   }
 
   protected buildGenerators(data: BlockWizardData): FileGenerator[] {

@@ -12,40 +12,33 @@ interface Props {
 }
 
 const getFieldId = (field: WizardField, prefix?: string) => {
-  if (prefix) {
-    return `${prefix}.${field.id}`;
-  }
-
-  return field.id;
+  return prefix ? `${prefix}.${field.id}` : field.id;
 };
 
 const getFieldProps = (field: WizardField, prefix?: string) => {
+  const name = getFieldId(field, prefix);
+
   switch (field.type) {
-    case WizardInput.Readonly:
-      return { readonly: true };
     case WizardInput.Checkbox:
-      return { name: getFieldId(field, prefix), checked: false };
+      return { name, checked: false };
     case WizardInput.Select:
-      return { name: getFieldId(field, prefix) };
     case WizardInput.DynamicRow:
-      return { name: getFieldId(field, prefix) };
+      return { name };
     default:
       return {
-        name: getFieldId(field, prefix),
+        name,
         placeholder: field.placeholder,
       };
   }
 };
 
-const mapOption = (option: WizardSelectOption): Option => {
-  return {
-    label: option.label,
-    value: option.value,
-    description: option.description ?? '',
-    selected: option.selected ?? false,
-    disabled: option.disabled ?? false,
-  };
-};
+const mapOption = (option: WizardSelectOption): Option => ({
+  label: option.label,
+  value: option.value,
+  description: option.description ?? '',
+  selected: option.selected ?? false,
+  disabled: option.disabled ?? false,
+});
 
 export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }) => {
   const { values } = useFormikContext<any>();
@@ -69,8 +62,21 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
 
   const fieldInner = useMemo(() => {
     switch (field.type) {
-      case WizardInput.Readonly:
-      case WizardInput.Number:
+      case WizardInput.Readonly: {
+        return (
+          <vscode-textfield placeholder={field.placeholder} {...fieldProps} readonly ref={el} />
+        );
+      }
+      case WizardInput.Number: {
+        return (
+          <vscode-textfield
+            type="number"
+            placeholder={field.placeholder}
+            {...fieldProps}
+            ref={el}
+          />
+        );
+      }
       case WizardInput.Text: {
         return <vscode-textfield placeholder={field.placeholder} {...fieldProps} ref={el} />;
       }
@@ -117,34 +123,40 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
     return null;
   }
 
-  if (fieldInner) {
-    if (simple) {
-      return (
-        <>
-          {fieldInner}
-          <vscode-form-helper>
-            <p className="error">
-              <FieldErrorMessage name={fieldProps.name} />
-            </p>
-          </vscode-form-helper>
-        </>
-      );
-    }
+  if (!fieldInner) {
+    return null;
+  }
 
+  if (simple) {
     return (
-      <vscode-form-group>
-        {field.type !== WizardInput.DynamicRow && <vscode-label>{field.label}</vscode-label>}
-        {field.type === WizardInput.DynamicRow && (
-          <div className="dynamic-row-title">{field.label}</div>
-        )}
+      <>
         {fieldInner}
         <vscode-form-helper>
-          {meta.touched && meta.error && <p className="error">{meta.error}</p>}
-          <p>{field.description}</p>
+          <p className="error">
+            <FieldErrorMessage name={fieldProps.name} />
+          </p>
         </vscode-form-helper>
-      </vscode-form-group>
+      </>
     );
   }
 
-  return null;
+  return (
+    <vscode-form-group>
+      {field.type !== WizardInput.DynamicRow && <vscode-label>{field.label}</vscode-label>}
+      {field.type === WizardInput.DynamicRow && (
+        <div className="dynamic-row-title">{field.label}</div>
+      )}
+      {fieldInner}
+      <vscode-form-helper>
+        {meta.touched && meta.error && <p className="error">{meta.error}</p>}
+        {field.description && field.description.length > 0 && (
+          <div className="field-description">
+            {field.description.map((line, idx) => (
+              <p key={idx}>{line}</p>
+            ))}
+          </div>
+        )}
+      </vscode-form-helper>
+    </vscode-form-group>
+  );
 };
