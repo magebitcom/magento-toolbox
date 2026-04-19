@@ -297,6 +297,11 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateCliCommand",
+        "title": "Generate CLI Command",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -436,6 +441,10 @@
         },
         {
           "command": "magento-toolbox.generateCronJob",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCliCommand",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

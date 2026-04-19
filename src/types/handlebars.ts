@@ -31,6 +31,8 @@ export enum TemplatePath {
   XmlModuleConfig = 'xml/module-config',
   XmlCronJob = 'xml/cron/job',
   XmlCronGroup = 'xml/cron/group',
+  XmlDiCliCommandItem = 'xml/di/cli-command-item',
+  XmlDiCliCommandArguments = 'xml/di/cli-command-arguments',
 }
 
 /**
@@ -130,6 +132,14 @@ export interface ModuleConfigParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for CLI command <item> fragments in di.xml
+ */
+export interface DiCliCommandItemParams extends BaseTemplateParams {
+  itemName: string;
+  itemClass: string;
+}
+
+/**
  * Template parameters mapped by template path
  */
 export interface TemplateParams {
@@ -147,6 +157,8 @@ export interface TemplateParams {
   [TemplatePath.XmlCronJob]: CronJobParams;
   [TemplatePath.XmlCronGroup]: CronGroupParams;
   [TemplatePath.XmlModuleConfig]: ModuleConfigParams;
+  [TemplatePath.XmlDiCliCommandItem]: DiCliCommandItemParams;
+  [TemplatePath.XmlDiCliCommandArguments]: BaseTemplateParams;
   [key: string]: BaseTemplateParams;
 }
 
@@ -180,11 +192,19 @@ export interface CronGroupTemplatePartials extends BaseTemplatePartials {
 }
 
 /**
+ * Partials for the CLI command arguments wrapper template
+ */
+export interface DiCliCommandArgumentsTemplatePartials extends BaseTemplatePartials {
+  itemsContent: string;
+}
+
+/**
  * Template partials mapped by template path
  */
 export interface TemplatePartials {
   [TemplatePath.XmlEventsEvent]: EventTemplatePartials;
   [TemplatePath.XmlDiType]: DiTypeTemplatePartials;
   [TemplatePath.XmlCronGroup]: CronGroupTemplatePartials;
+  [TemplatePath.XmlDiCliCommandArguments]: DiCliCommandArgumentsTemplatePartials;
   [key: string]: BaseTemplatePartials;
 }
