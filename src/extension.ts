@@ -85,6 +85,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.workspace.onDidSaveTextDocument(textDocument => {
       DocumentCache.clear(textDocument);
+      DiagnosticCollectionProvider.updateDiagnostics(textDocument);
     }),
     vscode.workspace.onDidRenameFiles(event => {
       for (const { oldUri } of event.files) {
