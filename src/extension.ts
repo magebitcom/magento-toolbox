@@ -18,6 +18,7 @@ import { XmlCompletionProviderProcessor } from 'completion/XmlCompletionProvider
 import { XmlHoverProviderProcessor } from 'hover/XmlHoverProviderProcessor';
 import XmlReferenceProvider from 'references/XmlReferenceProvider';
 import XmlRenameProvider from 'references/XmlRenameProvider';
+import QuickFixProvider from 'diagnostics/QuickFixProvider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -84,6 +85,16 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.workspace.onDidSaveTextDocument(textDocument => {
       DocumentCache.clear(textDocument);
+    }),
+    vscode.workspace.onDidRenameFiles(event => {
+      for (const { oldUri } of event.files) {
+        DiagnosticCollectionProvider.clear(oldUri);
+      }
+    }),
+    vscode.workspace.onDidDeleteFiles(event => {
+      for (const uri of event.files) {
+        DiagnosticCollectionProvider.clear(uri);
+      }
     })
   );
 
@@ -117,6 +128,20 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerReferenceProvider('xml', new XmlReferenceProvider()),
     vscode.languages.registerRenameProvider('xml', new XmlRenameProvider())
+  );
+
+  // code action (quick fix) providers
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      'xml',
+      new QuickFixProvider(),
+      QuickFixProvider.metadata
+    ),
+    vscode.languages.registerCodeActionsProvider(
+      'php',
+      new QuickFixProvider(),
+      QuickFixProvider.metadata
+    )
   );
 
   await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);
