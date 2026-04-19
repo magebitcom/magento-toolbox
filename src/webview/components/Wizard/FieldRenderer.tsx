@@ -17,18 +17,14 @@ const getFieldId = (field: WizardField, prefix?: string) => {
 
 const getFieldProps = (field: WizardField, prefix?: string) => {
   const name = getFieldId(field, prefix);
-
   switch (field.type) {
     case WizardInput.Checkbox:
-      return { name, checked: false };
+      return { name, type: 'checkbox' as const };
     case WizardInput.Select:
     case WizardInput.DynamicRow:
       return { name };
     default:
-      return {
-        name,
-        placeholder: field.placeholder,
-      };
+      return { name, placeholder: field.placeholder };
   }
 };
 
@@ -43,81 +39,130 @@ const mapOption = (option: WizardSelectOption): Option => ({
 export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }) => {
   const { values } = useFormikContext<any>();
   const el = useRef<any>(null);
-  const [fieldProps, meta] = useField(getFieldProps(field, prefix));
+  const [fieldProps, meta, helpers] = useField(getFieldProps(field, prefix));
+  const { setValue, setTouched } = helpers;
 
-  /**
-   * vscode-elements do not support (yet) onChange prop
-   */
+  // Bridge the custom element's native change/input events to Formik. Read the
+  // element's value/checked properties directly rather than trusting
+  // event.target.value — some @vscode-elements components surface the value
+  // only on the element property, not on the event.
   useEffect(() => {
-    if (!el.current) {
+    const node = el.current;
+    if (!node) {
       return;
     }
 
-    el.current.addEventListener('change', fieldProps.onChange);
+    const commit = () => {
+      if (field.type === WizardInput.Checkbox) {
+        setValue(Boolean(node.checked));
+        return;
+      }
+      if (field.type === WizardInput.Select && field.multiple) {
+        const next = Array.isArray(node.value) ? node.value : [];
+        setValue(next);
+        return;
+      }
+      setValue(node.value ?? '');
+    };
+
+    const onBlur = () => setTouched(true);
+
+    node.addEventListener('change', commit);
+    node.addEventListener('input', commit);
+    node.addEventListener('blur', onBlur);
 
     return () => {
-      el.current?.removeEventListener('change', fieldProps.onChange);
+      node.removeEventListener('change', commit);
+      node.removeEventListener('input', commit);
+      node.removeEventListener('blur', onBlur);
     };
-  }, [fieldProps, el.current]);
+  }, [setValue, setTouched, field.type, (field as { multiple?: boolean }).multiple]);
+
+  // Push the Formik value back onto the custom element whenever it changes
+  // from outside user interaction (initial mount, programmatic updates,
+  // Add Row defaults).
+  useEffect(() => {
+    const node = el.current;
+    if (!node) {
+      return;
+    }
+    if (field.type === WizardInput.Checkbox) {
+      const wanted = Boolean((fieldProps as { value?: unknown }).value);
+      if (node.checked !== wanted) {
+        node.checked = wanted;
+      }
+      return;
+    }
+    if (field.type === WizardInput.Select && field.multiple) {
+      const next = Array.isArray(fieldProps.value) ? fieldProps.value : [];
+      try {
+        node.value = next;
+      } catch {
+        /* some builds reject array assignment — safe to ignore */
+      }
+      return;
+    }
+    const next = fieldProps.value ?? '';
+    if (node.value !== next) {
+      node.value = next;
+    }
+  }, [fieldProps.value, field.type, (field as { multiple?: boolean }).multiple]);
+
+  const options = useMemo(() => {
+    if (field.type !== WizardInput.Select) {
+      return [];
+    }
+    return field.options.map(mapOption);
+  }, [field]);
 
   const fieldInner = useMemo(() => {
     switch (field.type) {
-      case WizardInput.Readonly: {
+      case WizardInput.Readonly:
         return (
-          <vscode-textfield placeholder={field.placeholder} {...fieldProps} readonly ref={el} />
+          <vscode-textfield
+            placeholder={field.placeholder}
+            name={fieldProps.name}
+            readonly
+            ref={el}
+          />
         );
-      }
-      case WizardInput.Number: {
+      case WizardInput.Number:
         return (
           <vscode-textfield
             type="number"
             placeholder={field.placeholder}
-            {...fieldProps}
+            name={fieldProps.name}
             ref={el}
           />
         );
-      }
-      case WizardInput.Text: {
-        return <vscode-textfield placeholder={field.placeholder} {...fieldProps} ref={el} />;
-      }
-      case WizardInput.Select: {
-        const selectedIndex = field.initialValue
-          ? field.options.findIndex(option => option.value === String(field.initialValue))
-          : undefined;
-
+      case WizardInput.Text:
+        return <vscode-textfield placeholder={field.placeholder} name={fieldProps.name} ref={el} />;
+      case WizardInput.Select:
         if (field.multiple) {
           return (
             <vscode-multi-select
-              {...fieldProps}
+              name={fieldProps.name}
               ref={el}
-              combobox
-              value={field.initialValue ? [String(field.initialValue)] : undefined}
-              options={field.options.map(mapOption)}
-              selectedIndexes={selectedIndex ? [selectedIndex] : undefined}
+              {...(field.search ? { combobox: true } : {})}
+              options={options}
             />
           );
         }
-
         return (
           <vscode-single-select
-            {...fieldProps}
+            name={fieldProps.name}
             ref={el}
-            combobox
-            selectedIndex={selectedIndex}
-            options={field.options.map(mapOption)}
+            {...(field.search ? { combobox: true } : {})}
+            options={options}
           />
         );
-      }
-      case WizardInput.DynamicRow: {
+      case WizardInput.DynamicRow:
         return <DynamicRowInput field={field} />;
-      }
-      case WizardInput.Checkbox: {
-        return <vscode-checkbox {...fieldProps} ref={el} />;
-      }
+      case WizardInput.Checkbox:
+        return <vscode-checkbox name={fieldProps.name} ref={el} />;
     }
-
     return null;
-  }, []);
+  }, [field, fieldProps.name, options]);
 
   if (field.dependsOn && values[field.dependsOn.field] !== field.dependsOn.value) {
     return null;
