@@ -29,4 +29,7 @@ export { default as GenerateConfigXmlFileCommand } from './generator/GenerateCon
 export { default as GenerateDataPatchCommand } from './generator/GenerateDataPatchCommand';
 export { default as GenerateCronJobCommand } from './generator/GenerateCronJobCommand';
 export { default as GenerateCliCommandCommand } from './generator/GenerateCliCommandCommand';
+export { default as GenerateProductEavAttributePatchCommand } from './generator/GenerateProductEavAttributePatchCommand';
+export { default as GenerateCategoryEavAttributePatchCommand } from './generator/GenerateCategoryEavAttributePatchCommand';
+export { default as GenerateCustomerEavAttributePatchCommand } from './generator/GenerateCustomerEavAttributePatchCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';
