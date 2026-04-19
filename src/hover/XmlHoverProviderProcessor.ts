@@ -4,6 +4,8 @@ import { AclHoverProvider } from 'hover/xml/AclHoverProvider';
 import { ModuleHoverProvider } from 'hover/xml/ModuleHoverProvider';
 import { CronHoverProvider } from 'hover/xml/CronHoverProvider';
 import { ThemeHoverProvider } from 'hover/xml/ThemeHoverProvider';
+import { LayoutReferenceBlockHoverProvider } from 'hover/xml/LayoutReferenceBlockHoverProvider';
+import { LayoutReferenceContainerHoverProvider } from 'hover/xml/LayoutReferenceContainerHoverProvider';
 
 export class XmlHoverProviderProcessor extends XmlSuggestionProviderProcessor<Hover> {
   public constructor() {
@@ -12,6 +14,8 @@ export class XmlHoverProviderProcessor extends XmlSuggestionProviderProcessor<Ho
       new ModuleHoverProvider(),
       new CronHoverProvider(),
       new ThemeHoverProvider(),
+      new LayoutReferenceBlockHoverProvider(),
+      new LayoutReferenceContainerHoverProvider(),
     ]);
   }
 

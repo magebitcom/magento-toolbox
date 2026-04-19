@@ -51,4 +51,16 @@ export default class Magento {
       return false;
     }
   }
+
+  public static getArea(filePath: string): MagentoScope {
+    if (filePath.includes('/frontend/')) {
+      return MagentoScope.Frontend;
+    }
+
+    if (filePath.includes('/adminhtml/')) {
+      return MagentoScope.Adminhtml;
+    }
+
+    return MagentoScope.Global;
+  }
 }

@@ -1,15 +1,12 @@
 import { RelativePattern, Uri } from 'vscode';
 import { Indexer } from 'indexer/Indexer';
 import { IndexerKey } from 'types/indexer';
-import { Layout } from './types';
+import { PageLayout } from './types';
 import { XMLParser } from 'fast-xml-parser';
 import FileSystem from 'util/FileSystem';
-import IndexManager from 'indexer/IndexManager';
-import ThemeIndexer from 'indexer/theme/ThemeIndexer';
-import { Theme } from 'indexer/theme/types';
 
-export default class LayoutIndexer extends Indexer<Layout> {
-  public static readonly KEY = 'layout';
+export default class PageLayoutIndexer extends Indexer<PageLayout> {
+  public static readonly KEY = 'page-layout';
 
   private xmlParser: XMLParser;
 
@@ -30,24 +27,24 @@ export default class LayoutIndexer extends Indexer<Layout> {
   }
 
   public getId(): IndexerKey {
-    return LayoutIndexer.KEY;
+    return PageLayoutIndexer.KEY;
   }
 
   public getName(): string {
-    return 'layout';
+    return 'page-layout';
   }
 
   public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/layout/*.xml');
+    return new RelativePattern(uri, '**/page_layout/*.xml');
   }
 
-  public async indexFile(uri: Uri): Promise<Layout | undefined> {
+  public async indexFile(uri: Uri): Promise<PageLayout | undefined> {
     const xml = await FileSystem.readFile(uri);
     const parsed = this.xmlParser.parse(xml);
 
-    const pageNode = Array.isArray(parsed?.page) ? parsed.page[0] : undefined;
+    const layoutNode = Array.isArray(parsed?.layout) ? parsed.layout[0] : undefined;
 
-    if (!pageNode) {
+    if (!layoutNode) {
       return undefined;
     }
 
@@ -182,61 +179,16 @@ export default class LayoutIndexer extends Indexer<Layout> {
       }));
     };
 
-    const bodyNode = Array.isArray(pageNode.body) ? pageNode.body[0] : undefined;
-    const body = bodyNode
-      ? {
-          block: mapBlocks(bodyNode.block),
-          referenceBlock: mapReferenceBlocks(bodyNode.referenceBlock),
-          uiComponent: mapUiComponents(bodyNode.uiComponent),
-          container: mapContainers(bodyNode.container),
-          referenceContainer: mapReferenceContainers(bodyNode.referenceContainer),
-          move: mapMoves(bodyNode.move),
-        }
-      : {
-          block: [],
-          referenceBlock: [],
-          uiComponent: [],
-          container: [],
-          referenceContainer: [],
-          move: [],
-        };
-
-    const page = {
-      update: Array.isArray(pageNode.update)
-        ? pageNode.update.map((u: any) => ({
-            handle: getAttr(u, 'handle') as string,
-          }))
-        : [],
-      body: [body],
+    const pageLayout: PageLayout = {
+      path: uri.fsPath,
+      block: mapBlocks(layoutNode.block),
+      referenceBlock: mapReferenceBlocks(layoutNode.referenceBlock),
+      uiComponent: mapUiComponents(layoutNode.uiComponent),
+      container: mapContainers(layoutNode.container),
+      referenceContainer: mapReferenceContainers(layoutNode.referenceContainer),
+      move: mapMoves(layoutNode.move),
     };
 
-    const path = uri.fsPath;
-    const p = path.replace(/\\/g, '/');
-
-    let area = 'base';
-    if (p.includes('/view/frontend/layout/') || p.includes('/app/design/frontend/')) {
-      area = 'frontend';
-    } else if (p.includes('/view/adminhtml/layout/') || p.includes('/app/design/adminhtml/')) {
-      area = 'adminhtml';
-    } else if (p.includes('/view/base/layout/') || p.includes('/app/design/base/')) {
-      area = 'base';
-    }
-
-    const theme = this.getTheme(path);
-
-    const layout: Layout = {
-      area,
-      theme: theme?.title ?? '-',
-      path,
-      page,
-    };
-
-    return layout;
-  }
-
-  private getTheme(path: string): Theme | undefined {
-    const themeIndexData = IndexManager.getIndexData(ThemeIndexer.KEY);
-
-    return themeIndexData?.getThemeByFilePath(path);
+    return pageLayout;
   }
 }

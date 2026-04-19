@@ -22,7 +22,7 @@ export abstract class XmlSuggestionProvider<T> {
     document: TextDocument,
     element: XMLElement,
     attribute?: XMLAttribute
-  ): T[];
+  ): (Promise<T> | T)[];
 
   public getConfigKey(): string | undefined {
     return undefined;
@@ -36,11 +36,11 @@ export abstract class XmlSuggestionProvider<T> {
     return [];
   }
 
-  public async provideSuggestions(
+  public provideSuggestions(
     document: TextDocument,
     position: Position,
     tokenData: TokenData
-  ): Promise<T[]> {
+  ): (Promise<T> | T)[] {
     if (!this.canProvideSuggestions(document)) {
       return [];
     }
@@ -48,7 +48,7 @@ export abstract class XmlSuggestionProvider<T> {
     return this.processSuggestions(document, position, tokenData);
   }
 
-  public getSuggestionProviders(document: TextDocument): SuggestionProviders<T> {
+  public getSuggestionProviders(document: TextDocument): SuggestionProviders<Promise<T> | T> {
     return {
       attributeValue: [options => this.getAttributeValueSuggestionProviders(document, options)],
       elementContent: [options => this.getElementContentSuggestionProviders(document, options)],
@@ -58,7 +58,7 @@ export abstract class XmlSuggestionProvider<T> {
   public getAttributeValueSuggestionProviders(
     document: TextDocument,
     { element, attribute }: AttributeValueCompletionOptions<undefined>
-  ): T[] {
+  ): (Promise<T> | T)[] {
     const match = this.getAttributeValueConditions().find(matchElement => {
       return this.matchesConditions(matchElement, element, attribute);
     });
@@ -85,7 +85,7 @@ export abstract class XmlSuggestionProvider<T> {
   public getElementContentSuggestionProviders(
     document: TextDocument,
     { element }: ElementContentCompletionOptions<undefined>
-  ): T[] {
+  ): (Promise<T> | T)[] {
     const match = this.getElementContentMatches().find(matchElement => {
       return this.matchesConditions(matchElement, element);
     });
@@ -122,7 +122,7 @@ export abstract class XmlSuggestionProvider<T> {
     document: TextDocument,
     position: Position,
     tokenData: TokenData
-  ): T[] {
+  ): (Promise<T> | T)[] {
     const suggestions = getSuggestions({
       ...tokenData,
       offset: document.offsetAt(position),

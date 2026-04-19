@@ -72,6 +72,11 @@
           "type": "boolean",
           "default": true,
           "description": "Enable definitions for Magento 2 theme files."
+        },
+        "magento-toolbox.provideLayoutDefinitions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable definitions for Magento 2 layout files."
         }
       }
     },

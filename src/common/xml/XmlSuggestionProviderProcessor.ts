@@ -22,7 +22,10 @@ export abstract class XmlSuggestionProviderProcessor<T> {
       )
     );
 
-    return providerCompletionItems.flat();
+    const flattenedItems = providerCompletionItems.flat();
+    const promises = flattenedItems.map(item => Promise.resolve(item));
+    const resolvedItems = await Promise.all(promises);
+    return resolvedItems;
   }
 
   protected async getProviderCompletionItems(
@@ -30,7 +33,7 @@ export abstract class XmlSuggestionProviderProcessor<T> {
     document: TextDocument,
     position: Position,
     tokenData: TokenData
-  ): Promise<T[]> {
+  ): Promise<(Promise<T> | T)[]> {
     if (!provider.canProvideSuggestions(document)) {
       return [];
     }

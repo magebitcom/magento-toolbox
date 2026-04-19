@@ -10,6 +10,8 @@ import { AclDefinitionProvider } from './xml/AclDefinitionProvider';
 import { ModuleDefinitionProvider } from './xml/ModuleDefinitionProvider';
 import { TemplateDefinitionProvider } from './xml/TemplateDefinitionProvider';
 import { ThemeDefinitionProvider } from './xml/ThemeDefinitionProvider';
+import { LayoutReferenceBlockDefinitionProvider } from './xml/LayoutReferenceBlockDefinitionProvider';
+import { LayoutReferenceContainerDefinitionProvider } from './xml/LayoutReferenceContainerDefinitionProvider';
 
 export class XmlDefinitionProviderProcessor
   extends XmlSuggestionProviderProcessor<LocationLink>
@@ -21,6 +23,8 @@ export class XmlDefinitionProviderProcessor
       new ModuleDefinitionProvider(),
       new TemplateDefinitionProvider(),
       new ThemeDefinitionProvider(),
+      new LayoutReferenceBlockDefinitionProvider(),
+      new LayoutReferenceContainerDefinitionProvider(),
     ]);
   }
 
