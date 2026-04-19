@@ -35,6 +35,19 @@ export default abstract class AbstractXmlFragmentGenerator<
     return 4;
   }
 
+  /**
+   * Characters wrapped around the inserted fragment. Default produces a blank
+   * line before and after by adding `\n` on each side (since typical insert
+   * points already have surrounding newlines). Override to tighten the gap —
+   * e.g. inserting a sibling into a non-blank-separated list.
+   */
+  protected getFragmentSeparator(
+    _existingXml: string,
+    _insertPosition: number
+  ): { before: string; after: string } {
+    return { before: '\n', after: '\n' };
+  }
+
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
     const { vendor, module } = Magento.splitModule(this.data.module);
     const target = this.getTarget();
@@ -50,11 +63,12 @@ export default abstract class AbstractXmlFragmentGenerator<
 
     const insertPosition = this.computeInsertPosition(existingXml);
     const indented = indentString(fragment, this.getIndent());
+    const { before, after } = this.getFragmentSeparator(existingXml, insertPosition);
     const merged =
       existingXml.slice(0, insertPosition) +
-      '\n' +
+      before +
       indented +
-      '\n' +
+      after +
       existingXml.slice(insertPosition);
 
     const uri = FindOrCreateXml.getUri(workspaceUri, vendor, module, target);
