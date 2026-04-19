@@ -6,7 +6,7 @@ import { describe, it, before } from 'mocha';
 import { setup } from 'test/setup';
 import { getReferenceFile, getTestWorkspaceUri } from 'test/util';
 import sinon from 'sinon';
-import FindOrCreateCrontabXml from 'generator/util/FindOrCreateCrontabXml';
+import FindOrCreateXml from 'generator/xml/FindOrCreateXml';
 
 describe('CronJobXmlGenerator Tests', () => {
   const cronJobWizardData: CronJobWizardData = {
@@ -56,8 +56,8 @@ describe('CronJobXmlGenerator Tests', () => {
 
   it('should add job to existing group', async () => {
     const existingCrontabXml = getReferenceFile('generator/cronJob/crontab.xml');
-    // Stub FindOrCreateCrontabXml.execute to return crontab.xml with existing group
-    const stub = sinon.stub(FindOrCreateCrontabXml, 'execute').resolves(existingCrontabXml);
+    // Stub FindOrCreateXml.execute to return crontab.xml with existing group
+    const stub = sinon.stub(FindOrCreateXml, 'execute').resolves(existingCrontabXml);
 
     try {
       // Create the generator with test data
