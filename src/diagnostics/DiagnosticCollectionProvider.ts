@@ -1,14 +1,39 @@
-import { Diagnostic, DiagnosticCollection, languages, TextDocument } from 'vscode';
+import { Diagnostic, DiagnosticCollection, languages, TextDocument, Uri } from 'vscode';
 import { LanguageDiagnostics } from './LanguageDiagnostics';
 import PluginDiagnostics from './php/PluginDiagnostics';
 import LayoutDiagnostics from './xml/LayoutDiagnostics';
+import AclResourceDiagnostics from './xml/AclResourceDiagnostics';
+import CacheableFalseInDefaultLayoutDiagnostics from './xml/CacheableFalseInDefaultLayoutDiagnostics';
+import InvalidDiTypeDiagnostics from './xml/InvalidDiTypeDiagnostics';
+import InvalidVirtualTypeSourceClassDiagnostics from './xml/InvalidVirtualTypeSourceClassDiagnostics';
+import ModuleDeclarationDiagnostics from './xml/ModuleDeclarationDiagnostics';
+import ModuleScopeDiagnostics from './xml/ModuleScopeDiagnostics';
+import ObserverDeclarationDiagnostics from './xml/ObserverDeclarationDiagnostics';
+import PluginAttrTypeDiagnostics from './xml/PluginAttrTypeDiagnostics';
+import PluginDeclarationDiagnostics from './xml/PluginDeclarationDiagnostics';
+import PreferenceDeclarationDiagnostics from './xml/PreferenceDeclarationDiagnostics';
+import WebApiServiceDiagnostics from './xml/WebApiServiceDiagnostics';
 
 class DiagnosticCollectionProvider {
   private readonly languageDiagnostics: LanguageDiagnostics[];
   private readonly collections: Record<string, DiagnosticCollection>;
 
   constructor() {
-    this.languageDiagnostics = [new PluginDiagnostics(), new LayoutDiagnostics()];
+    this.languageDiagnostics = [
+      new PluginDiagnostics(),
+      new LayoutDiagnostics(),
+      new AclResourceDiagnostics(),
+      new CacheableFalseInDefaultLayoutDiagnostics(),
+      new InvalidDiTypeDiagnostics(),
+      new InvalidVirtualTypeSourceClassDiagnostics(),
+      new ModuleDeclarationDiagnostics(),
+      new ModuleScopeDiagnostics(),
+      new ObserverDeclarationDiagnostics(),
+      new PluginAttrTypeDiagnostics(),
+      new PluginDeclarationDiagnostics(),
+      new PreferenceDeclarationDiagnostics(),
+      new WebApiServiceDiagnostics(),
+    ];
     this.collections = {};
   }
 
@@ -45,6 +70,12 @@ class DiagnosticCollectionProvider {
 
     for (const language in diagnostics) {
       this.getCollection(language).set(document.uri, diagnostics[language]);
+    }
+  }
+
+  public clear(uri: Uri): void {
+    for (const language in this.collections) {
+      this.collections[language].delete(uri);
     }
   }
 }

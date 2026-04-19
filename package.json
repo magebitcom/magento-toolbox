@@ -77,6 +77,61 @@
           "type": "boolean",
           "default": true,
           "description": "Enable definitions for Magento 2 layout files."
+        },
+        "magento-toolbox.diagnostics.observerDeclaration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn on duplicate/disabled observer declarations in events.xml."
+        },
+        "magento-toolbox.diagnostics.pluginDeclaration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn on duplicate/disabled plugin declarations in di.xml."
+        },
+        "magento-toolbox.diagnostics.aclResource": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate id/title attributes on acl.xml <resource> nodes."
+        },
+        "magento-toolbox.diagnostics.cacheableFalseInDefaultLayout": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when a block in default.xml layouts sets cacheable=\"false\"."
+        },
+        "magento-toolbox.diagnostics.moduleDeclaration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when etc/module.xml declares a name that doesn't match the folder structure."
+        },
+        "magento-toolbox.diagnostics.moduleScope": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn when an etc/<area>/*.xml config sits in an unknown area folder."
+        },
+        "magento-toolbox.diagnostics.pluginAttrType": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate the type attribute of <plugin/> in di.xml resolves to a real class."
+        },
+        "magento-toolbox.diagnostics.preferenceDeclaration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate the for/type attributes of <preference/> in di.xml."
+        },
+        "magento-toolbox.diagnostics.invalidDiType": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate <type name>/xsi:type=\"object\" arguments in di.xml resolve to real classes."
+        },
+        "magento-toolbox.diagnostics.invalidVirtualTypeSource": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate the type attribute of <virtualType/> in di.xml resolves to a real class."
+        },
+        "magento-toolbox.diagnostics.webApiService": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate <service class/method/> in webapi.xml (class exists, method exists and is public)."
         }
       }
     },
