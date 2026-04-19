@@ -1,4 +1,9 @@
-interface Block {
+export type WithLayout<T> = {
+  layout: Layout;
+  element: T;
+};
+
+export interface Block {
   name?: string;
   class?: string;
   cacheable?: boolean;
@@ -13,7 +18,7 @@ interface Block {
   uiComponent: UiComponent[];
 }
 
-interface BlockReference extends Block {
+export interface BlockReference extends Block {
   name: string;
   template?: string;
   class?: string;
@@ -27,7 +32,7 @@ interface BlockReference extends Block {
   container: Container[];
 }
 
-interface Container {
+export interface Container {
   name: string;
   after?: string;
   before?: string;
@@ -36,9 +41,10 @@ interface Container {
   referenceBlock: BlockReference[];
   uiComponent: UiComponent[];
   container: Container[];
+  referenceContainer: ContainerReference[];
 }
 
-interface ContainerReference {
+export interface ContainerReference {
   name: string;
   remove?: boolean;
   display?: boolean;
@@ -47,9 +53,10 @@ interface ContainerReference {
   referenceBlock: BlockReference[];
   uiComponent: UiComponent[];
   container: Container[];
+  referenceContainer: ContainerReference[];
 }
 
-interface UiComponent {
+export interface UiComponent {
   name?: string;
   component?: string;
   as?: string;
@@ -59,15 +66,15 @@ interface UiComponent {
   cacheable?: boolean;
 }
 
-interface Update {
+export interface Update {
   handle: string;
 }
 
-interface Remove {
+export interface Remove {
   name: string;
 }
 
-interface Move {
+export interface Move {
   element: string;
   destination: string;
   as?: string;
@@ -75,15 +82,16 @@ interface Move {
   before?: string;
 }
 
-interface Body {
+export interface Body {
   block: Block[];
   referenceBlock: BlockReference[];
   uiComponent: UiComponent[];
   container: Container[];
+  referenceContainer: ContainerReference[];
   move: Move[];
 }
 
-interface Page {
+export interface Page {
   update: Update[];
   body: Body[];
 }
