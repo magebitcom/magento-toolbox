@@ -34,14 +34,20 @@ export default class LayoutDiagnostics implements LanguageDiagnostics {
       const nameAttr = this.attr(element, 'name');
 
       if (element.name === 'referenceBlock' && nameAttr?.value) {
-        if (!this.blockExists(nameAttr.value, area)) {
-          diagnostics.push(this.unknown('block', nameAttr));
+        if (
+          !this.blockExists(nameAttr.value, area) &&
+          !this.containerExists(nameAttr.value, area)
+        ) {
+          diagnostics.push(this.unknown('block or container', nameAttr));
         }
       }
 
       if (element.name === 'referenceContainer' && nameAttr?.value) {
-        if (!this.containerExists(nameAttr.value, area)) {
-          diagnostics.push(this.unknown('container', nameAttr));
+        if (
+          !this.containerExists(nameAttr.value, area) &&
+          !this.blockExists(nameAttr.value, area)
+        ) {
+          diagnostics.push(this.unknown('block or container', nameAttr));
         }
       }
 

@@ -5,12 +5,11 @@ import { ElementNameMatches } from 'common/xml/suggestion/condition/ElementNameM
 import { AttributeNameMatches } from 'common/xml/suggestion/condition/AttributeNameMatches';
 import LayoutIndexer from 'indexer/layout/LayoutIndexer';
 import PageLayoutIndexer from 'indexer/page-layout/PageLayoutIndexer';
-import { Container } from 'indexer/layout/types';
 import FileSystem from 'util/FileSystem';
 import RangeUtil from 'util/Range';
 import Magento from 'util/Magento';
 
-type ContainerTarget = { path: string; container: Container };
+type Target = { path: string; name: string; kind: 'block' | 'container' };
 
 export class LayoutReferenceContainerDefinitionProvider extends XmlSuggestionProvider<LocationLink> {
   public getFilePatterns(): string[] {
@@ -34,39 +33,50 @@ export class LayoutReferenceContainerDefinitionProvider extends XmlSuggestionPro
     const pageLayoutIndexData = IndexManager.getIndexData(PageLayoutIndexer.KEY);
     const area = Magento.getLayoutArea(document.uri.fsPath);
 
-    const targets: ContainerTarget[] = [];
+    const targets: Target[] = [];
 
     if (layoutIndexData) {
       for (const { layout, element } of layoutIndexData.getContainersByName(value, area)) {
-        targets.push({ path: layout.path, container: element });
+        targets.push({ path: layout.path, name: element.name, kind: 'container' });
       }
     }
 
     if (pageLayoutIndexData) {
       for (const { pageLayout, element } of pageLayoutIndexData.getContainersByName(value, area)) {
-        targets.push({ path: pageLayout.path, container: element });
+        targets.push({ path: pageLayout.path, name: element.name, kind: 'container' });
       }
     }
 
-    return targets.map(target => this.mapContainer(target, range));
+    if (targets.length === 0) {
+      if (layoutIndexData) {
+        for (const { layout, element } of layoutIndexData.getBlocksByName(value, area)) {
+          if (element.name) {
+            targets.push({ path: layout.path, name: element.name, kind: 'block' });
+          }
+        }
+      }
+
+      if (pageLayoutIndexData) {
+        for (const { pageLayout, element } of pageLayoutIndexData.getBlocksByName(value, area)) {
+          if (element.name) {
+            targets.push({ path: pageLayout.path, name: element.name, kind: 'block' });
+          }
+        }
+      }
+    }
+
+    return targets.map(target => this.mapTarget(target, range));
   }
 
-  private async mapContainer(
-    target: ContainerTarget,
-    originSelectionRange: Range
-  ): Promise<LocationLink> {
-    const targetRange = await this.getTargetRange(target);
+  private async mapTarget(target: Target, originSelectionRange: Range): Promise<LocationLink> {
+    const uri = Uri.file(target.path);
+    const content = await FileSystem.readFile(uri);
+    const regex = new RegExp(`${target.kind}[^>]*name="${target.name}"`, 's');
+    const targetRange = RangeUtil.fileRegexToVsCodeRange(regex, content);
     return {
-      targetUri: Uri.file(target.path),
+      targetUri: uri,
       targetRange,
       originSelectionRange,
     };
-  }
-
-  private async getTargetRange(target: ContainerTarget): Promise<Range> {
-    const uri = Uri.file(target.path);
-    const content = await FileSystem.readFile(uri);
-    const regex = new RegExp(`container[^>]*name="${target.container.name}"`, 's');
-    return RangeUtil.fileRegexToVsCodeRange(regex, content);
   }
 }
