@@ -22,6 +22,7 @@ export class GeneratorWizard extends Webview {
           localResourceRoots: [
             vscode.Uri.file(path.join(ExtensionState.context.extensionPath, 'dist', 'webview')),
           ],
+          retainContextWhenHidden: true,
         }
       );
 
