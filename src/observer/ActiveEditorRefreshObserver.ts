@@ -5,7 +5,7 @@ import Context from 'common/Context';
 import ObserverInstanceDecorationProvider from 'decorator/ObserverInstanceDecorationProvider';
 import CronClassDecorationProvider from 'decorator/CronClassDecorationProvider';
 
-export default class ActiveTextEditorChangeObserver extends Observer {
+export default class ActiveEditorRefreshObserver extends Observer {
   public async execute(textEditor: TextEditor | undefined): Promise<void> {
     await Context.updateContext('editor', textEditor);
 
