@@ -1,0 +1,9 @@
+<field id="{{ fieldId }}" type="{{ fieldType }}" translate="label{{#if comment }} comment{{/if}}" sortOrder="{{ sortOrder }}" showInDefault="1" showInWebsite="1" showInStore="1">
+    <label>{{ label }}</label>
+{{#if sourceModel }}
+    <source_model>{{ sourceModel }}</source_model>
+{{/if}}
+{{#if comment }}
+    <comment>{{ comment }}</comment>
+{{/if}}
+</field>
