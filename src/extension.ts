@@ -1,6 +1,6 @@
 import ExtensionState from 'common/ExtensionState';
 import IndexRunner from 'indexer/IndexRunner';
-import ActiveTextEditorChangeObserver from 'observer/ActiveTextEditorChangeObserver';
+import ActiveEditorRefreshObserver from 'observer/ActiveEditorRefreshObserver';
 import * as vscode from 'vscode';
 import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvider';
 import ChangeTextEditorSelectionObserver from 'observer/ChangeTextEditorSelectionObserver';
@@ -58,13 +58,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
   await IndexRunner.indexWorkspace();
 
-  const activeTextEditorChangeObserver = new ActiveTextEditorChangeObserver();
+  const activeEditorRefreshObserver = new ActiveEditorRefreshObserver();
   const changeTextEditorSelectionObserver = new ChangeTextEditorSelectionObserver();
 
   // window observers
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(event => {
-      activeTextEditorChangeObserver.execute(event);
+      activeEditorRefreshObserver.execute(event);
 
       if (event?.document) {
         DiagnosticCollectionProvider.updateDiagnostics(event.document);
@@ -86,6 +86,10 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidSaveTextDocument(textDocument => {
       DocumentCache.clear(textDocument);
       DiagnosticCollectionProvider.updateDiagnostics(textDocument);
+
+      if (textDocument === vscode.window.activeTextEditor?.document) {
+        activeEditorRefreshObserver.execute(vscode.window.activeTextEditor);
+      }
     }),
     vscode.workspace.onDidRenameFiles(event => {
       for (const { oldUri } of event.files) {
@@ -145,7 +149,7 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  await activeTextEditorChangeObserver.execute(vscode.window.activeTextEditor);
+  await activeEditorRefreshObserver.execute(vscode.window.activeTextEditor);
 
   if (vscode.window.activeTextEditor) {
     DiagnosticCollectionProvider.updateDiagnostics(vscode.window.activeTextEditor.document);
