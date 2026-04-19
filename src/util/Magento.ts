@@ -38,6 +38,11 @@ export default class Magento {
     return `${vendor}_${module}`;
   }
 
+  public static splitModule(moduleName: string): { vendor: string; module: string } {
+    const [vendor, module] = moduleName.split('_');
+    return { vendor, module };
+  }
+
   public static getModuleNamespace(vendor: string, module: string): PhpNamespace {
     return PhpNamespace.fromParts([vendor, module]);
   }
