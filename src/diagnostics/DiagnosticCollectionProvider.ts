@@ -1,13 +1,14 @@
 import { Diagnostic, DiagnosticCollection, languages, TextDocument } from 'vscode';
 import { LanguageDiagnostics } from './LanguageDiagnostics';
 import PluginDiagnostics from './php/PluginDiagnostics';
+import LayoutDiagnostics from './xml/LayoutDiagnostics';
 
 class DiagnosticCollectionProvider {
   private readonly languageDiagnostics: LanguageDiagnostics[];
   private readonly collections: Record<string, DiagnosticCollection>;
 
   constructor() {
-    this.languageDiagnostics = [new PluginDiagnostics()];
+    this.languageDiagnostics = [new PluginDiagnostics(), new LayoutDiagnostics()];
     this.collections = {};
   }
 
@@ -39,7 +40,7 @@ class DiagnosticCollectionProvider {
     }
 
     for (const language in this.collections) {
-      this.getCollection(language).clear();
+      this.getCollection(language).delete(document.uri);
     }
 
     for (const language in diagnostics) {

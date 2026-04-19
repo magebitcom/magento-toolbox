@@ -1,3 +1,5 @@
+import { MagentoScope } from 'types/global';
+
 export type WithLayout<T> = {
   layout: Layout;
   element: T;
@@ -36,6 +38,11 @@ export interface Container {
   name: string;
   after?: string;
   before?: string;
+  label?: string;
+  htmlTag?: string;
+  htmlClass?: string;
+  htmlId?: string;
+  as?: string;
 
   block: Block[];
   referenceBlock: BlockReference[];
@@ -97,7 +104,7 @@ export interface Page {
 }
 
 export interface Layout {
-  area: string;
+  area: MagentoScope;
   theme: string;
   path: string;
   page: Page;

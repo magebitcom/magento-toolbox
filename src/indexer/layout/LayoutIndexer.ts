@@ -7,6 +7,7 @@ import FileSystem from 'util/FileSystem';
 import IndexManager from 'indexer/IndexManager';
 import ThemeIndexer from 'indexer/theme/ThemeIndexer';
 import { Theme } from 'indexer/theme/types';
+import Magento from 'util/Magento';
 
 export default class LayoutIndexer extends Indexer<Layout> {
   public static readonly KEY = 'layout';
@@ -145,6 +146,11 @@ export default class LayoutIndexer extends Indexer<Layout> {
         name: getAttr(node, 'name') as string,
         after: getAttr(node, 'after'),
         before: getAttr(node, 'before'),
+        label: getAttr(node, 'label'),
+        htmlTag: getAttr(node, 'htmlTag'),
+        htmlClass: getAttr(node, 'htmlClass'),
+        htmlId: getAttr(node, 'htmlId'),
+        as: getAttr(node, 'as'),
         block: mapBlocks(node.block),
         referenceBlock: mapReferenceBlocks(node.referenceBlock),
         uiComponent: mapUiComponents(node.uiComponent),
@@ -211,17 +217,7 @@ export default class LayoutIndexer extends Indexer<Layout> {
     };
 
     const path = uri.fsPath;
-    const p = path.replace(/\\/g, '/');
-
-    let area = 'base';
-    if (p.includes('/view/frontend/layout/') || p.includes('/app/design/frontend/')) {
-      area = 'frontend';
-    } else if (p.includes('/view/adminhtml/layout/') || p.includes('/app/design/adminhtml/')) {
-      area = 'adminhtml';
-    } else if (p.includes('/view/base/layout/') || p.includes('/app/design/base/')) {
-      area = 'base';
-    }
-
+    const area = Magento.getLayoutArea(path);
     const theme = this.getTheme(path);
 
     const layout: Layout = {

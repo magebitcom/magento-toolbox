@@ -3,6 +3,7 @@ import { Block, Container, Layout, WithLayout } from './types';
 import { AbstractIndexData } from 'indexer/AbstractIndexData';
 import LayoutIndexer from './LayoutIndexer';
 import { MagentoScope } from 'types/global';
+import { collectAll, findByName } from './walker';
 
 export class LayoutIndexData extends AbstractIndexData<Layout> {
   @Memoize({
@@ -14,21 +15,20 @@ export class LayoutIndexData extends AbstractIndexData<Layout> {
 
   @Memoize({
     tags: [LayoutIndexer.KEY],
-    hashFunction: (name: string) => name,
+    hashFunction: (name: string, area: MagentoScope) => `${area}:${name}`,
   })
-  public getBlocksByName(
-    name: string,
-    area: MagentoScope = MagentoScope.Frontend
-  ): WithLayout<Block>[] {
+  public getBlocksByName(name: string, area: MagentoScope): WithLayout<Block>[] {
     const result: WithLayout<Block>[] = [];
 
     for (const layout of this.getLayouts()) {
-      if (layout.area !== area) {
+      if (!isAreaInScope(layout.area, area)) {
         continue;
       }
 
-      const values = this.findByName<Block>('block', name, layout, layout.page.body);
-      result.push(...values);
+      const values = findByName<Block, Layout>('block', name, layout, layout.page.body);
+      for (const { parent, element } of values) {
+        result.push({ layout: parent, element });
+      }
     }
 
     return result;
@@ -36,68 +36,118 @@ export class LayoutIndexData extends AbstractIndexData<Layout> {
 
   @Memoize({
     tags: [LayoutIndexer.KEY],
-    hashFunction: (name: string) => name,
+    hashFunction: (name: string, area: MagentoScope) => `${area}:${name}`,
   })
-  public getContainersByName(
-    name: string,
-    area: MagentoScope = MagentoScope.Frontend
-  ): WithLayout<Container>[] {
+  public getContainersByName(name: string, area: MagentoScope): WithLayout<Container>[] {
     const result: WithLayout<Container>[] = [];
 
     for (const layout of this.getLayouts()) {
-      if (layout.area !== area) {
+      if (!isAreaInScope(layout.area, area)) {
         continue;
       }
 
-      const values = this.findByName<Container>('container', name, layout, layout.page.body);
-      result.push(...values);
+      const values = findByName<Container, Layout>('container', name, layout, layout.page.body);
+      for (const { parent, element } of values) {
+        result.push({ layout: parent, element });
+      }
     }
 
     return result;
   }
 
-  private findByName<T>(
-    key: string,
-    name: string,
-    layout: Layout,
-    parent: unknown
-  ): WithLayout<T>[] {
-    const result: WithLayout<T>[] = [];
+  @Memoize({
+    tags: [LayoutIndexer.KEY],
+    hashFunction: (handle: string, area: MagentoScope) => `${area}:${handle}`,
+  })
+  public getLayoutsByHandle(handle: string, area: MagentoScope): Layout[] {
+    const result: Layout[] = [];
 
-    const innerWalk = (layout: Layout, node: unknown) => {
-      if (Array.isArray(node)) {
-        for (const item of node) {
-          innerWalk(layout, item as any);
-        }
-        return;
+    for (const layout of this.getLayouts()) {
+      if (!isAreaInScope(layout.area, area)) {
+        continue;
       }
 
-      if (node && typeof node === 'object') {
-        const obj = node as Record<string, unknown>;
-
-        if (Array.isArray((obj as any)[key])) {
-          const elements = (obj as any)[key] as T[];
-
-          for (const element of elements) {
-            if (element && (element as any).name === name) {
-              result.push({ layout, element: element });
-            }
-
-            innerWalk(layout, element as any);
-          }
-        }
-
-        for (const key of Object.keys(obj)) {
-          const value = obj[key];
-          if (value && typeof value === 'object') {
-            innerWalk(layout, value as any);
-          }
-        }
+      if (handleOfLayout(layout) === handle) {
+        result.push(layout);
       }
-    };
-
-    innerWalk(layout, parent);
+    }
 
     return result;
   }
+
+  @Memoize({
+    tags: [LayoutIndexer.KEY],
+    hashFunction: (area: MagentoScope) => area,
+  })
+  public getHandles(area: MagentoScope): string[] {
+    const handles = new Set<string>();
+
+    for (const layout of this.getLayouts()) {
+      if (!isAreaInScope(layout.area, area)) {
+        continue;
+      }
+      handles.add(handleOfLayout(layout));
+    }
+
+    return Array.from(handles);
+  }
+
+  @Memoize({
+    tags: [LayoutIndexer.KEY],
+    hashFunction: (area: MagentoScope) => area,
+  })
+  public getAllBlockNames(area: MagentoScope): string[] {
+    const names = new Set<string>();
+
+    for (const layout of this.getLayouts()) {
+      if (!isAreaInScope(layout.area, area)) {
+        continue;
+      }
+
+      const values = collectAll<Block, Layout>('block', layout, layout.page.body);
+      for (const { element } of values) {
+        if (element.name) {
+          names.add(element.name);
+        }
+      }
+    }
+
+    return Array.from(names);
+  }
+
+  @Memoize({
+    tags: [LayoutIndexer.KEY],
+    hashFunction: (area: MagentoScope) => area,
+  })
+  public getAllContainerNames(area: MagentoScope): string[] {
+    const names = new Set<string>();
+
+    for (const layout of this.getLayouts()) {
+      if (!isAreaInScope(layout.area, area)) {
+        continue;
+      }
+
+      const values = collectAll<Container, Layout>('container', layout, layout.page.body);
+      for (const { element } of values) {
+        if (element.name) {
+          names.add(element.name);
+        }
+      }
+    }
+
+    return Array.from(names);
+  }
+}
+
+export function isAreaInScope(layoutArea: MagentoScope, requestedArea: MagentoScope): boolean {
+  if (requestedArea === MagentoScope.Base) {
+    return true;
+  }
+  return layoutArea === requestedArea || layoutArea === MagentoScope.Base;
+}
+
+export function handleOfLayout(layout: { path: string }): string {
+  const segments = layout.path.replace(/\\/g, '/').split('/');
+  const filename = segments[segments.length - 1] ?? '';
+  return filename.replace(/\.xml$/, '');
 }

@@ -8,7 +8,7 @@ import { ElementAttributeMatches } from 'common/xml/suggestion/condition/Element
 
 export class TemplateCompletionProvider extends XmlSuggestionProvider<CompletionItem> {
   public getFilePatterns(): string[] {
-    return ['**/view/**/layout/*.xml', '**/etc/**/di.xml'];
+    return ['**/layout/*.xml', '**/page_layout/*.xml', '**/etc/**/di.xml'];
   }
 
   public getAttributeValueConditions(): CombinedCondition[] {

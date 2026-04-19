@@ -9,6 +9,9 @@ import { NamespaceCompletionProvider } from './xml/NamespaceCompletionProvider';
 import { AclCompletionProvider } from './xml/AclCompletionProvider';
 import { TemplateCompletionProvider } from './xml/TemplateCompletionProvider';
 import { EventCompletionProvider } from './xml/EventCompletionProvider';
+import { LayoutBlockNameCompletionProvider } from './xml/LayoutBlockNameCompletionProvider';
+import { LayoutContainerNameCompletionProvider } from './xml/LayoutContainerNameCompletionProvider';
+import { LayoutUpdateHandleCompletionProvider } from './xml/LayoutUpdateHandleCompletionProvider';
 
 export class XmlCompletionProviderProcessor
   extends XmlSuggestionProviderProcessor<CompletionItem>
@@ -21,6 +24,9 @@ export class XmlCompletionProviderProcessor
       new AclCompletionProvider(),
       new TemplateCompletionProvider(),
       new EventCompletionProvider(),
+      new LayoutBlockNameCompletionProvider(),
+      new LayoutContainerNameCompletionProvider(),
+      new LayoutUpdateHandleCompletionProvider(),
     ]);
   }
 

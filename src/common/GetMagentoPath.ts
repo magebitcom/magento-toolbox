@@ -26,18 +26,6 @@ export class GetMagentoPath {
       return;
     }
 
-    const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
-
-    if (!moduleIndexData) {
-      return;
-    }
-
-    const module = moduleIndexData.getModuleByUri(file, false);
-
-    if (!module) {
-      return;
-    }
-
     const paths = this.getPaths(file);
 
     if (!paths) {
@@ -54,9 +42,35 @@ export class GetMagentoPath {
     const offset = paths[pathIndex].length;
     const relativePath = file.fsPath.slice(offset + endIndex);
 
-    const magentoPath = `${module.name}::${relativePath}`;
+    const moduleName = this.resolveModuleName(file, endIndex);
 
-    return magentoPath;
+    if (!moduleName) {
+      return;
+    }
+
+    return `${moduleName}::${relativePath}`;
+  }
+
+  private resolveModuleName(file: Uri, matchedPathStart: number): string | undefined {
+    const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
+
+    if (moduleIndexData) {
+      const module = moduleIndexData.getModuleByUri(file, false);
+      if (module) {
+        return module.name;
+      }
+    }
+
+    const normalized = file.fsPath.replace(/\\/g, '/');
+    const before = normalized.slice(0, matchedPathStart).replace(/\/$/, '');
+    const segments = before.split('/');
+    const last = segments[segments.length - 1];
+
+    if (last && /^[A-Z][A-Za-z0-9]*_[A-Z][A-Za-z0-9]*$/.test(last)) {
+      return last;
+    }
+
+    return undefined;
   }
 
   private getPaths(file: Uri): string[] | undefined {
