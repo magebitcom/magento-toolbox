@@ -32,4 +32,5 @@ export { default as GenerateCliCommandCommand } from './generator/GenerateCliCom
 export { default as GenerateProductEavAttributePatchCommand } from './generator/GenerateProductEavAttributePatchCommand';
 export { default as GenerateCategoryEavAttributePatchCommand } from './generator/GenerateCategoryEavAttributePatchCommand';
 export { default as GenerateCustomerEavAttributePatchCommand } from './generator/GenerateCustomerEavAttributePatchCommand';
+export { default as GenerateSystemConfigCommand } from './generator/GenerateSystemConfigCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';

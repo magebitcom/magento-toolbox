@@ -317,6 +317,11 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateSystemConfig",
+        "title": "Generate System Configuration",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -472,6 +477,10 @@
         },
         {
           "command": "magento-toolbox.generateCustomerEavAttributePatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSystemConfig",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

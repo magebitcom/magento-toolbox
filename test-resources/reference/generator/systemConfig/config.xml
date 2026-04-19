@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+
+    <default>
+        <my_section>
+            <my_group>
+                <enabled>1</enabled>
+                <name>World</name>
+            </my_group>
+        </my_section>
+    </default>
+</config>

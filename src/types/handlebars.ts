@@ -33,6 +33,13 @@ export enum TemplatePath {
   XmlCronGroup = 'xml/cron/group',
   XmlDiCliCommandItem = 'xml/di/cli-command-item',
   XmlDiCliCommandArguments = 'xml/di/cli-command-arguments',
+  XmlSystemField = 'xml/system/field',
+  XmlSystemGroup = 'xml/system/group',
+  XmlSystemSection = 'xml/system/section',
+  XmlConfigField = 'xml/config/field',
+  XmlConfigGroup = 'xml/config/group',
+  XmlConfigSection = 'xml/config/section',
+  XmlAclResource = 'xml/acl/resource',
 }
 
 /**
@@ -140,6 +147,68 @@ export interface DiCliCommandItemParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for system.xml <field>
+ */
+export interface SystemFieldParams extends BaseTemplateParams {
+  fieldId: string;
+  fieldType: string;
+  sortOrder: number | string;
+  label: string;
+  sourceModel?: string;
+  comment?: string;
+}
+
+/**
+ * Parameters for system.xml <group>
+ */
+export interface SystemGroupParams extends BaseTemplateParams {
+  groupId: string;
+  sortOrder: number | string;
+  label: string;
+}
+
+/**
+ * Parameters for system.xml <section>
+ */
+export interface SystemSectionParams extends BaseTemplateParams {
+  sectionId: string;
+  sortOrder: number | string;
+  label: string;
+  tab: string;
+  resource: string;
+}
+
+/**
+ * Parameters for config.xml <field>
+ */
+export interface ConfigFieldParams extends BaseTemplateParams {
+  fieldId: string;
+  defaultValue: string;
+}
+
+/**
+ * Parameters for config.xml <group>
+ */
+export interface ConfigGroupParams extends BaseTemplateParams {
+  groupId: string;
+}
+
+/**
+ * Parameters for config.xml <section>
+ */
+export interface ConfigSectionParams extends BaseTemplateParams {
+  sectionId: string;
+}
+
+/**
+ * Parameters for an acl.xml <resource> leaf
+ */
+export interface AclResourceParams extends BaseTemplateParams {
+  resourceId: string;
+  title: string;
+}
+
+/**
  * Template parameters mapped by template path
  */
 export interface TemplateParams {
@@ -159,6 +228,13 @@ export interface TemplateParams {
   [TemplatePath.XmlModuleConfig]: ModuleConfigParams;
   [TemplatePath.XmlDiCliCommandItem]: DiCliCommandItemParams;
   [TemplatePath.XmlDiCliCommandArguments]: BaseTemplateParams;
+  [TemplatePath.XmlSystemField]: SystemFieldParams;
+  [TemplatePath.XmlSystemGroup]: SystemGroupParams;
+  [TemplatePath.XmlSystemSection]: SystemSectionParams;
+  [TemplatePath.XmlConfigField]: ConfigFieldParams;
+  [TemplatePath.XmlConfigGroup]: ConfigGroupParams;
+  [TemplatePath.XmlConfigSection]: ConfigSectionParams;
+  [TemplatePath.XmlAclResource]: AclResourceParams;
   [key: string]: BaseTemplateParams;
 }
 
@@ -199,6 +275,34 @@ export interface DiCliCommandArgumentsTemplatePartials extends BaseTemplateParti
 }
 
 /**
+ * Partials for system.xml <group> — the inner list of rendered <field> elements
+ */
+export interface SystemGroupTemplatePartials extends BaseTemplatePartials {
+  fieldsContent: string;
+}
+
+/**
+ * Partials for system.xml <section> — the inner list of rendered <group> elements
+ */
+export interface SystemSectionTemplatePartials extends BaseTemplatePartials {
+  groupsContent: string;
+}
+
+/**
+ * Partials for config.xml <group> — the inner list of rendered <field> defaults
+ */
+export interface ConfigGroupTemplatePartials extends BaseTemplatePartials {
+  fieldsContent: string;
+}
+
+/**
+ * Partials for config.xml <section> — the inner list of rendered <group> blocks
+ */
+export interface ConfigSectionTemplatePartials extends BaseTemplatePartials {
+  groupsContent: string;
+}
+
+/**
  * Template partials mapped by template path
  */
 export interface TemplatePartials {
@@ -206,5 +310,9 @@ export interface TemplatePartials {
   [TemplatePath.XmlDiType]: DiTypeTemplatePartials;
   [TemplatePath.XmlCronGroup]: CronGroupTemplatePartials;
   [TemplatePath.XmlDiCliCommandArguments]: DiCliCommandArgumentsTemplatePartials;
+  [TemplatePath.XmlSystemGroup]: SystemGroupTemplatePartials;
+  [TemplatePath.XmlSystemSection]: SystemSectionTemplatePartials;
+  [TemplatePath.XmlConfigGroup]: ConfigGroupTemplatePartials;
+  [TemplatePath.XmlConfigSection]: ConfigSectionTemplatePartials;
   [key: string]: BaseTemplatePartials;
 }
