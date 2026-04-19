@@ -28,4 +28,5 @@ export { default as GenerateSystemXmlFileCommand } from './generator/GenerateSys
 export { default as GenerateConfigXmlFileCommand } from './generator/GenerateConfigXmlFileCommand';
 export { default as GenerateDataPatchCommand } from './generator/GenerateDataPatchCommand';
 export { default as GenerateCronJobCommand } from './generator/GenerateCronJobCommand';
+export { default as GenerateCliCommandCommand } from './generator/GenerateCliCommandCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';
