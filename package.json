@@ -302,6 +302,21 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateProductEavAttributePatch",
+        "title": "Generate Product EAV Attribute Patch",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCategoryEavAttributePatch",
+        "title": "Generate Category EAV Attribute Patch",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCustomerEavAttributePatch",
+        "title": "Generate Customer EAV Attribute Patch",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -445,6 +460,18 @@
         },
         {
           "command": "magento-toolbox.generateCliCommand",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateProductEavAttributePatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCategoryEavAttributePatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCustomerEavAttributePatch",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
