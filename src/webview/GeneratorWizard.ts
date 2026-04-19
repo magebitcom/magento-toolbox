@@ -18,6 +18,7 @@ export class GeneratorWizard extends Webview {
         vscode.ViewColumn.One,
         {
           enableScripts: true,
+          retainContextWhenHidden: true,
         }
       );
 
