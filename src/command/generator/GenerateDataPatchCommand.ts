@@ -13,7 +13,7 @@ export default class GenerateDataPatchCommand extends AbstractWizardCommand<Data
   }
 
   protected showWizard(contextModule: string | undefined): Promise<DataPatchWizardData> {
-    return new DataPatchWizard().show(contextModule);
+    return this.attachPreview(new DataPatchWizard()).show(contextModule);
   }
 
   protected buildGenerators(data: DataPatchWizardData): FileGenerator[] {

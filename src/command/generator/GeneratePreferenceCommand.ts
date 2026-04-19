@@ -18,7 +18,7 @@ export default class GeneratePreferenceCommand extends AbstractWizardCommand<Pre
 
   protected async showWizard(contextModule: string | undefined): Promise<PreferenceWizardData> {
     const parentClassName = await this.resolveParentClassName(window.activeTextEditor?.document);
-    return new PreferenceWizard().show(parentClassName, contextModule);
+    return this.attachPreview(new PreferenceWizard()).show(parentClassName, contextModule);
   }
 
   protected buildGenerators(data: PreferenceWizardData): FileGenerator[] {

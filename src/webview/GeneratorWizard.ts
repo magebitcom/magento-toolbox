@@ -2,31 +2,47 @@ import { Webview } from './Webview';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import { Command, Message, Wizard } from 'types/webview';
+import { Command, Message, PreviewResult, Wizard } from 'types/webview';
 import ExtensionState from 'common/ExtensionState';
 import WizzardClosedError from './error/WizzardClosedError';
 
+export type PreviewHandler = (formData: unknown) => Promise<PreviewResult>;
+
 export class GeneratorWizard extends Webview {
+  protected previewHandler?: PreviewHandler;
+
+  public setPreviewHandler(handler: PreviewHandler): this {
+    this.previewHandler = handler;
+    return this;
+  }
+
   protected async openWizard<D>(pageData: Wizard): Promise<D> {
     let it: NodeJS.Timeout;
     let loaded = false;
     let completed = false;
 
     return new Promise((resolve, reject) => {
+      const extensionUri = vscode.Uri.file(ExtensionState.context.extensionPath);
+
       this.open(
         'magento-toolbox.generatorWizard',
         'Magento Toolbox: Generator Wizard',
         vscode.ViewColumn.One,
         {
           enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.file(path.join(ExtensionState.context.extensionPath, 'dist', 'webview')),
-          ],
           retainContextWhenHidden: true,
+          localResourceRoots: [extensionUri],
         }
       );
 
-      this.panel?.webview.onDidReceiveMessage((message: Message) => {
+      const assets = {
+        logoUri:
+          this.panel?.webview
+            .asWebviewUri(vscode.Uri.joinPath(extensionUri, 'resources', 'logo.jpg'))
+            .toString() ?? '',
+      };
+
+      this.panel?.webview.onDidReceiveMessage(async (message: Message) => {
         // The webview is untrusted: only act on known commands with a well-formed payload.
         if (!message || typeof message.command !== 'string') {
           return;
@@ -38,6 +54,7 @@ export class GeneratorWizard extends Webview {
           this.panel?.webview.postMessage({
             command: Command.ShowWizard,
             data: pageData,
+            assets,
           });
         }
 
@@ -49,6 +66,18 @@ export class GeneratorWizard extends Webview {
           completed = true;
           this.panel?.dispose();
           resolve(message.data);
+        }
+
+        if (message.command === Command.Cancel) {
+          this.panel?.dispose();
+        }
+
+        if (message.command === Command.Preview && this.previewHandler) {
+          const result = await this.previewHandler(message.data);
+          this.panel?.webview.postMessage({
+            command: Command.PreviewResult,
+            data: result,
+          });
         }
       });
 

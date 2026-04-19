@@ -8,6 +8,21 @@ export enum Command {
   Ready = 'ready',
   ShowWizard = 'showWizard',
   Submit = 'submit',
+  Cancel = 'cancel',
+  Preview = 'preview',
+  PreviewResult = 'previewResult',
+}
+
+export type PreviewFileAction = 'create' | 'modify';
+
+export interface PreviewFile {
+  path: string;
+  action: PreviewFileAction;
+}
+
+export interface PreviewResult {
+  files: PreviewFile[];
+  error?: string;
 }
 
 export interface Message<T = any> {
@@ -15,11 +30,22 @@ export interface Message<T = any> {
   data: T;
 }
 
+export interface WizardAssets {
+  logoUri: string;
+}
+
+export interface ShowWizardMessage {
+  command: Command.ShowWizard;
+  data: Wizard;
+  assets: WizardAssets;
+}
+
 export type WizardMessage = Message<Wizard>;
 
 export interface Wizard {
   title: string;
   description?: string;
+  submitLabel?: string;
   tabs: WizardTab[];
   validationSchema?: any;
   validation?: Rules;
