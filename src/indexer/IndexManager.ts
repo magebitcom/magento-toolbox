@@ -2,84 +2,35 @@ import { FileSystemWatcher, Progress, Uri, workspace, WorkspaceFolder } from 'vs
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
-import DiIndexer from './di/DiIndexer';
 import IndexStorage from './IndexStorage';
-import ModuleIndexer from './module/ModuleIndexer';
-import AutoloadNamespaceIndexer from './autoload-namespace/AutoloadNamespaceIndexer';
 import { clear } from 'typescript-memoize';
-import EventsIndexer from './events/EventsIndexer';
-import { DiIndexData } from './di/DiIndexData';
-import { ModuleIndexData } from './module/ModuleIndexData';
-import { AutoloadNamespaceIndexData } from './autoload-namespace/AutoloadNamespaceIndexData';
-import { EventsIndexData } from './events/EventsIndexData';
 import Logger from 'util/Logger';
 import { IndexerKey } from 'types/indexer';
-import AclIndexer from './acl/AclIndexer';
-import { AclIndexData } from './acl/AclIndexData';
-import TemplateIndexer from './template/TemplateIndexer';
-import { TemplateIndexData } from './template/TemplateIndexData';
-import CronIndexer from './cron/CronIndexer';
-import { CronIndexData } from './cron/CronIndexData';
-import LayoutIndexer from './layout/LayoutIndexer';
-import ThemeIndexer from './theme/ThemeIndexer';
-import { ThemeIndexData } from './theme/ThemeIndexData';
-import { LayoutIndexData } from './layout/LayoutIndexData';
-import PageLayoutIndexer from './page-layout/PageLayoutIndexer';
-import { PageLayoutIndexData } from './page-layout/PageLayoutIndexData';
-
-type IndexerInstance =
-  | DiIndexer
-  | ModuleIndexer
-  | AutoloadNamespaceIndexer
-  | EventsIndexer
-  | AclIndexer
-  | TemplateIndexer
-  | CronIndexer
-  | LayoutIndexer
-  | PageLayoutIndexer
-  | ThemeIndexer;
-
-type IndexerDataMap = {
-  [DiIndexer.KEY]: DiIndexData;
-  [ModuleIndexer.KEY]: ModuleIndexData;
-  [AutoloadNamespaceIndexer.KEY]: AutoloadNamespaceIndexData;
-  [EventsIndexer.KEY]: EventsIndexData;
-  [AclIndexer.KEY]: AclIndexData;
-  [TemplateIndexer.KEY]: TemplateIndexData;
-  [CronIndexer.KEY]: CronIndexData;
-  [ThemeIndexer.KEY]: ThemeIndexData;
-  [LayoutIndexer.KEY]: LayoutIndexData;
-  [PageLayoutIndexer.KEY]: PageLayoutIndexData;
-};
+import { indexerDefinitions, IndexerDataMap } from './registry';
 
 class IndexManager {
   private static readonly INDEX_BATCH_SIZE = 50;
 
-  protected indexers: IndexerInstance[] = [];
+  protected indexers: Indexer[] = [];
   protected indexStorage: IndexStorage;
   protected fileWatchers: Record<string, Record<IndexerKey, FileSystemWatcher>> = {};
+  private readonly definitions = indexerDefinitions;
 
   public constructor() {
-    this.indexers = [
-      new DiIndexer(),
-      new ModuleIndexer(),
-      new AutoloadNamespaceIndexer(),
-      new EventsIndexer(),
-      new AclIndexer(),
-      new TemplateIndexer(),
-      new CronIndexer(),
-      new ThemeIndexer(),
-      new LayoutIndexer(),
-      new PageLayoutIndexer(),
-    ];
+    const keys = this.definitions.map(def => def.key);
+    if (new Set(keys).size !== keys.length) {
+      throw new Error(`Duplicate indexer keys detected: ${keys.join(', ')}`);
+    }
+
+    this.indexers = this.definitions.map(def => def.createIndexer());
     this.indexStorage = new IndexStorage();
   }
 
-  public getIndexers(): IndexerInstance[] {
+  public getIndexers(): Indexer[] {
     return this.indexers;
   }
 
-  public getIndexer<I extends IndexerInstance>(name: string): I | undefined {
+  public getIndexer<I extends Indexer>(name: string): I | undefined {
     return this.indexers.find(index => index.getName() === name) as I | undefined;
   }
 
@@ -200,40 +151,13 @@ class IndexManager {
       return undefined;
     }
 
-    switch (id) {
-      case DiIndexer.KEY:
-        return new DiIndexData(data) as IndexerDataMap[T];
+    const definition = this.definitions.find(def => def.key === id);
 
-      case ModuleIndexer.KEY:
-        return new ModuleIndexData(data) as IndexerDataMap[T];
-
-      case AutoloadNamespaceIndexer.KEY:
-        return new AutoloadNamespaceIndexData(data) as IndexerDataMap[T];
-
-      case EventsIndexer.KEY:
-        return new EventsIndexData(data) as IndexerDataMap[T];
-
-      case AclIndexer.KEY:
-        return new AclIndexData(data) as IndexerDataMap[T];
-
-      case TemplateIndexer.KEY:
-        return new TemplateIndexData(data) as IndexerDataMap[T];
-
-      case CronIndexer.KEY:
-        return new CronIndexData(data) as IndexerDataMap[T];
-
-      case ThemeIndexer.KEY:
-        return new ThemeIndexData(data) as IndexerDataMap[T];
-
-      case LayoutIndexer.KEY:
-        return new LayoutIndexData(data) as IndexerDataMap[T];
-
-      case PageLayoutIndexer.KEY:
-        return new PageLayoutIndexData(data) as IndexerDataMap[T];
-
-      default:
-        return undefined;
+    if (!definition) {
+      return undefined;
     }
+
+    return definition.createData(data) as IndexerDataMap[T];
   }
 
   protected async indexFileInner(
@@ -267,7 +191,7 @@ class IndexManager {
     await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
   }
 
-  protected shouldIndex(workspaceFolder: WorkspaceFolder, index: IndexerInstance): boolean {
+  protected shouldIndex(workspaceFolder: WorkspaceFolder, index: Indexer): boolean {
     return !this.indexStorage.hasIndex(workspaceFolder, index.getId());
   }
 
