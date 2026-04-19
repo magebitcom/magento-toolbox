@@ -1,19 +1,20 @@
-import { FileSystemWatcher, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
+import { Disposable, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
 import IndexStorage from './IndexStorage';
 import { clear } from 'typescript-memoize';
 import Logger from 'util/Logger';
-import { IndexerKey } from 'types/indexer';
+import { IndexedFilePath, IndexerKey } from 'types/indexer';
 import { indexerDefinitions, IndexerDataMap } from './registry';
+import { IndexerDefinition, IndexerWatcherContext } from './IndexerDefinition';
 
 class IndexManager {
   private static readonly INDEX_BATCH_SIZE = 50;
 
   protected indexers: Indexer[] = [];
   protected indexStorage: IndexStorage;
-  protected fileWatchers: Record<string, Record<IndexerKey, FileSystemWatcher>> = {};
+  protected fileWatchers: Record<string, Record<IndexerKey, Disposable[]>> = {};
   private readonly definitions = indexerDefinitions;
 
   public constructor() {
@@ -202,18 +203,20 @@ class IndexManager {
       this.fileWatchers[workspaceFolder.uri.fsPath] = {};
     }
 
-    for (const indexer of this.indexers) {
+    for (let i = 0; i < this.indexers.length; i++) {
+      const indexer = this.indexers[i];
+      const definition = this.definitions[i];
       const pattern = indexer.getPattern(workspaceFolder.uri);
       const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
 
-      let watcher: FileSystemWatcher | undefined =
-        this.fileWatchers[workspaceFolder.uri.fsPath][indexer.getId()];
-
-      if (watcher) {
-        watcher.dispose();
+      const existing = this.fileWatchers[workspaceFolder.uri.fsPath][indexer.getId()];
+      if (existing) {
+        for (const disposable of existing) {
+          disposable.dispose();
+        }
       }
 
-      watcher = workspace.createFileSystemWatcher(patternString, false, false, false);
+      const watcher = workspace.createFileSystemWatcher(patternString, false, false, false);
 
       watcher.onDidChange(file => {
         this.indexFileInner(workspaceFolder, file, indexer);
@@ -232,7 +235,44 @@ class IndexManager {
 
         Logger.logWithTime('File deleted', file.fsPath);
       });
+
+      const disposables: Disposable[] = [watcher];
+
+      if (definition.watchAdditional) {
+        const additional = definition.watchAdditional(
+          this.buildWatcherContext(workspaceFolder, indexer, definition)
+        );
+        disposables.push(...additional);
+      }
+
+      this.fileWatchers[workspaceFolder.uri.fsPath][indexer.getId()] = disposables;
     }
+  }
+
+  private buildWatcherContext(
+    workspaceFolder: WorkspaceFolder,
+    indexer: Indexer,
+    definition: IndexerDefinition
+  ): IndexerWatcherContext {
+    return {
+      workspaceFolder,
+      key: definition.key,
+      indexer,
+      getData: () => {
+        const data = this.indexStorage.get(workspaceFolder, definition.key);
+        if (data) {
+          return data;
+        }
+        const empty = new Map<IndexedFilePath, any>();
+        this.indexStorage.set(workspaceFolder, definition.key, empty);
+        return empty;
+      },
+      commit: async data => {
+        this.indexStorage.set(workspaceFolder, definition.key, data);
+        await this.indexStorage.saveIndex(workspaceFolder, definition.key, indexer.getVersion());
+        clear([definition.key]);
+      },
+    };
   }
 }
 
