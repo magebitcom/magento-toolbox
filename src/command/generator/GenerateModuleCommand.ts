@@ -14,7 +14,7 @@ export default class GenerateModuleCommand extends AbstractWizardCommand<ModuleD
   }
 
   protected showWizard(): Promise<ModuleData> {
-    return new ModuleWizard().show();
+    return this.attachPreview(new ModuleWizard()).show();
   }
 
   protected buildGenerators(data: ModuleData): FileGenerator[] {

@@ -14,7 +14,7 @@ export default class GenerateCronJobCommand extends AbstractWizardCommand<CronJo
   }
 
   protected showWizard(contextModule: string | undefined): Promise<CronJobWizardData> {
-    return new CronJobWizard().show(contextModule);
+    return this.attachPreview(new CronJobWizard()).show(contextModule);
   }
 
   protected buildGenerators(data: CronJobWizardData): FileGenerator[] {

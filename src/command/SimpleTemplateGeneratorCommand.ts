@@ -34,7 +34,7 @@ export abstract class SimpleTemplateGeneratorCommand extends AbstractWizardComma
   }
 
   protected showWizard(contextModule: string | undefined): Promise<TemplateWizardData> {
-    return new SimpleTemplateWizard().show(
+    return this.attachPreview(new SimpleTemplateWizard()).show(
       this.getWizardTitle(),
       contextModule,
       this.getAreas(),

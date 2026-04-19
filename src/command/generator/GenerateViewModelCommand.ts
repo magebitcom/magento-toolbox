@@ -9,7 +9,7 @@ export default class GenerateViewModelCommand extends AbstractWizardCommand<View
   }
 
   protected showWizard(contextModule: string | undefined): Promise<ViewModelWizardData> {
-    return new ViewModelWizard().show(contextModule);
+    return this.attachPreview(new ViewModelWizard()).show(contextModule);
   }
 
   protected buildGenerators(data: ViewModelWizardData): FileGenerator[] {

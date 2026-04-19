@@ -4,6 +4,7 @@ import { Wizard, WizardTab } from 'types/webview';
 export class WizardFormBuilder {
   private title?: string;
   private description?: string;
+  private submitLabel?: string;
   private tabs: WizardTab[] = [];
   private validation: Rules = {};
   private validationMessages: ErrorMessages = {};
@@ -22,6 +23,10 @@ export class WizardFormBuilder {
 
   public setDescription(description: string): void {
     this.description = description;
+  }
+
+  public setSubmitLabel(label: string): void {
+    this.submitLabel = label;
   }
 
   public addValidation(
@@ -47,6 +52,7 @@ export class WizardFormBuilder {
     return {
       title: this.title,
       description: this.description,
+      submitLabel: this.submitLabel,
       tabs: this.tabs,
       validation: this.validation,
       validationMessages: this.validationMessages,
