@@ -67,7 +67,8 @@ export type WizardField =
   | WizardSelectField
   | WizardReadonlyField
   | WizardCheckboxField
-  | WizardDynamicRowField;
+  | WizardDynamicRowField
+  | WizardAutocompleteField;
 
 export interface WizardTextField extends WizardGenericField {
   type: WizardInput.Text;
@@ -100,6 +101,29 @@ export interface WizardDynamicRowField extends WizardGenericField {
   fields: WizardField[];
 }
 
+/**
+ * Describes where an autocomplete should pull its suggestions from. `fieldId`
+ * is the id of a sibling DynamicRow field (at the wizard root); `column` is
+ * the per-row property to collect values from. An optional `filterBy` narrows
+ * the rows — e.g. for Fields → Group, you want to see only groups belonging
+ * to the section currently typed into the same row.
+ */
+export interface DynamicSuggestionsSource {
+  fieldId: string;
+  column: string;
+  filterBy?: {
+    column: string;
+    fromField: string;
+  };
+}
+
+export interface WizardAutocompleteField extends WizardGenericField {
+  type: WizardInput.Autocomplete;
+  placeholder?: string;
+  suggestions?: string[];
+  suggestionsFrom?: DynamicSuggestionsSource;
+}
+
 export type FieldValue = string | number | boolean | Record<string, string | number | boolean>;
 
 export interface FieldDependency {
@@ -122,6 +146,7 @@ export enum WizardInput {
   Checkbox = 'checkbox',
   Readonly = 'readonly',
   DynamicRow = 'dynamic-row',
+  Autocomplete = 'autocomplete',
 }
 
 export interface WizardSelectOption {

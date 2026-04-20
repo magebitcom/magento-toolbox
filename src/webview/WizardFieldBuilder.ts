@@ -1,4 +1,5 @@
 import {
+  DynamicSuggestionsSource,
   FieldDependency,
   FieldValue,
   WizardField,
@@ -11,6 +12,8 @@ export class WizardFieldBuilder {
   private initialValue: FieldValue | undefined = undefined;
   private multiple: boolean | undefined = false;
   private options: WizardSelectOption[] = [];
+  private suggestions: string[] | undefined = undefined;
+  private suggestionsFrom: DynamicSuggestionsSource | undefined = undefined;
 
   public constructor(
     private type: WizardInput | undefined = undefined,
@@ -43,6 +46,10 @@ export class WizardFieldBuilder {
 
   public static dynamicRow(id?: string, label?: string): WizardFieldBuilder {
     return new WizardFieldBuilder(WizardInput.DynamicRow, id, label);
+  }
+
+  public static autocomplete(id?: string, label?: string): WizardFieldBuilder {
+    return new WizardFieldBuilder(WizardInput.Autocomplete, id, label);
   }
 
   public setId(id: string): WizardFieldBuilder {
@@ -104,6 +111,16 @@ export class WizardFieldBuilder {
     return this;
   }
 
+  public setSuggestions(suggestions: string[]): WizardFieldBuilder {
+    this.suggestions = suggestions;
+    return this;
+  }
+
+  public setSuggestionsFrom(source: DynamicSuggestionsSource): WizardFieldBuilder {
+    this.suggestionsFrom = source;
+    return this;
+  }
+
   public build(): WizardField {
     if (!this.id || !this.label || !this.type) {
       throw new Error('Invalid field');
@@ -148,6 +165,18 @@ export class WizardFieldBuilder {
           description: this.description,
           dependsOn: this.dependsOn,
           initialValue: this.initialValue,
+          type: this.type,
+        };
+      case WizardInput.Autocomplete:
+        return {
+          id: this.id,
+          label: this.label,
+          description: this.description,
+          dependsOn: this.dependsOn,
+          placeholder: this.placeholder,
+          initialValue: this.initialValue,
+          suggestions: this.suggestions,
+          suggestionsFrom: this.suggestionsFrom,
           type: this.type,
         };
       default:
