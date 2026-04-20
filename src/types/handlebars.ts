@@ -40,6 +40,8 @@ export enum TemplatePath {
   XmlConfigGroup = 'xml/config/group',
   XmlConfigSection = 'xml/config/section',
   XmlAclResource = 'xml/acl/resource',
+  XmlBlankCronGroups = 'xml/blank-cron-groups',
+  XmlCronGroupsGroup = 'xml/cron-groups/group',
 }
 
 /**
@@ -209,6 +211,20 @@ export interface AclResourceParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for a cron_groups.xml <group>
+ */
+export interface CronGroupsGroupParams extends BaseTemplateParams {
+  groupId: string;
+  scheduleGenerateEvery: number | string;
+  scheduleAheadFor: number | string;
+  scheduleLifetime: number | string;
+  historyCleanupEvery: number | string;
+  historySuccessLifetime: number | string;
+  historyFailureLifetime: number | string;
+  useSeparateProcess: 0 | 1;
+}
+
+/**
  * Template parameters mapped by template path
  */
 export interface TemplateParams {
@@ -235,6 +251,8 @@ export interface TemplateParams {
   [TemplatePath.XmlConfigGroup]: ConfigGroupParams;
   [TemplatePath.XmlConfigSection]: ConfigSectionParams;
   [TemplatePath.XmlAclResource]: AclResourceParams;
+  [TemplatePath.XmlBlankCronGroups]: BaseTemplateParams;
+  [TemplatePath.XmlCronGroupsGroup]: CronGroupsGroupParams;
   [key: string]: BaseTemplateParams;
 }
 

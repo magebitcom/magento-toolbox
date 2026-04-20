@@ -327,6 +327,16 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateGraphqlResolver",
+        "title": "Generate GraphQL Resolver",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCronGroup",
+        "title": "Generate Cron Group",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -486,6 +496,14 @@
         },
         {
           "command": "magento-toolbox.generateSystemConfig",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateGraphqlResolver",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCronGroup",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
