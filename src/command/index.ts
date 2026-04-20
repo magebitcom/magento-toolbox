@@ -34,4 +34,6 @@ export { default as GenerateProductEavAttributePatchCommand } from './generator/
 export { default as GenerateCategoryEavAttributePatchCommand } from './generator/GenerateCategoryEavAttributePatchCommand';
 export { default as GenerateCustomerEavAttributePatchCommand } from './generator/GenerateCustomerEavAttributePatchCommand';
 export { default as GenerateSystemConfigCommand } from './generator/GenerateSystemConfigCommand';
+export { default as GenerateGraphqlResolverCommand } from './generator/GenerateGraphqlResolverCommand';
+export { default as GenerateCronGroupCommand } from './generator/GenerateCronGroupCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';
