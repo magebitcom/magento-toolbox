@@ -11,6 +11,7 @@ export enum Command {
   Cancel = 'cancel',
   Preview = 'preview',
   PreviewResult = 'previewResult',
+  ShowSwitcher = 'showSwitcher',
 }
 
 export type PreviewFileAction = 'create' | 'modify';
