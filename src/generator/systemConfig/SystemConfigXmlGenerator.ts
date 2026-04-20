@@ -30,31 +30,85 @@ export default class SystemConfigXmlGenerator extends FileGenerator {
     let xml = await FindOrCreateXml.execute(workspaceUri, vendor, module, target);
     const renderer = new HandlebarsTemplateRenderer();
 
-    for (const section of this.data.sections ?? []) {
-      xml = await this.mergeSection(xml, section, renderer);
+    // Process every section that's either declared in the wizard or merely
+    // referenced by a group/field row. This lets users target sections that
+    // already exist in the module's system.xml without re-declaring them.
+    const sectionIds = new Set<string>();
+    for (const s of this.data.sections ?? []) {
+      if (s.id) sectionIds.add(s.id);
+    }
+    for (const g of this.data.groups ?? []) {
+      if (g.sectionRef) sectionIds.add(g.sectionRef);
+    }
+    for (const f of this.data.fields ?? []) {
+      if (f.sectionRef) sectionIds.add(f.sectionRef);
+    }
+
+    for (const sectionId of sectionIds) {
+      xml = await this.mergeSectionById(xml, sectionId, renderer);
     }
 
     const uri = FindOrCreateXml.getUri(workspaceUri, vendor, module, target);
     return new GeneratedFile(uri, xml, false);
   }
 
-  private async mergeSection(
+  private async mergeSectionById(
     xml: string,
-    section: SystemConfigSectionRow,
+    sectionId: string,
     renderer: HandlebarsTemplateRenderer
   ): Promise<string> {
-    const groups = (this.data.groups ?? []).filter(g => g.sectionRef === section.id);
-    const existing = findOpeningTagWithId(xml, 'section', section.id);
+    const sectionData = (this.data.sections ?? []).find(s => s.id === sectionId);
+    const existing = findOpeningTagWithId(xml, 'section', sectionId);
+    const declaredGroups = (this.data.groups ?? []).filter(g => g.sectionRef === sectionId);
 
     if (!existing) {
-      const sectionXml = await this.buildSectionXml(section, groups, renderer);
+      if (!sectionData) {
+        // User referenced an unknown section and didn't declare it — nothing
+        // sensible to insert here.
+        return xml;
+      }
+      const sectionXml = await this.buildSectionXml(sectionData, declaredGroups, renderer);
       const insertPos = walkBackToLineStart(xml, xml.indexOf('</system>'));
       return insertAt(xml, insertPos, sectionXml, { indent: 8 });
     }
 
+    // Section already lives in the file. Use a placeholder sectionData so the
+    // downstream merge helpers can still key off `section.id`.
+    const section: SystemConfigSectionRow = sectionData ?? {
+      id: sectionId,
+      label: '',
+      sortOrder: 10,
+      tab: '',
+      resource: '',
+    };
+
     let result = xml;
-    for (const group of groups) {
+    // Merge every declared group (might be fresh, might already exist).
+    for (const group of declaredGroups) {
       result = await this.mergeGroup(result, section, group, renderer);
+    }
+    // Also handle groups that weren't declared but are referenced by fields —
+    // those must already exist in the XML for us to target them.
+    const declaredGroupIds = new Set(declaredGroups.map(g => g.id));
+    const undeclaredGroupIds = new Set<string>();
+    for (const f of this.data.fields ?? []) {
+      if (f.sectionRef === sectionId && f.groupRef && !declaredGroupIds.has(f.groupRef)) {
+        undeclaredGroupIds.add(f.groupRef);
+      }
+    }
+    for (const groupId of undeclaredGroupIds) {
+      const syntheticGroup: SystemConfigGroupRow = {
+        sectionRef: sectionId,
+        id: groupId,
+        label: '',
+        sortOrder: 10,
+      };
+      const fields = (this.data.fields ?? []).filter(
+        f => f.sectionRef === sectionId && f.groupRef === groupId
+      );
+      for (const field of fields) {
+        result = await this.mergeField(result, section, syntheticGroup, field, renderer);
+      }
     }
     return result;
   }

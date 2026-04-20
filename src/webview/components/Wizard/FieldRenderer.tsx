@@ -5,6 +5,7 @@ import { WizardField, WizardInput, WizardSelectOption } from 'types/webview';
 import { AutocompleteInput } from './AutocompleteInput';
 import { DynamicRowInput } from './DynamicRowInput';
 import { FieldErrorMessage } from './FieldErrorMessage';
+import { formatError } from './formatError';
 
 interface Props {
   field: WizardField;
@@ -218,7 +219,9 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
               ))}
             </div>
           )}
-          {meta.touched && meta.error && <p className="error">{meta.error}</p>}
+          {meta.touched && typeof meta.error === 'string' && meta.error.length > 0 && (
+            <p className="error">{formatError(meta.error)}</p>
+          )}
         </div>
         {renderedInner}
       </div>
@@ -226,11 +229,13 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
   }
 
   return (
-    <vscode-form-group>
+    <vscode-form-group variant="vertical">
       <vscode-label>{field.label}</vscode-label>
       {renderedInner}
       <vscode-form-helper>
-        {meta.touched && meta.error && <p className="error">{meta.error}</p>}
+        {meta.touched && typeof meta.error === 'string' && meta.error.length > 0 && (
+          <p className="error">{formatError(meta.error)}</p>
+        )}
         {field.description && field.description.length > 0 && (
           <div className="field-description">
             {field.description.map((line, idx) => (

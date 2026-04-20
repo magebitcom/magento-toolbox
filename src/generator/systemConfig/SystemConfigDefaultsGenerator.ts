@@ -30,12 +30,27 @@ export default class SystemConfigDefaultsGenerator extends FileGenerator {
     let xml = await FindOrCreateXml.execute(workspaceUri, vendor, module, target);
     const renderer = new HandlebarsTemplateRenderer();
 
-    const sectionsWithDefaults = (this.data.sections ?? []).filter(section =>
-      this.sectionHasDefaults(section)
-    );
+    // Collect every section that has at least one field-with-default, whether
+    // or not the section itself was declared in the wizard. config.xml's
+    // default tree is keyed by id string and doesn't need section metadata.
+    const sectionIds = new Set<string>();
+    for (const f of this.data.fields ?? []) {
+      if (f.sectionRef && (f.default ?? '').length > 0) {
+        sectionIds.add(f.sectionRef);
+      }
+    }
 
-    for (const section of sectionsWithDefaults) {
-      xml = await this.mergeSection(xml, section, renderer);
+    for (const sectionId of sectionIds) {
+      const sectionData =
+        (this.data.sections ?? []).find(s => s.id === sectionId) ??
+        ({
+          id: sectionId,
+          label: '',
+          sortOrder: 10,
+          tab: '',
+          resource: '',
+        } as SystemConfigSectionRow);
+      xml = await this.mergeSection(xml, sectionData, renderer);
     }
 
     const uri = FindOrCreateXml.getUri(workspaceUri, vendor, module, target);
@@ -77,7 +92,30 @@ export default class SystemConfigDefaultsGenerator extends FileGenerator {
       return insertAt(xml, insertPos, sectionXml, { indent: 8 });
     }
 
-    const groups = (this.data.groups ?? []).filter(g => g.sectionRef === section.id);
+    const declaredGroups = (this.data.groups ?? []).filter(g => g.sectionRef === section.id);
+    const declaredGroupIds = new Set(declaredGroups.map(g => g.id));
+    // Any groupRef mentioned by a field with a default but not declared above.
+    const undeclaredGroupIds = new Set<string>();
+    for (const f of this.data.fields ?? []) {
+      if (
+        f.sectionRef === section.id &&
+        f.groupRef &&
+        (f.default ?? '').length > 0 &&
+        !declaredGroupIds.has(f.groupRef)
+      ) {
+        undeclaredGroupIds.add(f.groupRef);
+      }
+    }
+    const groups: SystemConfigGroupRow[] = [
+      ...declaredGroups,
+      ...Array.from(undeclaredGroupIds).map(id => ({
+        sectionRef: section.id,
+        id,
+        label: '',
+        sortOrder: 10,
+      })),
+    ];
+
     let result = xml;
     for (const group of groups) {
       if (!this.groupHasDefaults(section, group)) {
@@ -163,9 +201,30 @@ export default class SystemConfigDefaultsGenerator extends FileGenerator {
     section: SystemConfigSectionRow,
     renderer: HandlebarsTemplateRenderer
   ): Promise<string> {
-    const groups = (this.data.groups ?? []).filter(
+    const declaredGroups = (this.data.groups ?? []).filter(
       g => g.sectionRef === section.id && this.groupHasDefaults(section, g)
     );
+    const declaredIds = new Set(declaredGroups.map(g => g.id));
+    const syntheticGroupIds = new Set<string>();
+    for (const f of this.data.fields ?? []) {
+      if (
+        f.sectionRef === section.id &&
+        f.groupRef &&
+        (f.default ?? '').length > 0 &&
+        !declaredIds.has(f.groupRef)
+      ) {
+        syntheticGroupIds.add(f.groupRef);
+      }
+    }
+    const groups: SystemConfigGroupRow[] = [
+      ...declaredGroups,
+      ...Array.from(syntheticGroupIds).map(id => ({
+        sectionRef: section.id,
+        id,
+        label: '',
+        sortOrder: 10,
+      })),
+    ];
     const groupsXml = await this.buildGroupsXml(section, groups, renderer);
     return renderer.render(
       TemplatePath.XmlConfigSection,
