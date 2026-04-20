@@ -177,14 +177,7 @@ p.error {
   color: var(--vscode-foreground);
 }
 
-.dynamic-row-cell {
-  vertical-align: top;
-  padding-top: 8px;
-  padding-bottom: 6px;
-}
-
 .dynamic-row-title {
-  width: 100%;
   text-align: left;
   font-size: 0.95em;
   font-weight: 600;
@@ -193,4 +186,58 @@ p.error {
 
 .dynamic-row-add-row {
   margin-top: 8px;
+}
+
+/*
+ * Plain HTML table styled with VS Code theme tokens. We avoid vscode-table
+ * here because its shadow-DOM .wrapper uses overflow:hidden, which clips
+ * absolutely-positioned child dropdowns (e.g. <vscode-single-select>) and
+ * can't be reached from outside.
+ */
+.dynamic-row-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.dynamic-row-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+  padding: 4px 8px 6px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+}
+
+.dynamic-row-table tbody tr:nth-child(odd) td {
+  background: var(--vscode-keybindingTable-rowsBackground, transparent);
+}
+
+.dynamic-row-cell {
+  vertical-align: middle;
+  padding: 6px 8px;
+}
+
+.dynamic-row-cell vscode-textfield,
+.dynamic-row-cell vscode-single-select,
+.dynamic-row-cell vscode-multi-select,
+.dynamic-row-cell vscode-checkbox {
+  width: 100%;
+}
+
+.dynamic-row-action {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.dynamic-row-action-header {
+  width: 1%;
+}
+
+.dynamic-row-empty {
+  padding: 10px 8px;
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
 }
