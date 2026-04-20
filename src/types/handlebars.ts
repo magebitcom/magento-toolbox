@@ -42,6 +42,9 @@ export enum TemplatePath {
   XmlAclResource = 'xml/acl/resource',
   XmlBlankCronGroups = 'xml/blank-cron-groups',
   XmlCronGroupsGroup = 'xml/cron-groups/group',
+  XmlBlankRoutesShell = 'xml/blank-routes-shell',
+  XmlRoutesRoute = 'xml/routes/route',
+  XmlRoutesRouter = 'xml/routes/router',
 }
 
 /**
@@ -211,6 +214,29 @@ export interface AclResourceParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for a routes.xml <route> fragment
+ */
+export interface RoutesRouteParams extends BaseTemplateParams {
+  routeId: string;
+  frontName: string;
+  moduleName: string;
+}
+
+/**
+ * Parameters for a routes.xml <router> wrapper
+ */
+export interface RoutesRouterParams extends BaseTemplateParams {
+  routerId: string;
+}
+
+/**
+ * Partials for the <router> wrapper — inner <route> content.
+ */
+export interface RoutesRouterPartials extends BaseTemplatePartials {
+  routesContent: string;
+}
+
+/**
  * Parameters for a cron_groups.xml <group>
  */
 export interface CronGroupsGroupParams extends BaseTemplateParams {
@@ -253,6 +279,9 @@ export interface TemplateParams {
   [TemplatePath.XmlAclResource]: AclResourceParams;
   [TemplatePath.XmlBlankCronGroups]: BaseTemplateParams;
   [TemplatePath.XmlCronGroupsGroup]: CronGroupsGroupParams;
+  [TemplatePath.XmlBlankRoutesShell]: BaseTemplateParams;
+  [TemplatePath.XmlRoutesRoute]: RoutesRouteParams;
+  [TemplatePath.XmlRoutesRouter]: RoutesRouterParams;
   [key: string]: BaseTemplateParams;
 }
 
@@ -332,5 +361,6 @@ export interface TemplatePartials {
   [TemplatePath.XmlSystemSection]: SystemSectionTemplatePartials;
   [TemplatePath.XmlConfigGroup]: ConfigGroupTemplatePartials;
   [TemplatePath.XmlConfigSection]: ConfigSectionTemplatePartials;
+  [TemplatePath.XmlRoutesRouter]: RoutesRouterPartials;
   [key: string]: BaseTemplatePartials;
 }

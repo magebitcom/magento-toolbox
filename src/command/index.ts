@@ -36,4 +36,5 @@ export { default as GenerateCustomerEavAttributePatchCommand } from './generator
 export { default as GenerateSystemConfigCommand } from './generator/GenerateSystemConfigCommand';
 export { default as GenerateGraphqlResolverCommand } from './generator/GenerateGraphqlResolverCommand';
 export { default as GenerateCronGroupCommand } from './generator/GenerateCronGroupCommand';
+export { default as GenerateControllerCommand } from './generator/GenerateControllerCommand';
 export { default as JumpToModuleCommand } from './JumpToModuleCommand';
