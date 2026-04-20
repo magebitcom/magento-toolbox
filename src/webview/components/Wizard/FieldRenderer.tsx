@@ -2,6 +2,7 @@ import { Option } from '@vscode-elements/elements/dist/includes/vscode-select/ty
 import { useField, useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef } from 'react';
 import { WizardField, WizardInput, WizardSelectOption } from 'types/webview';
+import { AutocompleteInput } from './AutocompleteInput';
 import { DynamicRowInput } from './DynamicRowInput';
 import { FieldErrorMessage } from './FieldErrorMessage';
 
@@ -160,22 +161,40 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
         return <DynamicRowInput field={field} />;
       case WizardInput.Checkbox:
         return <vscode-checkbox name={fieldProps.name} ref={el} />;
+      case WizardInput.Autocomplete:
+        // Rendered below via `autocompleteInner` so it reacts to Formik value
+        // changes without re-rendering the other custom elements.
+        return null;
     }
     return null;
   }, [field, fieldProps.name, options]);
+
+  const autocompleteInner =
+    field.type === WizardInput.Autocomplete ? (
+      <AutocompleteInput
+        field={field}
+        prefix={prefix}
+        name={fieldProps.name}
+        value={(fieldProps.value as string) ?? ''}
+        onChange={next => setValue(next)}
+        onBlur={() => setTouched(true)}
+      />
+    ) : null;
+
+  const renderedInner = autocompleteInner ?? fieldInner;
 
   if (field.dependsOn && values[field.dependsOn.field] !== field.dependsOn.value) {
     return null;
   }
 
-  if (!fieldInner) {
+  if (!renderedInner) {
     return null;
   }
 
   if (simple) {
     return (
       <>
-        {fieldInner}
+        {renderedInner}
         <vscode-form-helper>
           <p className="error">
             <FieldErrorMessage name={fieldProps.name} />
@@ -201,7 +220,7 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
           )}
           {meta.touched && meta.error && <p className="error">{meta.error}</p>}
         </div>
-        {fieldInner}
+        {renderedInner}
       </div>
     );
   }
@@ -209,7 +228,7 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
   return (
     <vscode-form-group>
       <vscode-label>{field.label}</vscode-label>
-      {fieldInner}
+      {renderedInner}
       <vscode-form-helper>
         {meta.touched && meta.error && <p className="error">{meta.error}</p>}
         {field.description && field.description.length > 0 && (

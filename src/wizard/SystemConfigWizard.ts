@@ -49,6 +49,20 @@ const FIELD_TYPE_OPTIONS = [
   { label: 'obscure', value: 'obscure' },
 ];
 
+const COMMON_SOURCE_MODELS = [
+  'Magento\\Config\\Model\\Config\\Source\\Yesno',
+  'Magento\\Config\\Model\\Config\\Source\\Enabledisable',
+  'Magento\\Config\\Model\\Config\\Source\\Locale',
+  'Magento\\Config\\Model\\Config\\Source\\Store',
+  'Magento\\Config\\Model\\Config\\Source\\Website',
+  'Magento\\Config\\Model\\Config\\Source\\Nooptreq',
+  'Magento\\Config\\Model\\Config\\Source\\Email\\Template',
+  'Magento\\Config\\Model\\Config\\Source\\Email\\Identity',
+  'Magento\\Config\\Model\\Config\\Source\\Email\\Method',
+  'Magento\\Config\\Model\\Config\\Source\\Design\\Robots',
+  'Magento\\Cms\\Model\\Config\\Source\\Page',
+];
+
 export default class SystemConfigWizard extends GeneratorWizard {
   public async show(contextModule?: string): Promise<SystemConfigWizardData> {
     const moduleIndexData = IndexManager.getIndexData(ModuleIndexer.KEY);
@@ -106,7 +120,10 @@ export default class SystemConfigWizard extends GeneratorWizard {
           'One row per group. "Section" must match the ID of a row in the Sections table.',
         ])
         .addFields([
-          WizardFieldBuilder.text('sectionRef', 'Section').setPlaceholder('my_section').build(),
+          WizardFieldBuilder.autocomplete('sectionRef', 'Section')
+            .setPlaceholder('my_section')
+            .setSuggestionsFrom({ fieldId: 'sections', column: 'id' })
+            .build(),
           WizardFieldBuilder.text('id', 'ID').setPlaceholder('general').build(),
           WizardFieldBuilder.text('label', 'Label').setPlaceholder('General Settings').build(),
           WizardFieldBuilder.number('sortOrder', 'Sort').setInitialValue(10).build(),
@@ -120,8 +137,18 @@ export default class SystemConfigWizard extends GeneratorWizard {
           'One row per field. "Section" and "Group" must match IDs from the tables above.',
         ])
         .addFields([
-          WizardFieldBuilder.text('sectionRef', 'Section').setPlaceholder('my_section').build(),
-          WizardFieldBuilder.text('groupRef', 'Group').setPlaceholder('general').build(),
+          WizardFieldBuilder.autocomplete('sectionRef', 'Section')
+            .setPlaceholder('my_section')
+            .setSuggestionsFrom({ fieldId: 'sections', column: 'id' })
+            .build(),
+          WizardFieldBuilder.autocomplete('groupRef', 'Group')
+            .setPlaceholder('general')
+            .setSuggestionsFrom({
+              fieldId: 'groups',
+              column: 'id',
+              filterBy: { column: 'sectionRef', fromField: 'sectionRef' },
+            })
+            .build(),
           WizardFieldBuilder.text('id', 'ID').setPlaceholder('my_field').build(),
           WizardFieldBuilder.text('label', 'Label').setPlaceholder('My Field').build(),
           WizardFieldBuilder.select('type', 'Type')
@@ -130,8 +157,9 @@ export default class SystemConfigWizard extends GeneratorWizard {
             .build(),
           WizardFieldBuilder.number('sortOrder', 'Sort').setInitialValue(10).build(),
           WizardFieldBuilder.text('default', 'Default').setPlaceholder('optional').build(),
-          WizardFieldBuilder.text('sourceModel', 'Source Model')
+          WizardFieldBuilder.autocomplete('sourceModel', 'Source Model')
             .setPlaceholder('Magento\\Config\\Model\\Config\\Source\\Yesno')
+            .setSuggestions(COMMON_SOURCE_MODELS)
             .build(),
           WizardFieldBuilder.text('comment', 'Comment').setPlaceholder('optional').build(),
         ])
