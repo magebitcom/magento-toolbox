@@ -337,6 +337,11 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateController",
+        "title": "Generate Controller",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -504,6 +509,10 @@
         },
         {
           "command": "magento-toolbox.generateCronGroup",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateController",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
