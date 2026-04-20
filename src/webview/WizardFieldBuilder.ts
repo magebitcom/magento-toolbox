@@ -14,6 +14,7 @@ export class WizardFieldBuilder {
   private options: WizardSelectOption[] = [];
   private suggestions: string[] | undefined = undefined;
   private suggestionsFrom: DynamicSuggestionsSource | undefined = undefined;
+  private itemLabel: string | undefined = undefined;
 
   public constructor(
     private type: WizardInput | undefined = undefined,
@@ -121,6 +122,11 @@ export class WizardFieldBuilder {
     return this;
   }
 
+  public setItemLabel(itemLabel: string): WizardFieldBuilder {
+    this.itemLabel = itemLabel;
+    return this;
+  }
+
   public build(): WizardField {
     if (!this.id || !this.label || !this.type) {
       throw new Error('Invalid field');
@@ -156,6 +162,7 @@ export class WizardFieldBuilder {
           description: this.description,
           dependsOn: this.dependsOn,
           fields: this.fields ?? [],
+          itemLabel: this.itemLabel,
           type: this.type,
         };
       case WizardInput.Checkbox:
