@@ -1,4 +1,5 @@
 export { default as IndexWorkspaceCommand } from './IndexWorkspaceCommand';
+export { default as GenerateCommand } from './GenerateCommand';
 export { default as GenerateModuleCommand } from './generator/GenerateModuleCommand';
 export { default as GenerateContextPluginCommand } from './generator/GenerateContextPluginCommand';
 export { default as CopyMagentoPathCommand } from './CopyMagentoPathCommand';
