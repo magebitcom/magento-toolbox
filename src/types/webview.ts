@@ -99,6 +99,8 @@ export interface WizardCheckboxField extends WizardGenericField {
 export interface WizardDynamicRowField extends WizardGenericField {
   type: WizardInput.DynamicRow;
   fields: WizardField[];
+  /** Singular noun used in row headings, e.g. "Section" → "Section 1". */
+  itemLabel?: string;
 }
 
 /**

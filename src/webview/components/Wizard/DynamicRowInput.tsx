@@ -23,9 +23,21 @@ const emptyRowFromFields = (fields: WizardField[]): Record<string, unknown> => {
   return row;
 };
 
+const deriveItemLabel = (field: WizardDynamicRowField): string => {
+  if (field.itemLabel) {
+    return field.itemLabel;
+  }
+  // Fallback: strip a trailing 's' from the plural heading ("Sections" → "Section").
+  if (field.label.length > 1 && field.label.endsWith('s')) {
+    return field.label.slice(0, -1);
+  }
+  return 'Row';
+};
+
 export const DynamicRowInput: React.FC<Props> = ({ field }) => {
   const { values } = useFormikContext<any>();
   const rows = values[field.id] ?? ([] as Record<string, any>[]);
+  const itemLabel = deriveItemLabel(field);
 
   return (
     <FieldArray
@@ -39,7 +51,7 @@ export const DynamicRowInput: React.FC<Props> = ({ field }) => {
           {rows.map((_row: any, index: number) => (
             <div key={`${field.id}-row-${index}`} className="dynamic-row-item">
               <div className="dynamic-row-item-header">
-                <span className="dynamic-row-item-label">Row {index + 1}</span>
+                <span className="dynamic-row-item-label">{`${itemLabel} ${index + 1}`}</span>
                 <vscode-button secondary onClick={() => arrayHelpers.remove(index)}>
                   Remove
                 </vscode-button>

@@ -1,5 +1,6 @@
 import IndexManager from 'indexer/IndexManager';
 import ModuleIndexer from 'indexer/module/ModuleIndexer';
+import Validation from 'common/Validation';
 import { GeneratorWizard } from 'webview/GeneratorWizard';
 import { WizardFieldBuilder } from 'webview/WizardFieldBuilder';
 import { WizardFormBuilder } from 'webview/WizardFormBuilder';
@@ -101,7 +102,9 @@ export default class SystemConfigWizard extends GeneratorWizard {
 
     tab.addField(
       WizardFieldBuilder.dynamicRow('sections', 'Sections')
-        .setDescription(['One row per configuration section'])
+        .setDescription([
+          'Add a row for each new section. Leave empty if you are only extending an existing section.',
+        ])
         .addFields([
           WizardFieldBuilder.text('id', 'ID').setPlaceholder('my_section').build(),
           WizardFieldBuilder.text('label', 'Label').setPlaceholder('My Section').build(),
@@ -117,7 +120,7 @@ export default class SystemConfigWizard extends GeneratorWizard {
     tab.addField(
       WizardFieldBuilder.dynamicRow('groups', 'Groups')
         .setDescription([
-          'One row per group. "Section" must match the ID of a row in the Sections table.',
+          'Add a row for each new group. "Section" can be an ID from the Sections table or any section already defined in the module.',
         ])
         .addFields([
           WizardFieldBuilder.autocomplete('sectionRef', 'Section')
@@ -134,7 +137,7 @@ export default class SystemConfigWizard extends GeneratorWizard {
     tab.addField(
       WizardFieldBuilder.dynamicRow('fields', 'Fields')
         .setDescription([
-          'One row per field. "Section" and "Group" must match IDs from the tables above.',
+          'One row per field. "Section" and "Group" can refer to IDs from the tables above or to section/groups already defined in the module.',
         ])
         .addFields([
           WizardFieldBuilder.autocomplete('sectionRef', 'Section')
@@ -168,7 +171,28 @@ export default class SystemConfigWizard extends GeneratorWizard {
 
     builder.addTab(tab.build());
 
+    const snake = `regex:/${Validation.SNAKE_CASE_REGEX.source}/`;
+
     builder.addValidation('module', 'required');
+
+    // None of the three tables are required as a whole — users can leave
+    // sections and groups empty when they're adding fields to an already
+    // existing section/group in the module's system.xml. Wildcard rules below
+    // only fire when a row exists, so per-row fields stay validated.
+    builder.addValidation('sections.*.id', ['required', snake]);
+    builder.addValidation('sections.*.label', 'required');
+    builder.addValidation('sections.*.tab', 'required');
+    builder.addValidation('sections.*.resource', 'required');
+
+    builder.addValidation('groups.*.sectionRef', 'required');
+    builder.addValidation('groups.*.id', ['required', snake]);
+    builder.addValidation('groups.*.label', 'required');
+
+    builder.addValidation('fields.*.sectionRef', 'required');
+    builder.addValidation('fields.*.groupRef', 'required');
+    builder.addValidation('fields.*.id', ['required', snake]);
+    builder.addValidation('fields.*.label', 'required');
+    builder.addValidation('fields.*.type', 'required');
 
     return this.openWizard<SystemConfigWizardData>(builder.build());
   }

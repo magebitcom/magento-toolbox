@@ -93,6 +93,17 @@ p.error {
   border-top: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
 }
 
+.wizard-error-summary {
+  margin: 16px 0 0;
+  padding: 8px 12px;
+  background: var(--vscode-inputValidation-errorBackground, rgba(200, 40, 40, 0.1));
+  border: 1px solid
+    var(--vscode-inputValidation-errorBorder, var(--vscode-errorForeground, rgba(200, 40, 40, 0.5)));
+  color: var(--vscode-errorForeground, #c82828);
+  font-size: 0.9em;
+  border-radius: 3px;
+}
+
 .preview-panel {
   margin-top: 20px;
   padding: 12px 14px;
@@ -240,10 +251,18 @@ p.error {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 6px 16px;
+  align-items: start;
 }
 
 .dynamic-row-item-grid vscode-form-group {
   width: 100%;
+  min-width: 0;
+}
+
+.dynamic-row-item-grid .error,
+.dynamic-row-item-grid .field-description {
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .dynamic-row-empty {
