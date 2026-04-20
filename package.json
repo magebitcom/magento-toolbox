@@ -147,6 +147,11 @@
     ],
     "commands": [
       {
+        "command": "magento-toolbox.generate",
+        "title": "Generate…",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.generateModule",
         "title": "Generate Module",
         "category": "Magento Toolbox"

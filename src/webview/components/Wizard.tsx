@@ -1,5 +1,5 @@
 import { WebviewApi } from 'vscode-webview';
-import { PreviewResult, Wizard as WizardType, WizardAssets } from 'types/webview';
+import { Command, PreviewResult, Wizard as WizardType, WizardAssets } from 'types/webview';
 import { Renderer } from './Wizard/Renderer';
 
 interface WizardProps {
@@ -10,6 +10,10 @@ interface WizardProps {
 }
 
 const Wizard: React.FC<WizardProps> = ({ data, assets, preview, vscode }) => {
+  const handleSwitch = () => {
+    vscode.postMessage({ command: Command.ShowSwitcher });
+  };
+
   return (
     <div className="wizard">
       <header className="wizard-header">
@@ -18,6 +22,14 @@ const Wizard: React.FC<WizardProps> = ({ data, assets, preview, vscode }) => {
             <img className="wizard-logo" src={assets.logoUri} alt="Magento Toolbox" />
           )}
           <span className="wizard-brand-name">Magento Toolbox</span>
+          <button
+            type="button"
+            className="wizard-switch"
+            onClick={handleSwitch}
+            title="Switch to a different generator"
+          >
+            Switch generator…
+          </button>
         </div>
         <h1>{data.title}</h1>
         {data.description && <p>{data.description}</p>}
