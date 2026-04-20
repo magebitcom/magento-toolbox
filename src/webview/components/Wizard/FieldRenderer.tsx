@@ -185,12 +185,30 @@ export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }
     );
   }
 
+  if (field.type === WizardInput.DynamicRow) {
+    // Dynamic rows render their own rich layout below; keep the heading and
+    // description at the top where they describe the list as a whole.
+    return (
+      <div className="dynamic-row-section">
+        <div className="dynamic-row-heading">
+          <div className="dynamic-row-title">{field.label}</div>
+          {field.description && field.description.length > 0 && (
+            <div className="field-description">
+              {field.description.map((line, idx) => (
+                <p key={idx}>{line}</p>
+              ))}
+            </div>
+          )}
+          {meta.touched && meta.error && <p className="error">{meta.error}</p>}
+        </div>
+        {fieldInner}
+      </div>
+    );
+  }
+
   return (
     <vscode-form-group>
-      {field.type !== WizardInput.DynamicRow && <vscode-label>{field.label}</vscode-label>}
-      {field.type === WizardInput.DynamicRow && (
-        <div className="dynamic-row-title">{field.label}</div>
-      )}
+      <vscode-label>{field.label}</vscode-label>
       {fieldInner}
       <vscode-form-helper>
         {meta.touched && meta.error && <p className="error">{meta.error}</p>}

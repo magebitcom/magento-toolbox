@@ -31,47 +31,38 @@ export const DynamicRowInput: React.FC<Props> = ({ field }) => {
     <FieldArray
       name={field.id}
       render={arrayHelpers => (
-        <>
-          <table className="dynamic-row-table">
-            <thead>
-              <tr>
-                {field.fields.map(child => (
-                  <th key={`${child.id}-header`}>{child.label}</th>
+        <div className="dynamic-row-list">
+          {rows.length === 0 && (
+            <p className="dynamic-row-empty">No rows — click Add Row to get started.</p>
+          )}
+
+          {rows.map((_row: any, index: number) => (
+            <div key={`${field.id}-row-${index}`} className="dynamic-row-item">
+              <div className="dynamic-row-item-header">
+                <span className="dynamic-row-item-label">Row {index + 1}</span>
+                <vscode-button secondary onClick={() => arrayHelpers.remove(index)}>
+                  Remove
+                </vscode-button>
+              </div>
+              <div className="dynamic-row-item-grid">
+                {field.fields.map(childField => (
+                  <FieldRenderer
+                    key={`${field.id}-${index}-${childField.id}`}
+                    prefix={`${field.id}.${index}`}
+                    field={childField}
+                  />
                 ))}
-                <th className="dynamic-row-action-header">&nbsp;</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((_row: any, index: number) => (
-                <tr key={`${field.id}-row-${index}`}>
-                  {field.fields.map(childField => (
-                    <td className="dynamic-row-cell" key={`${field.id}-${index}-${childField.id}`}>
-                      <FieldRenderer prefix={`${field.id}.${index}`} field={childField} simple />
-                    </td>
-                  ))}
-                  <td className="dynamic-row-cell dynamic-row-action">
-                    <vscode-button secondary onClick={() => arrayHelpers.remove(index)}>
-                      Remove
-                    </vscode-button>
-                  </td>
-                </tr>
-              ))}
-              {rows.length === 0 && (
-                <tr>
-                  <td className="dynamic-row-empty" colSpan={field.fields.length + 1}>
-                    No rows — click Add Row to get started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              </div>
+            </div>
+          ))}
+
           <vscode-button
             className="dynamic-row-add-row"
             onClick={() => arrayHelpers.push(emptyRowFromFields(field.fields))}
           >
             Add Row
           </vscode-button>
-        </>
+        </div>
       )}
     />
   );
