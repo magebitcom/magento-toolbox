@@ -147,6 +147,11 @@
     ],
     "commands": [
       {
+        "command": "magento-toolbox.generate",
+        "title": "Generate…",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.generateModule",
         "title": "Generate Module",
         "category": "Magento Toolbox"
@@ -297,6 +302,46 @@
         "category": "Magento Toolbox"
       },
       {
+        "command": "magento-toolbox.generateCliCommand",
+        "title": "Generate CLI Command",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateProductEavAttributePatch",
+        "title": "Generate Product EAV Attribute Patch",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCategoryEavAttributePatch",
+        "title": "Generate Category EAV Attribute Patch",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCustomerEavAttributePatch",
+        "title": "Generate Customer EAV Attribute Patch",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateSystemConfig",
+        "title": "Generate System Configuration",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateGraphqlResolver",
+        "title": "Generate GraphQL Resolver",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateCronGroup",
+        "title": "Generate Cron Group",
+        "category": "Magento Toolbox"
+      },
+      {
+        "command": "magento-toolbox.generateController",
+        "title": "Generate Controller",
+        "category": "Magento Toolbox"
+      },
+      {
         "command": "magento-toolbox.jumpToModule",
         "title": "Jump to Module",
         "category": "Magento Toolbox"
@@ -436,6 +481,38 @@
         },
         {
           "command": "magento-toolbox.generateCronJob",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCliCommand",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateProductEavAttributePatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCategoryEavAttributePatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCustomerEavAttributePatch",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSystemConfig",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateGraphqlResolver",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCronGroup",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateController",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]

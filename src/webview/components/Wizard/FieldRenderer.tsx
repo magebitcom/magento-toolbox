@@ -2,8 +2,10 @@ import { Option } from '@vscode-elements/elements/dist/includes/vscode-select/ty
 import { useField, useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef } from 'react';
 import { WizardField, WizardInput, WizardSelectOption } from 'types/webview';
+import { AutocompleteInput } from './AutocompleteInput';
 import { DynamicRowInput } from './DynamicRowInput';
 import { FieldErrorMessage } from './FieldErrorMessage';
+import { formatError } from './formatError';
 
 interface Props {
   field: WizardField;
@@ -12,139 +14,236 @@ interface Props {
 }
 
 const getFieldId = (field: WizardField, prefix?: string) => {
-  if (prefix) {
-    return `${prefix}.${field.id}`;
-  }
-
-  return field.id;
+  return prefix ? `${prefix}.${field.id}` : field.id;
 };
 
 const getFieldProps = (field: WizardField, prefix?: string) => {
+  const name = getFieldId(field, prefix);
   switch (field.type) {
-    case WizardInput.Readonly:
-      return { readonly: true };
     case WizardInput.Checkbox:
-      return { name: getFieldId(field, prefix), checked: false };
+      return { name, type: 'checkbox' as const };
     case WizardInput.Select:
-      return { name: getFieldId(field, prefix) };
     case WizardInput.DynamicRow:
-      return { name: getFieldId(field, prefix) };
+      return { name };
     default:
-      return {
-        name: getFieldId(field, prefix),
-        placeholder: field.placeholder,
-      };
+      return { name, placeholder: field.placeholder };
   }
 };
 
-const mapOption = (option: WizardSelectOption): Option => {
-  return {
-    label: option.label,
-    value: option.value,
-    description: option.description ?? '',
-    selected: option.selected ?? false,
-    disabled: option.disabled ?? false,
-  };
-};
+const mapOption = (option: WizardSelectOption): Option => ({
+  label: option.label,
+  value: option.value,
+  description: option.description ?? '',
+  selected: option.selected ?? false,
+  disabled: option.disabled ?? false,
+});
 
 export const FieldRenderer: React.FC<Props> = ({ field, simple = false, prefix }) => {
   const { values } = useFormikContext<any>();
   const el = useRef<any>(null);
-  const [fieldProps, meta] = useField(getFieldProps(field, prefix));
+  const [fieldProps, meta, helpers] = useField(getFieldProps(field, prefix));
+  const { setValue, setTouched } = helpers;
 
-  /**
-   * vscode-elements do not support (yet) onChange prop
-   */
+  // Bridge the custom element's native change/input events to Formik. Read the
+  // element's value/checked properties directly rather than trusting
+  // event.target.value — some @vscode-elements components surface the value
+  // only on the element property, not on the event.
   useEffect(() => {
-    if (!el.current) {
+    const node = el.current;
+    if (!node) {
       return;
     }
 
-    el.current.addEventListener('change', fieldProps.onChange);
+    const commit = () => {
+      if (field.type === WizardInput.Checkbox) {
+        setValue(Boolean(node.checked));
+        return;
+      }
+      if (field.type === WizardInput.Select && field.multiple) {
+        const next = Array.isArray(node.value) ? node.value : [];
+        setValue(next);
+        return;
+      }
+      setValue(node.value ?? '');
+    };
+
+    const onBlur = () => setTouched(true);
+
+    node.addEventListener('change', commit);
+    node.addEventListener('input', commit);
+    node.addEventListener('blur', onBlur);
 
     return () => {
-      el.current?.removeEventListener('change', fieldProps.onChange);
+      node.removeEventListener('change', commit);
+      node.removeEventListener('input', commit);
+      node.removeEventListener('blur', onBlur);
     };
-  }, [fieldProps, el.current]);
+  }, [setValue, setTouched, field.type, (field as { multiple?: boolean }).multiple]);
+
+  // Push the Formik value back onto the custom element whenever it changes
+  // from outside user interaction (initial mount, programmatic updates,
+  // Add Row defaults).
+  useEffect(() => {
+    const node = el.current;
+    if (!node) {
+      return;
+    }
+    if (field.type === WizardInput.Checkbox) {
+      const wanted = Boolean((fieldProps as { value?: unknown }).value);
+      if (node.checked !== wanted) {
+        node.checked = wanted;
+      }
+      return;
+    }
+    if (field.type === WizardInput.Select && field.multiple) {
+      const next = Array.isArray(fieldProps.value) ? fieldProps.value : [];
+      try {
+        node.value = next;
+      } catch {
+        /* some builds reject array assignment — safe to ignore */
+      }
+      return;
+    }
+    const next = fieldProps.value ?? '';
+    if (node.value !== next) {
+      node.value = next;
+    }
+  }, [fieldProps.value, field.type, (field as { multiple?: boolean }).multiple]);
+
+  const options = useMemo(() => {
+    if (field.type !== WizardInput.Select) {
+      return [];
+    }
+    return field.options.map(mapOption);
+  }, [field]);
 
   const fieldInner = useMemo(() => {
     switch (field.type) {
       case WizardInput.Readonly:
+        return (
+          <vscode-textfield
+            placeholder={field.placeholder}
+            name={fieldProps.name}
+            readonly
+            ref={el}
+          />
+        );
       case WizardInput.Number:
-      case WizardInput.Text: {
-        return <vscode-textfield placeholder={field.placeholder} {...fieldProps} ref={el} />;
-      }
-      case WizardInput.Select: {
-        const selectedIndex = field.initialValue
-          ? field.options.findIndex(option => option.value === String(field.initialValue))
-          : undefined;
-
+        return (
+          <vscode-textfield
+            type="number"
+            placeholder={field.placeholder}
+            name={fieldProps.name}
+            ref={el}
+          />
+        );
+      case WizardInput.Text:
+        return <vscode-textfield placeholder={field.placeholder} name={fieldProps.name} ref={el} />;
+      case WizardInput.Select:
         if (field.multiple) {
           return (
             <vscode-multi-select
-              {...fieldProps}
+              name={fieldProps.name}
               ref={el}
-              combobox
-              value={field.initialValue ? [String(field.initialValue)] : undefined}
-              options={field.options.map(mapOption)}
-              selectedIndexes={selectedIndex ? [selectedIndex] : undefined}
+              {...(field.search ? { combobox: true } : {})}
+              options={options}
             />
           );
         }
-
         return (
           <vscode-single-select
-            {...fieldProps}
+            name={fieldProps.name}
             ref={el}
-            combobox
-            selectedIndex={selectedIndex}
-            options={field.options.map(mapOption)}
+            {...(field.search ? { combobox: true } : {})}
+            options={options}
           />
         );
-      }
-      case WizardInput.DynamicRow: {
+      case WizardInput.DynamicRow:
         return <DynamicRowInput field={field} />;
-      }
-      case WizardInput.Checkbox: {
-        return <vscode-checkbox {...fieldProps} ref={el} />;
-      }
+      case WizardInput.Checkbox:
+        return <vscode-checkbox name={fieldProps.name} ref={el} />;
+      case WizardInput.Autocomplete:
+        // Rendered below via `autocompleteInner` so it reacts to Formik value
+        // changes without re-rendering the other custom elements.
+        return null;
     }
-
     return null;
-  }, []);
+  }, [field, fieldProps.name, options]);
+
+  const autocompleteInner =
+    field.type === WizardInput.Autocomplete ? (
+      <AutocompleteInput
+        field={field}
+        prefix={prefix}
+        name={fieldProps.name}
+        value={(fieldProps.value as string) ?? ''}
+        onChange={next => setValue(next)}
+        onBlur={() => setTouched(true)}
+      />
+    ) : null;
+
+  const renderedInner = autocompleteInner ?? fieldInner;
 
   if (field.dependsOn && values[field.dependsOn.field] !== field.dependsOn.value) {
     return null;
   }
 
-  if (fieldInner) {
-    if (simple) {
-      return (
-        <>
-          {fieldInner}
-          <vscode-form-helper>
-            <p className="error">
-              <FieldErrorMessage name={fieldProps.name} />
-            </p>
-          </vscode-form-helper>
-        </>
-      );
-    }
+  if (!renderedInner) {
+    return null;
+  }
 
+  if (simple) {
     return (
-      <vscode-form-group>
-        {field.type !== WizardInput.DynamicRow && <vscode-label>{field.label}</vscode-label>}
-        {field.type === WizardInput.DynamicRow && (
-          <div className="dynamic-row-title">{field.label}</div>
-        )}
-        {fieldInner}
+      <>
+        {renderedInner}
         <vscode-form-helper>
-          {meta.touched && meta.error && <p className="error">{meta.error}</p>}
-          <p>{field.description}</p>
+          <p className="error">
+            <FieldErrorMessage name={fieldProps.name} />
+          </p>
         </vscode-form-helper>
-      </vscode-form-group>
+      </>
     );
   }
 
-  return null;
+  if (field.type === WizardInput.DynamicRow) {
+    // Dynamic rows render their own rich layout below; keep the heading and
+    // description at the top where they describe the list as a whole.
+    return (
+      <div className="dynamic-row-section">
+        <div className="dynamic-row-heading">
+          <div className="dynamic-row-title">{field.label}</div>
+          {field.description && field.description.length > 0 && (
+            <div className="field-description">
+              {field.description.map((line, idx) => (
+                <p key={idx}>{line}</p>
+              ))}
+            </div>
+          )}
+          {meta.touched && typeof meta.error === 'string' && meta.error.length > 0 && (
+            <p className="error">{formatError(meta.error)}</p>
+          )}
+        </div>
+        {renderedInner}
+      </div>
+    );
+  }
+
+  return (
+    <vscode-form-group variant="vertical">
+      <vscode-label>{field.label}</vscode-label>
+      {renderedInner}
+      <vscode-form-helper>
+        {meta.touched && typeof meta.error === 'string' && meta.error.length > 0 && (
+          <p className="error">{formatError(meta.error)}</p>
+        )}
+        {field.description && field.description.length > 0 && (
+          <div className="field-description">
+            {field.description.map((line, idx) => (
+              <p key={idx}>{line}</p>
+            ))}
+          </div>
+        )}
+      </vscode-form-helper>
+    </vscode-form-group>
+  );
 };

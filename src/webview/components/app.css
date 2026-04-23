@@ -1,26 +1,400 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  color: var(--vscode-foreground);
+}
+
 .app {
-  padding: 16px;
+  padding: 16px 20px;
+  max-width: 960px;
 }
 
-.dynamic-row-cell {
-  vertical-align: top;
-  padding-top: 8px;
-  padding-bottom: 6px;
+.wizard-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
 }
 
-.dynamic-row-title {
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
+.wizard-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.wizard-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: block;
+}
+
+.wizard-brand-name {
+  font-size: 0.85em;
   font-weight: 600;
-  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-.dynamic-row-add-row {
-  margin-top: 12px;
+.wizard-switch {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.3));
+  color: var(--vscode-descriptionForeground);
+  font-family: inherit;
+  font-size: 0.8em;
+  padding: 3px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.wizard-switch:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.12));
+  color: var(--vscode-foreground);
+}
+
+.wizard-switch:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+.wizard-header h1 {
+  margin: 0 0 4px;
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.wizard-header p {
+  margin: 0;
+  color: var(--vscode-descriptionForeground);
+}
+
+.wizard-form {
+  display: block;
 }
 
 .tab-panel {
-  padding: 16px;
+  padding: 12px 2px 0;
   overflow: visible;
+}
+
+.tab-description {
+  margin: 0 0 12px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.field-description {
+  margin: 4px 0 0;
+  color: var(--vscode-descriptionForeground);
+}
+
+.field-description p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.field-description p + p {
+  margin-top: 2px;
+}
+
+p.error {
+  margin: 4px 0 0;
+  color: var(--vscode-errorForeground);
+}
+
+.wizard-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+}
+
+.wizard-error-summary {
+  margin: 16px 0 0;
+  padding: 8px 12px;
+  background: var(--vscode-inputValidation-errorBackground, rgba(200, 40, 40, 0.1));
+  border: 1px solid
+    var(--vscode-inputValidation-errorBorder, var(--vscode-errorForeground, rgba(200, 40, 40, 0.5)));
+  color: var(--vscode-errorForeground, #c82828);
+  font-size: 0.9em;
+  border-radius: 3px;
+}
+
+.preview-panel {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.08));
+  border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+  border-radius: 4px;
+}
+
+.preview-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.preview-panel-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+}
+
+.preview-panel-count {
+  font-size: 0.75em;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+}
+
+.preview-panel-empty {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--vscode-descriptionForeground);
+}
+
+.preview-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 0.9em;
+}
+
+.preview-file-badge {
+  flex: 0 0 auto;
+  font-family: var(--vscode-font-family);
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  min-width: 52px;
+  text-align: center;
+}
+
+.preview-file-badge-create {
+  background: var(--vscode-gitDecoration-addedResourceForeground, #487e02);
+  color: var(--vscode-editor-background, #fff);
+}
+
+.preview-file-badge-modify {
+  background: var(--vscode-gitDecoration-modifiedResourceForeground, #895503);
+  color: var(--vscode-editor-background, #fff);
+}
+
+.preview-file-path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--vscode-foreground);
+}
+
+.dynamic-row-section {
+  display: block;
+  margin: 16px 0 20px;
+}
+
+.dynamic-row-heading {
+  margin-bottom: 12px;
+}
+
+.dynamic-row-title {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.dynamic-row-heading .field-description {
+  margin-top: 0;
+}
+
+.dynamic-row-add-row {
+  margin-top: 10px;
+}
+
+/*
+ * Each row renders as a standalone card with its fields laid out in a
+ * responsive grid. This gives inputs room to breathe and avoids the shadow-DOM
+ * overflow-clipping issues that `vscode-table` has around popovers.
+ */
+.dynamic-row-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dynamic-row-item {
+  border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.25));
+  border-radius: 4px;
+  padding: 10px 14px 12px;
+  background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.04));
+}
+
+.dynamic-row-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+}
+
+.dynamic-row-item-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--vscode-descriptionForeground);
+}
+
+.dynamic-row-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 6px 16px;
+  align-items: start;
+}
+
+.dynamic-row-item-grid vscode-form-group {
+  width: 100%;
+  min-width: 0;
+}
+
+.dynamic-row-item-grid .error,
+.dynamic-row-item-grid .field-description {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.dynamic-row-empty {
+  margin: 0;
+  padding: 12px 4px;
+  color: var(--vscode-descriptionForeground);
+  font-style: italic;
+}
+
+/* Autocomplete field — styled plain <input> plus a custom suggestions list. */
+.autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  color: var(--vscode-input-foreground, var(--vscode-foreground));
+  background: var(--vscode-input-background, transparent);
+  border: 1px solid var(--vscode-input-border, transparent);
+  border-radius: 2px;
+  padding: 4px 8px;
+  height: 26px;
+  line-height: 1.2;
+}
+
+.autocomplete-input::placeholder {
+  color: var(--vscode-input-placeholderForeground, var(--vscode-descriptionForeground));
+}
+
+.autocomplete-input:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+  border-color: var(--vscode-focusBorder);
+}
+
+.autocomplete-list {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(560px, 90vw);
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 2px 0;
+  list-style: none;
+  background: var(--vscode-editorSuggestWidget-background, var(--vscode-editorWidget-background));
+  border: 1px solid
+    var(--vscode-editorSuggestWidget-border, var(--vscode-panel-border, rgba(128, 128, 128, 0.3)));
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+}
+
+.autocomplete-option {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  text-align: left;
+  padding: 4px 10px;
+  background: transparent;
+  border: none;
+  color: var(--vscode-editorSuggestWidget-foreground, var(--vscode-foreground));
+  font-family: var(--vscode-editor-font-family, var(--vscode-font-family));
+  font-size: var(--vscode-font-size);
+  cursor: pointer;
+  line-height: 1.3;
+}
+
+.autocomplete-option-stacked {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.autocomplete-option-primary {
+  font-weight: 500;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.autocomplete-option-secondary {
+  font-size: 0.8em;
+  color: var(--vscode-descriptionForeground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.autocomplete-option:hover,
+.autocomplete-option.is-active {
+  background: var(
+    --vscode-editorSuggestWidget-selectedBackground,
+    var(--vscode-list-activeSelectionBackground)
+  );
+  color: var(
+    --vscode-editorSuggestWidget-selectedForeground,
+    var(--vscode-list-activeSelectionForeground)
+  );
+}
+
+.autocomplete-option:hover .autocomplete-option-secondary,
+.autocomplete-option.is-active .autocomplete-option-secondary {
+  color: inherit;
+  opacity: 0.8;
 }

@@ -8,6 +8,22 @@ export enum Command {
   Ready = 'ready',
   ShowWizard = 'showWizard',
   Submit = 'submit',
+  Cancel = 'cancel',
+  Preview = 'preview',
+  PreviewResult = 'previewResult',
+  ShowSwitcher = 'showSwitcher',
+}
+
+export type PreviewFileAction = 'create' | 'modify';
+
+export interface PreviewFile {
+  path: string;
+  action: PreviewFileAction;
+}
+
+export interface PreviewResult {
+  files: PreviewFile[];
+  error?: string;
 }
 
 export interface Message<T = any> {
@@ -15,11 +31,22 @@ export interface Message<T = any> {
   data: T;
 }
 
+export interface WizardAssets {
+  logoUri: string;
+}
+
+export interface ShowWizardMessage {
+  command: Command.ShowWizard;
+  data: Wizard;
+  assets: WizardAssets;
+}
+
 export type WizardMessage = Message<Wizard>;
 
 export interface Wizard {
   title: string;
   description?: string;
+  submitLabel?: string;
   tabs: WizardTab[];
   validationSchema?: any;
   validation?: Rules;
@@ -41,7 +68,8 @@ export type WizardField =
   | WizardSelectField
   | WizardReadonlyField
   | WizardCheckboxField
-  | WizardDynamicRowField;
+  | WizardDynamicRowField
+  | WizardAutocompleteField;
 
 export interface WizardTextField extends WizardGenericField {
   type: WizardInput.Text;
@@ -72,6 +100,31 @@ export interface WizardCheckboxField extends WizardGenericField {
 export interface WizardDynamicRowField extends WizardGenericField {
   type: WizardInput.DynamicRow;
   fields: WizardField[];
+  /** Singular noun used in row headings, e.g. "Section" → "Section 1". */
+  itemLabel?: string;
+}
+
+/**
+ * Describes where an autocomplete should pull its suggestions from. `fieldId`
+ * is the id of a sibling DynamicRow field (at the wizard root); `column` is
+ * the per-row property to collect values from. An optional `filterBy` narrows
+ * the rows — e.g. for Fields → Group, you want to see only groups belonging
+ * to the section currently typed into the same row.
+ */
+export interface DynamicSuggestionsSource {
+  fieldId: string;
+  column: string;
+  filterBy?: {
+    column: string;
+    fromField: string;
+  };
+}
+
+export interface WizardAutocompleteField extends WizardGenericField {
+  type: WizardInput.Autocomplete;
+  placeholder?: string;
+  suggestions?: string[];
+  suggestionsFrom?: DynamicSuggestionsSource;
 }
 
 export type FieldValue = string | number | boolean | Record<string, string | number | boolean>;
@@ -96,6 +149,7 @@ export enum WizardInput {
   Checkbox = 'checkbox',
   Readonly = 'readonly',
   DynamicRow = 'dynamic-row',
+  Autocomplete = 'autocomplete',
 }
 
 export interface WizardSelectOption {

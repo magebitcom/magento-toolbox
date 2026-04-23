@@ -10,7 +10,7 @@ export class Webview {
     type: string,
     title: string,
     column: vscode.ViewColumn = vscode.ViewColumn.One,
-    options: vscode.WebviewOptions = {},
+    options: vscode.WebviewPanelOptions & vscode.WebviewOptions = {},
     filename: string = 'index.html'
   ) {
     this.panel = vscode.window.createWebviewPanel(type, title, column, options);

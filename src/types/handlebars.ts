@@ -31,6 +31,20 @@ export enum TemplatePath {
   XmlModuleConfig = 'xml/module-config',
   XmlCronJob = 'xml/cron/job',
   XmlCronGroup = 'xml/cron/group',
+  XmlDiCliCommandItem = 'xml/di/cli-command-item',
+  XmlDiCliCommandArguments = 'xml/di/cli-command-arguments',
+  XmlSystemField = 'xml/system/field',
+  XmlSystemGroup = 'xml/system/group',
+  XmlSystemSection = 'xml/system/section',
+  XmlConfigField = 'xml/config/field',
+  XmlConfigGroup = 'xml/config/group',
+  XmlConfigSection = 'xml/config/section',
+  XmlAclResource = 'xml/acl/resource',
+  XmlBlankCronGroups = 'xml/blank-cron-groups',
+  XmlCronGroupsGroup = 'xml/cron-groups/group',
+  XmlBlankRoutesShell = 'xml/blank-routes-shell',
+  XmlRoutesRoute = 'xml/routes/route',
+  XmlRoutesRouter = 'xml/routes/router',
 }
 
 /**
@@ -130,6 +144,113 @@ export interface ModuleConfigParams extends BaseTemplateParams {
 }
 
 /**
+ * Parameters for CLI command <item> fragments in di.xml
+ */
+export interface DiCliCommandItemParams extends BaseTemplateParams {
+  itemName: string;
+  itemClass: string;
+}
+
+/**
+ * Parameters for system.xml <field>
+ */
+export interface SystemFieldParams extends BaseTemplateParams {
+  fieldId: string;
+  fieldType: string;
+  sortOrder: number | string;
+  label: string;
+  sourceModel?: string;
+  comment?: string;
+}
+
+/**
+ * Parameters for system.xml <group>
+ */
+export interface SystemGroupParams extends BaseTemplateParams {
+  groupId: string;
+  sortOrder: number | string;
+  label: string;
+}
+
+/**
+ * Parameters for system.xml <section>
+ */
+export interface SystemSectionParams extends BaseTemplateParams {
+  sectionId: string;
+  sortOrder: number | string;
+  label: string;
+  tab: string;
+  resource: string;
+}
+
+/**
+ * Parameters for config.xml <field>
+ */
+export interface ConfigFieldParams extends BaseTemplateParams {
+  fieldId: string;
+  defaultValue: string;
+}
+
+/**
+ * Parameters for config.xml <group>
+ */
+export interface ConfigGroupParams extends BaseTemplateParams {
+  groupId: string;
+}
+
+/**
+ * Parameters for config.xml <section>
+ */
+export interface ConfigSectionParams extends BaseTemplateParams {
+  sectionId: string;
+}
+
+/**
+ * Parameters for an acl.xml <resource> leaf
+ */
+export interface AclResourceParams extends BaseTemplateParams {
+  resourceId: string;
+  title: string;
+}
+
+/**
+ * Parameters for a routes.xml <route> fragment
+ */
+export interface RoutesRouteParams extends BaseTemplateParams {
+  routeId: string;
+  frontName: string;
+  moduleName: string;
+}
+
+/**
+ * Parameters for a routes.xml <router> wrapper
+ */
+export interface RoutesRouterParams extends BaseTemplateParams {
+  routerId: string;
+}
+
+/**
+ * Partials for the <router> wrapper — inner <route> content.
+ */
+export interface RoutesRouterPartials extends BaseTemplatePartials {
+  routesContent: string;
+}
+
+/**
+ * Parameters for a cron_groups.xml <group>
+ */
+export interface CronGroupsGroupParams extends BaseTemplateParams {
+  groupId: string;
+  scheduleGenerateEvery: number | string;
+  scheduleAheadFor: number | string;
+  scheduleLifetime: number | string;
+  historyCleanupEvery: number | string;
+  historySuccessLifetime: number | string;
+  historyFailureLifetime: number | string;
+  useSeparateProcess: 0 | 1;
+}
+
+/**
  * Template parameters mapped by template path
  */
 export interface TemplateParams {
@@ -147,6 +268,20 @@ export interface TemplateParams {
   [TemplatePath.XmlCronJob]: CronJobParams;
   [TemplatePath.XmlCronGroup]: CronGroupParams;
   [TemplatePath.XmlModuleConfig]: ModuleConfigParams;
+  [TemplatePath.XmlDiCliCommandItem]: DiCliCommandItemParams;
+  [TemplatePath.XmlDiCliCommandArguments]: BaseTemplateParams;
+  [TemplatePath.XmlSystemField]: SystemFieldParams;
+  [TemplatePath.XmlSystemGroup]: SystemGroupParams;
+  [TemplatePath.XmlSystemSection]: SystemSectionParams;
+  [TemplatePath.XmlConfigField]: ConfigFieldParams;
+  [TemplatePath.XmlConfigGroup]: ConfigGroupParams;
+  [TemplatePath.XmlConfigSection]: ConfigSectionParams;
+  [TemplatePath.XmlAclResource]: AclResourceParams;
+  [TemplatePath.XmlBlankCronGroups]: BaseTemplateParams;
+  [TemplatePath.XmlCronGroupsGroup]: CronGroupsGroupParams;
+  [TemplatePath.XmlBlankRoutesShell]: BaseTemplateParams;
+  [TemplatePath.XmlRoutesRoute]: RoutesRouteParams;
+  [TemplatePath.XmlRoutesRouter]: RoutesRouterParams;
   [key: string]: BaseTemplateParams;
 }
 
@@ -180,11 +315,52 @@ export interface CronGroupTemplatePartials extends BaseTemplatePartials {
 }
 
 /**
+ * Partials for the CLI command arguments wrapper template
+ */
+export interface DiCliCommandArgumentsTemplatePartials extends BaseTemplatePartials {
+  itemsContent: string;
+}
+
+/**
+ * Partials for system.xml <group> — the inner list of rendered <field> elements
+ */
+export interface SystemGroupTemplatePartials extends BaseTemplatePartials {
+  fieldsContent: string;
+}
+
+/**
+ * Partials for system.xml <section> — the inner list of rendered <group> elements
+ */
+export interface SystemSectionTemplatePartials extends BaseTemplatePartials {
+  groupsContent: string;
+}
+
+/**
+ * Partials for config.xml <group> — the inner list of rendered <field> defaults
+ */
+export interface ConfigGroupTemplatePartials extends BaseTemplatePartials {
+  fieldsContent: string;
+}
+
+/**
+ * Partials for config.xml <section> — the inner list of rendered <group> blocks
+ */
+export interface ConfigSectionTemplatePartials extends BaseTemplatePartials {
+  groupsContent: string;
+}
+
+/**
  * Template partials mapped by template path
  */
 export interface TemplatePartials {
   [TemplatePath.XmlEventsEvent]: EventTemplatePartials;
   [TemplatePath.XmlDiType]: DiTypeTemplatePartials;
   [TemplatePath.XmlCronGroup]: CronGroupTemplatePartials;
+  [TemplatePath.XmlDiCliCommandArguments]: DiCliCommandArgumentsTemplatePartials;
+  [TemplatePath.XmlSystemGroup]: SystemGroupTemplatePartials;
+  [TemplatePath.XmlSystemSection]: SystemSectionTemplatePartials;
+  [TemplatePath.XmlConfigGroup]: ConfigGroupTemplatePartials;
+  [TemplatePath.XmlConfigSection]: ConfigSectionTemplatePartials;
+  [TemplatePath.XmlRoutesRouter]: RoutesRouterPartials;
   [key: string]: BaseTemplatePartials;
 }
