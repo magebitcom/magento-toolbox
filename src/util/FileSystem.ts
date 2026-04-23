@@ -34,6 +34,10 @@ export default class FileSystem {
     await workspace.fs.writeFile(uri, Buffer.from(content));
   }
 
+  public static async createDirectory(uri: Uri): Promise<void> {
+    await workspace.fs.createDirectory(uri);
+  }
+
   public static async deleteFile(
     uri: Uri,
     options: { recursive: boolean } = { recursive: false }
