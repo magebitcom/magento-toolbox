@@ -26,7 +26,12 @@ export default class GenerateXmlCatalogCommand extends Command {
       return;
     }
 
-    const catalogLocation = Uri.joinPath(workspaceFolder.uri, '.vscode/magento-catalog.xml');
+    const vscodeDirectory = Uri.joinPath(workspaceFolder.uri, '.vscode');
+    const catalogLocation = Uri.joinPath(vscodeDirectory, 'magento-catalog.xml');
+
+    if (!(await FileSystem.fileExists(vscodeDirectory))) {
+      await FileSystem.createDirectory(vscodeDirectory);
+    }
 
     if (await FileSystem.fileExists(catalogLocation)) {
       await FileSystem.deleteFile(catalogLocation);
