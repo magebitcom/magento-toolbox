@@ -16,10 +16,7 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       return null;
     }
 
-    const range = document.getWordRangeAtPosition(
-      position,
-      /((?:\\{1,2}\w+|\w+\\{1,2})(?:\w+\\{0,2})+)/
-    );
+    const range = document.getWordRangeAtPosition(position, /(\\?\w+(?:\\{1,2}\w+)*)/);
 
     if (!range) {
       return null;
@@ -40,20 +37,22 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       return null;
     }
 
-    const classUri = await namespaceIndexData.findUriByNamespace(
-      PhpNamespace.fromString(potentialNamespace)
-    );
+    if (potentialNamespace.includes('\\')) {
+      const classUri = await namespaceIndexData.findUriByNamespace(
+        PhpNamespace.fromString(potentialNamespace)
+      );
 
-    if (classUri) {
-      const targetPosition = await this.getClasslikeNameRange(document, classUri);
+      if (classUri) {
+        const targetPosition = await this.getClasslikeNameRange(document, classUri);
 
-      return [
-        {
-          targetUri: classUri,
-          targetRange: targetPosition,
-          originSelectionRange: range,
-        } as LocationLink,
-      ];
+        return [
+          {
+            targetUri: classUri,
+            targetRange: targetPosition,
+            originSelectionRange: range,
+          } as LocationLink,
+        ];
+      }
     }
 
     const diData = IndexManager.getIndexData(DiIndexer.KEY);
