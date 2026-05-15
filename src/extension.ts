@@ -1,5 +1,6 @@
 import ExtensionState from 'common/ExtensionState';
 import IndexRunner from 'indexer/IndexRunner';
+import IndexManager from 'indexer/IndexManager';
 import ActiveEditorRefreshObserver from 'observer/ActiveEditorRefreshObserver';
 import * as vscode from 'vscode';
 import DiagnosticCollectionProvider from 'diagnostics/DiagnosticCollectionProvider';
@@ -19,6 +20,7 @@ import { XmlHoverProviderProcessor } from 'hover/XmlHoverProviderProcessor';
 import XmlReferenceProvider from 'references/XmlReferenceProvider';
 import XmlRenameProvider from 'references/XmlRenameProvider';
 import QuickFixProvider from 'diagnostics/QuickFixProvider';
+import PhpClassResolver from 'common/php/PhpClassResolver';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -83,8 +85,14 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidCloseTextDocument(event => {
       DocumentCache.clear(event);
     }),
-    vscode.workspace.onDidSaveTextDocument(textDocument => {
+    vscode.workspace.onDidSaveTextDocument(async textDocument => {
       DocumentCache.clear(textDocument);
+
+      const folder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
+      if (folder && magentoWorkspaces.some(w => w.uri.fsPath === folder.uri.fsPath)) {
+        await IndexRunner.indexFile(folder, textDocument.uri);
+      }
+
       DiagnosticCollectionProvider.updateDiagnostics(textDocument);
 
       if (textDocument === vscode.window.activeTextEditor?.document) {
@@ -100,6 +108,29 @@ export async function activate(context: vscode.ExtensionContext) {
       for (const uri of event.files) {
         DiagnosticCollectionProvider.clear(uri);
       }
+    })
+  );
+
+  // refresh diagnostics whenever the index updates (e.g. external file change,
+  // re-run command, watcher) so stale "class does not exist" warnings clear
+  let refreshTimer: NodeJS.Timeout | undefined;
+  context.subscriptions.push(
+    IndexManager.onDidIndex(() => {
+      PhpClassResolver.invalidate();
+
+      if (refreshTimer) {
+        clearTimeout(refreshTimer);
+      }
+      refreshTimer = setTimeout(() => {
+        refreshTimer = undefined;
+        const seen = new Set<string>();
+        for (const editor of vscode.window.visibleTextEditors) {
+          const key = editor.document.uri.toString();
+          if (seen.has(key)) continue;
+          seen.add(key);
+          DiagnosticCollectionProvider.updateDiagnostics(editor.document);
+        }
+      }, 200);
     })
   );
 

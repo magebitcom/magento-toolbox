@@ -43,7 +43,7 @@ export default class InvalidVirtualTypeSourceClassDiagnostics implements Languag
         continue;
       }
 
-      if (!(await PhpClassResolver.classExists(typeAttr.value))) {
+      if (!(await PhpClassResolver.typeOrVirtualTypeExists(typeAttr.value))) {
         const d = new Diagnostic(
           XmlRange.ofAttributeValue(typeAttr),
           `The class "${typeAttr.value}" does not exist`,

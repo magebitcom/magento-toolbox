@@ -3,23 +3,13 @@ import { ClasslikeInfo } from 'common/php/ClasslikeInfo';
 import PhpDocumentParser from 'common/php/PhpDocumentParser';
 import PhpNamespace from 'common/PhpNamespace';
 import AutoloadNamespaceIndexer from 'indexer/autoload-namespace/AutoloadNamespaceIndexer';
+import DiIndexer from 'indexer/di/DiIndexer';
 import IndexManager from 'indexer/IndexManager';
-import {
-  DefinitionProvider,
-  TextDocument,
-  Position,
-  CancellationToken,
-  LocationLink,
-  Uri,
-  Range,
-} from 'vscode';
+import { findVirtualTypeRange } from './util/findVirtualTypeRange';
+import { DefinitionProvider, TextDocument, Position, LocationLink, Uri, Range } from 'vscode';
 
 export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
-  public async provideDefinition(
-    document: TextDocument,
-    position: Position,
-    token: CancellationToken
-  ) {
+  public async provideDefinition(document: TextDocument, position: Position) {
     const provideXmlDefinitions = Config.get<boolean>('provideXmlDefinitions');
 
     if (!provideXmlDefinitions) {
@@ -54,16 +44,41 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       PhpNamespace.fromString(potentialNamespace)
     );
 
-    if (!classUri) {
+    if (classUri) {
+      const targetPosition = await this.getClasslikeNameRange(document, classUri);
+
+      return [
+        {
+          targetUri: classUri,
+          targetRange: targetPosition,
+          originSelectionRange: range,
+        } as LocationLink,
+      ];
+    }
+
+    const diData = IndexManager.getIndexData(DiIndexer.KEY);
+    const virtualType = diData?.findVirtualTypeByName(potentialNamespace);
+
+    if (!virtualType) {
       return null;
     }
 
-    const targetPosition = await this.getClasslikeNameRange(document, classUri);
+    const target = await findVirtualTypeRange(virtualType.diPath, virtualType.name);
+
+    if (!target) {
+      return [
+        {
+          targetUri: Uri.file(virtualType.diPath),
+          targetRange: new Range(0, 0, 0, 0),
+          originSelectionRange: range,
+        } as LocationLink,
+      ];
+    }
 
     return [
       {
-        targetUri: classUri,
-        targetRange: targetPosition,
+        targetUri: target.uri,
+        targetRange: target.range,
         originSelectionRange: range,
       } as LocationLink,
     ];
