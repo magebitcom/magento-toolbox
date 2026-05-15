@@ -74,8 +74,24 @@ class DiagnosticCollectionProvider {
   }
 
   public clear(uri: Uri): void {
+    // VSCode fires rename/delete events with the directory URI when a folder is
+    // renamed or removed; diagnostics keyed by child URIs would otherwise leak.
+    const childPrefix = uri.fsPath.replace(/[/\\]+$/, '') + '/';
+
     for (const language in this.collections) {
-      this.collections[language].delete(uri);
+      const collection = this.collections[language];
+      collection.delete(uri);
+
+      const descendants: Uri[] = [];
+      collection.forEach(entryUri => {
+        if (entryUri.fsPath.startsWith(childPrefix)) {
+          descendants.push(entryUri);
+        }
+      });
+
+      for (const descendant of descendants) {
+        collection.delete(descendant);
+      }
     }
   }
 }
