@@ -5,8 +5,6 @@
 
 Code generation and inspection tools for Magento 2 development.
 
-**This extension is currently actively under development**
-
 ## Features
 
 Check out our [Wiki page](https://github.com/magebitcom/magento-toolbox/wiki) for information about the available features
