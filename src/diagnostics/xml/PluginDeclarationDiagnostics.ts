@@ -62,7 +62,10 @@ export default class PluginDeclarationDiagnostics implements LanguageDiagnostics
 
         if (disabled) {
           const enabledExists = (diIndex?.findPluginsForType(targetType) ?? []).some(
-            p => p.name === nameAttr.value && p.diPath !== document.uri.fsPath
+            p =>
+              p.name === nameAttr.value &&
+              p.diPath !== document.uri.fsPath &&
+              this.scopesConflict(scope, this.getScopeFromPath(p.diPath))
           );
 
           if (!enabledExists) {
@@ -79,16 +82,20 @@ export default class PluginDeclarationDiagnostics implements LanguageDiagnostics
         }
 
         const otherOccurrences = (diIndex?.findPluginsForType(targetType) ?? []).filter(
-          p => p.name === nameAttr.value && p.diPath !== document.uri.fsPath
+          p =>
+            p.name === nameAttr.value &&
+            p.diPath !== document.uri.fsPath &&
+            this.scopesConflict(scope, this.getScopeFromPath(p.diPath))
         );
 
         if (otherOccurrences.length > 0) {
           const otherPath = otherOccurrences[0].diPath;
           const otherModule = moduleIndex?.getModuleByUri(Uri.file(otherPath), false)?.name;
+          const otherScope = this.getScopeFromPath(otherPath);
 
           const d = new Diagnostic(
             XmlRange.ofAttributeValue(nameAttr),
-            `The plugin name "${nameAttr.value}" for targeted "${targetType}" class is already used in the module "${otherModule ?? 'unknown'}" (${scope} scope). For more details see Inspection Description.`,
+            `The plugin name "${nameAttr.value}" for targeted "${targetType}" class is already used in the module "${otherModule ?? 'unknown'}" (${otherScope} scope). For more details see Inspection Description.`,
             DiagnosticSeverity.Warning
           );
           d.code = DiagnosticCode.PluginDuplicateInOtherPlaces;
@@ -105,5 +112,9 @@ export default class PluginDeclarationDiagnostics implements LanguageDiagnostics
     const normalized = fsPath.replace(/\\/g, '/');
     const match = normalized.match(/\/etc\/([^/]+)\/di\.xml$/);
     return match ? match[1] : 'global';
+  }
+
+  private scopesConflict(a: string, b: string): boolean {
+    return a === b || a === 'global' || b === 'global';
   }
 }
