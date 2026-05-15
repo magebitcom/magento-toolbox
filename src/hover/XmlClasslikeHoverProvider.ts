@@ -15,10 +15,7 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
       return null;
     }
 
-    const range = document.getWordRangeAtPosition(
-      position,
-      /((?:\\{1,2}\w+|\w+\\{1,2})(?:\w+\\{0,2})+)/
-    );
+    const range = document.getWordRangeAtPosition(position, /(\\?\w+(?:\\{1,2}\w+)*)/);
 
     if (!range) {
       return null;
@@ -38,15 +35,17 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
       return null;
     }
 
-    const classUri = await namespaceIndexData.findUriByNamespace(
-      PhpNamespace.fromString(potentialNamespace)
-    );
+    if (potentialNamespace.includes('\\')) {
+      const classUri = await namespaceIndexData.findUriByNamespace(
+        PhpNamespace.fromString(potentialNamespace)
+      );
 
-    if (classUri) {
-      const phpFile = await PhpDocumentParser.parseUri(document, classUri);
-      const classLikeInfo = new ClasslikeInfo(phpFile);
+      if (classUri) {
+        const phpFile = await PhpDocumentParser.parseUri(document, classUri);
+        const classLikeInfo = new ClasslikeInfo(phpFile);
 
-      return new Hover(classLikeInfo.getHover(), range);
+        return new Hover(classLikeInfo.getHover(), range);
+      }
     }
 
     const diData = IndexManager.getIndexData(DiIndexer.KEY);
