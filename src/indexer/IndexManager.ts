@@ -1,4 +1,4 @@
-import { Disposable, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
+import { Disposable, Event, EventEmitter, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
@@ -9,6 +9,11 @@ import { IndexedFilePath, IndexerKey } from 'types/indexer';
 import { indexerDefinitions, IndexerDataMap } from './registry';
 import { IndexerDefinition, IndexerWatcherContext } from './IndexerDefinition';
 
+export interface IndexChangeEvent {
+  readonly indexerKeys: readonly IndexerKey[];
+  readonly file?: Uri;
+}
+
 class IndexManager {
   private static readonly INDEX_BATCH_SIZE = 50;
 
@@ -16,6 +21,8 @@ class IndexManager {
   protected indexStorage: IndexStorage;
   protected fileWatchers: Record<string, Record<IndexerKey, Disposable[]>> = {};
   private readonly definitions = indexerDefinitions;
+  private readonly onDidIndexEmitter = new EventEmitter<IndexChangeEvent>();
+  public readonly onDidIndex: Event<IndexChangeEvent> = this.onDidIndexEmitter.event;
 
   public constructor() {
     const keys = this.definitions.map(def => def.key);
@@ -105,6 +112,8 @@ class IndexManager {
     }
 
     Logger.logWithTime('Finished indexing workspace', workspaceFolder.name);
+
+    this.onDidIndexEmitter.fire({ indexerKeys: this.indexers.map(i => i.getId()) });
   }
 
   public async indexFile(workspaceFolder: WorkspaceFolder, file: Uri): Promise<void> {
@@ -117,6 +126,8 @@ class IndexManager {
     );
 
     Logger.logWithTime('Finished indexing file', file.fsPath);
+
+    this.onDidIndexEmitter.fire({ indexerKeys: this.indexers.map(i => i.getId()), file });
   }
 
   public async indexFiles(workspaceFolder: WorkspaceFolder, files: Uri[]): Promise<void> {
@@ -127,6 +138,8 @@ class IndexManager {
     }
 
     Logger.logWithTime(`Finished indexing ${files.length} files`);
+
+    this.onDidIndexEmitter.fire({ indexerKeys: this.indexers.map(i => i.getId()) });
   }
 
   public getIndexStorageData<T = any>(
@@ -190,6 +203,8 @@ class IndexManager {
     indexData.delete(file.fsPath);
     this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
     await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+
+    clear([indexer.getId()]);
   }
 
   protected shouldIndex(workspaceFolder: WorkspaceFolder, index: Indexer): boolean {
@@ -218,20 +233,23 @@ class IndexManager {
 
       const watcher = workspace.createFileSystemWatcher(patternString, false, false, false);
 
-      watcher.onDidChange(file => {
-        this.indexFileInner(workspaceFolder, file, indexer);
+      watcher.onDidChange(async file => {
+        await this.indexFileInner(workspaceFolder, file, indexer);
+        this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
 
         Logger.logWithTime('File changed', file.fsPath);
       });
 
-      watcher.onDidCreate(file => {
-        this.indexFileInner(workspaceFolder, file, indexer);
+      watcher.onDidCreate(async file => {
+        await this.indexFileInner(workspaceFolder, file, indexer);
+        this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
 
         Logger.logWithTime('File created', file.fsPath);
       });
 
-      watcher.onDidDelete(file => {
-        this.removeFileFromIndex(workspaceFolder, file, indexer);
+      watcher.onDidDelete(async file => {
+        await this.removeFileFromIndex(workspaceFolder, file, indexer);
+        this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
 
         Logger.logWithTime('File deleted', file.fsPath);
       });

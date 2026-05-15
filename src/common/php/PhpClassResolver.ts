@@ -16,8 +16,6 @@ interface MethodLookup {
 }
 
 class PhpClassResolver {
-  private static readonly SUFFIXES = ['Factory', 'Proxy'];
-
   private classExistCache = new Map<string, boolean>();
   private methodLookupCache = new Map<string, MethodLookup | null>();
 
@@ -56,6 +54,13 @@ class PhpClassResolver {
 
   public async typeOrVirtualTypeExists(name: string): Promise<boolean> {
     return this.classExists(name, { allowVirtualType: true });
+  }
+
+  public resolveVirtualTypeToConcrete(name: string): string | undefined {
+    const cleaned = this.normalize(name);
+    if (!cleaned) return undefined;
+    const di = IndexManager.getIndexData(DiIndexer.KEY);
+    return di ? di.resolveVirtualTypeToConcrete(cleaned) : undefined;
   }
 
   public async methodLookup(fqn: string, method: string): Promise<MethodLookup | null> {
@@ -103,15 +108,7 @@ class PhpClassResolver {
   private async resolveUri(fqn: string): Promise<Uri | undefined> {
     const autoload = IndexManager.getIndexData(AutoloadNamespaceIndexer.KEY);
     if (!autoload) return undefined;
-
-    const parts = fqn.split('\\').filter(Boolean);
-    if (!parts.length) return undefined;
-
-    const last = parts[parts.length - 1];
-    const withoutSuffix =
-      PhpClassResolver.SUFFIXES.includes(last) && parts.length > 1 ? parts.slice(0, -1) : parts;
-
-    return autoload.findUriByNamespace(PhpNamespace.fromParts(withoutSuffix.slice()));
+    return autoload.findUriByNamespace(PhpNamespace.fromString(fqn));
   }
 }
 

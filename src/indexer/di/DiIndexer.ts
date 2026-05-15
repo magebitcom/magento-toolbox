@@ -31,7 +31,7 @@ export default class DiIndexer extends Indexer<DiData> {
   }
 
   public getVersion(): number {
-    return 1;
+    return 2;
   }
 
   public getId(): IndexerKey {
@@ -43,7 +43,7 @@ export default class DiIndexer extends Indexer<DiData> {
   }
 
   public getPattern(uri: Uri): RelativePattern {
-    return new RelativePattern(uri, '**/etc/di.xml');
+    return new RelativePattern(uri, '**/etc/**/di.xml');
   }
 
   public async indexFile(uri: Uri): Promise<DiData> {
