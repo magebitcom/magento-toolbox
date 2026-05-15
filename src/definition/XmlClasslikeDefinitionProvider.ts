@@ -30,8 +30,9 @@ export class XmlClasslikeDefinitionProvider implements DefinitionProvider {
       return null;
     }
 
-    // also handle constants
-    const potentialNamespace = word.split(':').shift()?.trim();
+    // also handle constants; strip any leading backslashes so downstream
+    // lookups (virtual types in particular) match the indexed form.
+    const potentialNamespace = word.split(':').shift()?.trim().replace(/^\\+/, '');
 
     if (!potentialNamespace) {
       return null;

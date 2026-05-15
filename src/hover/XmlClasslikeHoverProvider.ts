@@ -29,7 +29,7 @@ export default class XmlClasslikeHoverProvider implements HoverProvider {
       return null;
     }
 
-    const potentialNamespace = word.split(':').shift()?.trim();
+    const potentialNamespace = word.split(':').shift()?.trim().replace(/^\\+/, '');
 
     if (!potentialNamespace) {
       return null;
