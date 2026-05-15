@@ -64,9 +64,9 @@ export default class ObserverDeclarationDiagnostics implements LanguageDiagnosti
         if (disabled) {
           const enabledExists = (eventsIndex?.getEvents() ?? []).some(event => {
             if (event.name !== eventName) return false;
-            return event.observers.some(
-              obs => obs.name === nameAttr.value && event.diPath !== document.uri.fsPath
-            );
+            if (event.diPath === document.uri.fsPath) return false;
+            if (!this.scopesConflict(scope, this.getScopeFromPath(event.diPath))) return false;
+            return event.observers.some(obs => obs.name === nameAttr.value);
           });
 
           if (!enabledExists) {
@@ -86,16 +86,18 @@ export default class ObserverDeclarationDiagnostics implements LanguageDiagnosti
           event =>
             event.name === eventName &&
             event.diPath !== document.uri.fsPath &&
+            this.scopesConflict(scope, this.getScopeFromPath(event.diPath)) &&
             event.observers.some(obs => obs.name === nameAttr.value)
         );
 
         if (otherOccurrences.length > 0) {
           const otherPath = otherOccurrences[0].diPath;
           const otherModule = moduleIndex?.getModuleByUri(Uri.file(otherPath), false)?.name;
+          const otherScope = this.getScopeFromPath(otherPath);
 
           const d = new Diagnostic(
             XmlRange.ofAttributeValue(nameAttr),
-            `The observer name "${nameAttr.value}" for event "${eventName}" is already used in the module "${otherModule ?? 'unknown'}" (${scope} scope). For more details see Inspection Description.`,
+            `The observer name "${nameAttr.value}" for event "${eventName}" is already used in the module "${otherModule ?? 'unknown'}" (${otherScope} scope). For more details see Inspection Description.`,
             DiagnosticSeverity.Warning
           );
           d.code = DiagnosticCode.ObserverDuplicateInOtherPlaces;
@@ -112,5 +114,9 @@ export default class ObserverDeclarationDiagnostics implements LanguageDiagnosti
     const normalized = fsPath.replace(/\\/g, '/');
     const match = normalized.match(/\/etc\/([^/]+)\/events\.xml$/);
     return match ? match[1] : 'global';
+  }
+
+  private scopesConflict(a: string, b: string): boolean {
+    return a === b || a === 'global' || b === 'global';
   }
 }
