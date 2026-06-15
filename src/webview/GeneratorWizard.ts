@@ -1,6 +1,7 @@
 import { Webview } from './Webview';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as crypto from 'crypto';
 import { Command, Message, Wizard } from 'types/webview';
 import ExtensionState from 'common/ExtensionState';
 import WizzardClosedError from './error/WizzardClosedError';
@@ -18,10 +19,18 @@ export class GeneratorWizard extends Webview {
         vscode.ViewColumn.One,
         {
           enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.file(path.join(ExtensionState.context.extensionPath, 'dist', 'webview')),
+          ],
         }
       );
 
       this.panel?.webview.onDidReceiveMessage((message: Message) => {
+        // The webview is untrusted: only act on known commands with a well-formed payload.
+        if (!message || typeof message.command !== 'string') {
+          return;
+        }
+
         if (message.command === Command.Ready) {
           loaded = true;
           clearInterval(it);
@@ -32,6 +41,10 @@ export class GeneratorWizard extends Webview {
         }
 
         if (message.command === Command.Submit) {
+          if (typeof message.data !== 'object' || message.data === null) {
+            return;
+          }
+
           completed = true;
           this.panel?.dispose();
           resolve(message.data);
@@ -76,8 +89,25 @@ export class GeneratorWizard extends Webview {
       throw new Error('Failed to get CSS source');
     }
 
+    const cspSource = this.panel?.webview.cspSource;
+
+    if (!cspSource) {
+      throw new Error('Failed to get webview CSP source');
+    }
+
+    const nonce = crypto.randomBytes(16).toString('base64');
+    const csp = [
+      `default-src 'none'`,
+      `img-src ${cspSource} https: data:`,
+      `font-src ${cspSource}`,
+      `style-src ${cspSource} 'unsafe-inline'`,
+      `script-src 'nonce-${nonce}'`,
+    ].join('; ');
+
     const html = super.getHtml(filename);
     return html
+      .replace('{{CSP}}', csp)
+      .replace('{{NONCE}}', nonce)
       .replace('{{APP_SCRIPT}}', scriptSrc.toString())
       .replace('{{APP_CSS}}', cssSrc.toString());
   }

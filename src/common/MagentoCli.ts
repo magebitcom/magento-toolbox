@@ -13,27 +13,52 @@ export default class MagentoCli {
   }
 
   public async run(command: string, args: string[] = []): Promise<number> {
-    return new Promise((resolve, reject) => {
-      const cmd = `${this.magentoCliPath} ${command} ${args.join(' ')}`;
+    const parts = [this.magentoCliPath, command, ...args].map(MagentoCli.quote);
+    const cmd = parts.join(' ');
 
-      const terminal = this.getOrCreateTerminal();
+    const terminal = this.getOrCreateTerminal();
+
+    return new Promise((resolve, reject) => {
+      let settled = false;
       let timeout: NodeJS.Timeout;
 
-      terminal.show();
-      terminal.sendText(cmd, true);
-
-      vscode.window.onDidEndTerminalShellExecution(event => {
-        if (event.terminal.name === MagentoCli.TERMINAL_NAME) {
-          clearTimeout(timeout);
-
-          resolve(event.exitCode ?? 0);
+      // Resolve only for the execution in our own terminal, and tear the listener
+      // down once settled so it does not leak or resolve a later run's promise.
+      const listener = vscode.window.onDidEndTerminalShellExecution(event => {
+        if (event.terminal !== terminal || settled) {
+          return;
         }
+
+        settled = true;
+        clearTimeout(timeout);
+        listener.dispose();
+        resolve(event.exitCode ?? 0);
       });
 
       timeout = setTimeout(() => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        listener.dispose();
         reject(new Error('Timeout'));
       }, 30000);
+
+      terminal.show();
+      terminal.sendText(cmd, true);
     });
+  }
+
+  /**
+   * Single-quote a shell token so values from configuration (e.g. magentoCliPath)
+   * or arguments cannot inject additional commands.
+   *
+   * @param value The raw token to quote.
+   * @returns The shell-safe, single-quoted token.
+   */
+  private static quote(value: string): string {
+    return `'${value.replace(/'/g, `'\\''`)}'`;
   }
 
   public dispose() {
