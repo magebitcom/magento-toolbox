@@ -11,21 +11,16 @@ export default class ModuleLicenseGenerator extends TemplateGenerator<
   | TemplatePath.LicenseApache20
   | TemplatePath.LicenseOslv3
 > {
-  public constructor(protected data: ModuleWizardData | ModuleWizardComposerData) {
-    const params = {
+  public constructor(data: ModuleWizardData | ModuleWizardComposerData) {
+    super('LICENSE.txt', TemplatePath.LicenseMit, {
       ...data,
       year: new Date().getFullYear(),
-    };
-
-    super('LICENSE.txt', TemplatePath.LicenseMit, params);
+    });
   }
 
   public async generate(workspaceUri: Uri): Promise<GeneratedFile> {
-    const moduleDirectory = Magento.getModuleDirectory(
-      this.data.vendor,
-      this.data.module,
-      workspaceUri
-    );
+    const data = this.data as ModuleWizardData | ModuleWizardComposerData;
+    const moduleDirectory = Magento.getModuleDirectory(data.vendor, data.module, workspaceUri);
 
     return super.generate(moduleDirectory);
   }
