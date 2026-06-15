@@ -1,34 +1,45 @@
 import { TextDocument } from 'vscode';
 
+interface CacheEntry {
+  version: number;
+  value: any;
+}
+
 class DocumentCache {
-  protected cache: Map<string, any> = new Map();
+  protected cache: Map<string, CacheEntry> = new Map();
 
   public get(document: TextDocument, key: string) {
-    const cacheKey = this.getCacheKey(document, key);
-    return this.cache.get(cacheKey);
+    const entry = this.cache.get(this.getCacheKey(document, key));
+
+    if (!entry || entry.version !== document.version) {
+      return undefined;
+    }
+
+    return entry.value;
   }
 
   public set(document: TextDocument, key: string, value: any) {
-    const cacheKey = this.getCacheKey(document, key);
-    this.cache.set(cacheKey, value);
+    this.cache.set(this.getCacheKey(document, key), { version: document.version, value });
   }
 
   public delete(document: TextDocument, key: string) {
-    const cacheKey = this.getCacheKey(document, key);
-    this.cache.delete(cacheKey);
+    this.cache.delete(this.getCacheKey(document, key));
   }
 
   public clear(document: TextDocument) {
-    this.cache.forEach((value, key) => {
-      if (key.startsWith(document.uri.fsPath)) {
+    const prefix = `${document.uri.fsPath}-`;
+
+    for (const key of this.cache.keys()) {
+      if (key.startsWith(prefix)) {
         this.cache.delete(key);
       }
-    });
+    }
   }
 
   public has(document: TextDocument, key: string) {
-    const cacheKey = this.getCacheKey(document, key);
-    return this.cache.has(cacheKey);
+    const entry = this.cache.get(this.getCacheKey(document, key));
+
+    return entry !== undefined && entry.version === document.version;
   }
 
   protected getCacheKey(document: TextDocument, key: string) {

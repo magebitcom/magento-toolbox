@@ -14,7 +14,7 @@ export abstract class XmlSuggestionProviderProcessor<T> {
       return [];
     }
 
-    const tokenData = await XmlDocumentParser.parse(document, true);
+    const tokenData = await XmlDocumentParser.parse(document);
 
     const providerCompletionItems = await Promise.all(
       this.providers.map(provider =>
