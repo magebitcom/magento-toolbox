@@ -1,7 +1,18 @@
-import { Disposable, Event, EventEmitter, Progress, Uri, workspace, WorkspaceFolder } from 'vscode';
+import {
+  Disposable,
+  Event,
+  EventEmitter,
+  FileType,
+  Progress,
+  RelativePattern,
+  Uri,
+  workspace,
+  WorkspaceFolder,
+} from 'vscode';
 import { Indexer } from './Indexer';
 import Common from 'util/Common';
 import { minimatch } from 'minimatch';
+import * as path from 'path';
 import IndexStorage from './IndexStorage';
 import { clear } from 'typescript-memoize';
 import Logger from 'util/Logger';
@@ -20,6 +31,10 @@ class IndexManager {
   protected indexers: Indexer[] = [];
   protected indexStorage: IndexStorage;
   protected fileWatchers: Record<string, Record<IndexerKey, Disposable[]>> = {};
+  // Cached derived index-data instances, keyed by workspace path then indexer key.
+  // Reusing the instance keeps the per-instance memoization effective and avoids
+  // allocating (and leaking) a fresh instance on every provider lookup.
+  private readonly indexDataCache = new Map<string, Map<IndexerKey, unknown>>();
   private readonly definitions = indexerDefinitions;
   private readonly onDidIndexEmitter = new EventEmitter<IndexChangeEvent>();
   public readonly onDidIndex: Event<IndexChangeEvent> = this.onDidIndexEmitter.event;
@@ -104,6 +119,7 @@ class IndexManager {
       this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
       await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
+      this.invalidateIndexData(workspaceFolder, indexer.getId());
       clear([indexer.getId()]);
 
       Logger.logWithTime('Indexing', indexer.getName(), 'done');
@@ -119,10 +135,14 @@ class IndexManager {
   public async indexFile(workspaceFolder: WorkspaceFolder, file: Uri): Promise<void> {
     Logger.logWithTime('Indexing file', file.fsPath);
 
+    const changed = await Promise.all(
+      this.indexers.map(indexer => this.indexFileInner(workspaceFolder, file, indexer))
+    );
+
     await Promise.all(
-      this.indexers.map(async indexer => {
-        await this.indexFileInner(workspaceFolder, file, indexer);
-      })
+      this.indexers
+        .filter((_, i) => changed[i])
+        .map(indexer => this.persistIndex(workspaceFolder, indexer))
     );
 
     Logger.logWithTime('Finished indexing file', file.fsPath);
@@ -134,12 +154,61 @@ class IndexManager {
     Logger.logWithTime(`Indexing ${files.length} files`);
 
     for (const indexer of this.indexers) {
-      await Promise.all(files.map(file => this.indexFileInner(workspaceFolder, file, indexer)));
+      const results = await Promise.all(
+        files.map(file => this.indexFileInner(workspaceFolder, file, indexer))
+      );
+
+      if (results.some(Boolean)) {
+        await this.persistIndex(workspaceFolder, indexer);
+      }
     }
 
     Logger.logWithTime(`Finished indexing ${files.length} files`);
 
     this.onDidIndexEmitter.fire({ indexerKeys: this.indexers.map(i => i.getId()) });
+  }
+
+  /**
+   * Reconcile the index after a file or directory rename: drop stale entries for
+   * the old path and (re-)index the new location.
+   *
+   * @param workspaceFolder The workspace the rename occurred in.
+   * @param oldUri The pre-rename path (may be a directory).
+   * @param newUri The post-rename path (may be a directory).
+   */
+  public async handleRename(
+    workspaceFolder: WorkspaceFolder,
+    oldUri: Uri,
+    newUri: Uri
+  ): Promise<void> {
+    for (const indexer of this.indexers) {
+      const indexData = this.getIndexStorageData(indexer.getId(), workspaceFolder);
+
+      if (indexData && this.deleteByPathPrefix(indexData, oldUri.fsPath)) {
+        this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
+        await this.persistIndex(workspaceFolder, indexer);
+        this.invalidateIndexData(workspaceFolder, indexer.getId());
+        clear([indexer.getId()]);
+      }
+    }
+
+    let isDirectory = false;
+
+    try {
+      const stat = await workspace.fs.stat(newUri);
+      isDirectory = stat.type === FileType.Directory;
+    } catch {
+      // New path no longer exists (e.g. moved out of the workspace); nothing to index.
+      this.onDidIndexEmitter.fire({ indexerKeys: this.indexers.map(i => i.getId()) });
+      return;
+    }
+
+    if (isDirectory) {
+      const files = await workspace.findFiles(new RelativePattern(newUri, '**/*'));
+      await this.indexFiles(workspaceFolder, files);
+    } else {
+      await this.indexFile(workspaceFolder, newUri);
+    }
   }
 
   public getIndexStorageData<T = any>(
@@ -159,10 +228,29 @@ class IndexManager {
     id: T,
     workspaceFolder?: WorkspaceFolder
   ): IndexerDataMap[T] | undefined {
-    const data = this.getIndexStorageData(id, workspaceFolder);
+    const wf = workspaceFolder || Common.getActiveWorkspaceFolder();
+
+    if (!wf) {
+      return undefined;
+    }
+
+    const data = this.indexStorage.get(wf, id);
 
     if (!data) {
       return undefined;
+    }
+
+    let perWorkspace = this.indexDataCache.get(wf.uri.fsPath);
+
+    if (!perWorkspace) {
+      perWorkspace = new Map();
+      this.indexDataCache.set(wf.uri.fsPath, perWorkspace);
+    }
+
+    const cached = perWorkspace.get(id);
+
+    if (cached) {
+      return cached as IndexerDataMap[T];
     }
 
     const definition = this.definitions.find(def => def.key === id);
@@ -171,27 +259,44 @@ class IndexManager {
       return undefined;
     }
 
-    return definition.createData(data) as IndexerDataMap[T];
+    const instance = definition.createData(data);
+    perWorkspace.set(id, instance);
+
+    return instance as IndexerDataMap[T];
   }
 
   protected async indexFileInner(
     workspaceFolder: WorkspaceFolder,
     file: Uri,
     indexer: Indexer
-  ): Promise<void> {
-    const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
+  ): Promise<boolean> {
     const pattern = indexer.getPattern(workspaceFolder.uri);
     const patternString = typeof pattern === 'string' ? pattern : pattern.pattern;
 
-    if (minimatch(file.fsPath, patternString, { matchBase: true })) {
-      const data = await indexer.indexFile(file);
-
-      if (data !== undefined) {
-        indexData.set(file.fsPath, data);
-      }
+    if (!minimatch(file.fsPath, patternString, { matchBase: true })) {
+      return false;
     }
 
+    if (!indexer.canIndex(file)) {
+      return false;
+    }
+
+    const indexData = this.getIndexStorageData(indexer.getId(), workspaceFolder) || new Map();
+    const data = await indexer.indexFile(file);
+
+    if (data !== undefined) {
+      indexData.set(file.fsPath, data);
+    } else if (indexData.has(file.fsPath)) {
+      indexData.delete(file.fsPath);
+    } else {
+      return false;
+    }
+
+    this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
+    this.invalidateIndexData(workspaceFolder, indexer.getId());
     clear([indexer.getId()]);
+
+    return true;
   }
 
   protected async removeFileFromIndex(
@@ -199,12 +304,47 @@ class IndexManager {
     file: Uri,
     indexer: Indexer
   ) {
-    const indexData = this.getIndexStorageData(indexer.getId()) || new Map();
-    indexData.delete(file.fsPath);
+    const indexData = this.getIndexStorageData(indexer.getId(), workspaceFolder);
+
+    if (!indexData || !this.deleteByPathPrefix(indexData, file.fsPath)) {
+      return;
+    }
+
     this.indexStorage.set(workspaceFolder, indexer.getId(), indexData);
     await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
 
+    this.invalidateIndexData(workspaceFolder, indexer.getId());
     clear([indexer.getId()]);
+  }
+
+  private async persistIndex(workspaceFolder: WorkspaceFolder, indexer: Indexer): Promise<void> {
+    await this.indexStorage.saveIndex(workspaceFolder, indexer.getId(), indexer.getVersion());
+  }
+
+  private invalidateIndexData(workspaceFolder: WorkspaceFolder, key: IndexerKey): void {
+    this.indexDataCache.get(workspaceFolder.uri.fsPath)?.delete(key);
+  }
+
+  /**
+   * Delete the entry for an exact path plus any entry nested beneath it, so a
+   * directory delete/rename removes every descendant index entry.
+   *
+   * @param indexData The index map to mutate in place.
+   * @param fsPath The file or directory path to remove.
+   * @returns Whether any entry was removed.
+   */
+  private deleteByPathPrefix(indexData: Map<string, unknown>, fsPath: string): boolean {
+    const prefix = fsPath + path.sep;
+    let removed = false;
+
+    for (const key of [...indexData.keys()]) {
+      if (key === fsPath || key.startsWith(prefix)) {
+        indexData.delete(key);
+        removed = true;
+      }
+    }
+
+    return removed;
   }
 
   protected shouldIndex(workspaceFolder: WorkspaceFolder, index: Indexer): boolean {
@@ -234,15 +374,19 @@ class IndexManager {
       const watcher = workspace.createFileSystemWatcher(patternString, false, false, false);
 
       watcher.onDidChange(async file => {
-        await this.indexFileInner(workspaceFolder, file, indexer);
-        this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
+        if (await this.indexFileInner(workspaceFolder, file, indexer)) {
+          await this.persistIndex(workspaceFolder, indexer);
+          this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
+        }
 
         Logger.logWithTime('File changed', file.fsPath);
       });
 
       watcher.onDidCreate(async file => {
-        await this.indexFileInner(workspaceFolder, file, indexer);
-        this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
+        if (await this.indexFileInner(workspaceFolder, file, indexer)) {
+          await this.persistIndex(workspaceFolder, indexer);
+          this.onDidIndexEmitter.fire({ indexerKeys: [indexer.getId()], file });
+        }
 
         Logger.logWithTime('File created', file.fsPath);
       });
@@ -288,6 +432,7 @@ class IndexManager {
       commit: async data => {
         this.indexStorage.set(workspaceFolder, definition.key, data);
         await this.indexStorage.saveIndex(workspaceFolder, definition.key, indexer.getVersion());
+        this.invalidateIndexData(workspaceFolder, definition.key);
         clear([definition.key]);
       },
     };

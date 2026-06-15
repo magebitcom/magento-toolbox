@@ -27,6 +27,14 @@ class IndexRunner {
     await IndexManager.indexFile(workspaceFolder, file);
   }
 
+  public async handleRename(
+    workspaceFolder: vscode.WorkspaceFolder,
+    oldUri: vscode.Uri,
+    newUri: vscode.Uri
+  ): Promise<void> {
+    await IndexManager.handleRename(workspaceFolder, oldUri, newUri);
+  }
+
   public async indexFiles(
     workspaceFolder: vscode.WorkspaceFolder,
     files: vscode.Uri[]
