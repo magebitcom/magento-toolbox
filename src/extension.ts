@@ -99,9 +99,14 @@ export async function activate(context: vscode.ExtensionContext) {
         activeEditorRefreshObserver.execute(vscode.window.activeTextEditor);
       }
     }),
-    vscode.workspace.onDidRenameFiles(event => {
-      for (const { oldUri } of event.files) {
+    vscode.workspace.onDidRenameFiles(async event => {
+      for (const { oldUri, newUri } of event.files) {
         DiagnosticCollectionProvider.clear(oldUri);
+
+        const folder = vscode.workspace.getWorkspaceFolder(newUri);
+        if (folder && magentoWorkspaces.some(w => w.uri.fsPath === folder.uri.fsPath)) {
+          await IndexRunner.handleRename(folder, oldUri, newUri);
+        }
       }
     }),
     vscode.workspace.onDidDeleteFiles(event => {
