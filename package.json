@@ -143,6 +143,22 @@
       {
         "id": "magento-toolbox.explorer-submenu",
         "label": "Magento Toolbox"
+      },
+      {
+        "id": "magento-toolbox.generate-code-submenu",
+        "label": "Generate Code"
+      },
+      {
+        "id": "magento-toolbox.generate-patch-submenu",
+        "label": "Generate Patch"
+      },
+      {
+        "id": "magento-toolbox.generate-cron-submenu",
+        "label": "Generate Cron"
+      },
+      {
+        "id": "magento-toolbox.generate-xml-submenu",
+        "label": "Generate XML File"
       }
     ],
     "commands": [
@@ -382,15 +398,33 @@
       ],
       "magento-toolbox.explorer-submenu": [
         {
-          "command": "magento-toolbox.copyMagentoPath",
-          "title": "Magento Toolbox: Copy Magento Path",
-          "when": "resourceExtname in magento-toolbox.supportedMagentoPathExtensions && resourcePath =~ /view/"
+          "submenu": "magento-toolbox.generate-code-submenu",
+          "group": "1_generate@1",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
-          "command": "magento-toolbox.generateObserver",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i",
-          "arguments": []
+          "submenu": "magento-toolbox.generate-patch-submenu",
+          "group": "1_generate@2",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
+        {
+          "submenu": "magento-toolbox.generate-cron-submenu",
+          "group": "1_generate@3",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "submenu": "magento-toolbox.generate-xml-submenu",
+          "group": "1_generate@4",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.copyMagentoPath",
+          "title": "Magento Toolbox: Copy Magento Path",
+          "group": "9_util",
+          "when": "resourceExtname in magento-toolbox.supportedMagentoPathExtensions && resourcePath =~ /view/"
+        }
+      ],
+      "magento-toolbox.generate-code-submenu": [
         {
           "command": "magento-toolbox.generateBlock",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
@@ -400,91 +434,30 @@
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
-          "command": "magento-toolbox.generateEventsXml",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+          "command": "magento-toolbox.generateObserver",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i",
+          "arguments": []
         },
         {
-          "command": "magento-toolbox.generateGraphqlSchemaFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateRoutesXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateAclXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateDiXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateWebapiXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateLayoutXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generatePageTypesXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateCrontabXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateEmailTemplatesXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateSectionsXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateFieldsetXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateViewXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateIndexerXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateMviewXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateWidgetXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateExtensionAttributesXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateSystemXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateConfigXmlFile",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateDataPatch",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateCronJob",
+          "command": "magento-toolbox.generateController",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
           "command": "magento-toolbox.generateCliCommand",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateGraphqlResolver",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSystemConfig",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        }
+      ],
+      "magento-toolbox.generate-patch-submenu": [
+        {
+          "command": "magento-toolbox.generateDataPatch",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
@@ -498,21 +471,93 @@
         {
           "command": "magento-toolbox.generateCustomerEavAttributePatch",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
+        }
+      ],
+      "magento-toolbox.generate-cron-submenu": [
         {
-          "command": "magento-toolbox.generateSystemConfig",
-          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
-        },
-        {
-          "command": "magento-toolbox.generateGraphqlResolver",
+          "command": "magento-toolbox.generateCronJob",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
           "command": "magento-toolbox.generateCronGroup",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        }
+      ],
+      "magento-toolbox.generate-xml-submenu": [
+        {
+          "command": "magento-toolbox.generateDiXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         },
         {
-          "command": "magento-toolbox.generateController",
+          "command": "magento-toolbox.generateEventsXml",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateAclXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateConfigXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSystemXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateRoutesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateWebapiXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateCrontabXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateEmailTemplatesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateExtensionAttributesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateFieldsetXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateIndexerXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateMviewXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateSectionsXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generatePageTypesXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateLayoutXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateViewXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateWidgetXmlFile",
+          "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
+        },
+        {
+          "command": "magento-toolbox.generateGraphqlSchemaFile",
           "when": "resourcePath =~ /app\\/code\\/.+\\/.+/i"
         }
       ]
