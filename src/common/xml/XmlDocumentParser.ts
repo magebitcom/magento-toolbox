@@ -1,6 +1,5 @@
 import { DocumentCstNode, parse } from '@xml-tools/parser';
 import DocumentCache from 'cache/DocumentCache';
-import PhpParser from 'parser/php/Parser';
 import { TextDocument } from 'vscode';
 import { buildAst, XMLDocument } from '@xml-tools/ast';
 
@@ -12,12 +11,6 @@ export interface TokenData {
 }
 
 class XmlDocumentParser {
-  protected readonly parser: PhpParser;
-
-  constructor() {
-    this.parser = new PhpParser();
-  }
-
   public async parse(document: TextDocument, skipCache = false): Promise<TokenData> {
     const cacheKey = `xml-file`;
 
