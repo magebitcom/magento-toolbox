@@ -4,6 +4,30 @@ All notable changes to the "magento-toolbox" extension will be documented in thi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.7.1] - 2026-05-15
+
+- Fixed: Type definitions for virtual types
+- Fixed: XML catalog generation failed if .vscode directory does not exist
+
+## [1.7.0] - 2026-04-19
+
+- Added: Layout & page_layout XML support — go-to-definition, hover, completion, find-references, and rename for referenceBlock, referenceContainer, update handle, move element, move destination. Area-scoped (frontend/adminhtml + base).
+- Added: Theme support — ThemeIndexer + navigation and hover for in theme.xml.
+- Added: Diagnostics engine with 13 rules across layout, DI, ACL, plugins, observers, modules, preferences, virtual types, and Web API. Each toggleable via settings.
+- Added: Quick fixes — fix module name, make method public, remove cacheable="false".
+- Added: Incremental class indexing — new PHP classes are picked up immediately without a full reindex.
+- Changed: Module XML generator rewritten on Handlebars templates with test coverage.
+- Fixed: Theme template overrides (app/design/.../{Module_Name}/templates/...) are now indexed and navigable.
+- Fixed: Decorations (plugin/observer/cron inlays) refresh on file save.
+- Fixed: File watcher now fires on create + delete, and covers all matching files.
+- Fixed: Empty system list in XML catalog.
+- Fixed: Multiline XML definitions matched correctly.
+- Fixed: / accept either element kind, matching Magento's runtime.
+- Changed: Simplified indexer registration — IndexerDefinition + registry tuple + derived IndexerDataMap.
+- Changed: Standardized hover formatting via HoverBuilder.
+- Changed: Renamed ActiveTextEditorChangeObserver → ActiveEditorRefreshObserver.
+- Changed: Dependency bumps including tar-fs security fix.
+
 ## [1.6.1] - 2025-08-11
 
 - Fixed: Issue [#92](https://github.com/magebitcom/magento-toolbox/issues/92) (Definitions and hovers dont work on element content values that are on a new line)
